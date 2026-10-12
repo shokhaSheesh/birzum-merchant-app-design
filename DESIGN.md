@@ -313,12 +313,26 @@ A detail screen (a client, later an application) is read top to bottom, so it is
 
 ## Home screen
 
-Asosiy is a summary, so it only links to things that exist elsewhere and never holds a form.
+Asosiy reports on one period: a day, a week or a month. It only shows numbers and never holds a form.
 
 - Top row: the user's `Avatar`, a greeting with the store and branch, and a round bell button on the right with a green dot while there are unread notifications.
-- One headline number on a navy tile (`bg-tile`), with a row of three `StatTile`s under it. A stat that has a list behind it is a link to that list.
-- Shortcuts are `ShortcutTile`s in a three-column grid: icon in a white circle over a short label. They are links, not buttons, so the screen has no primary button.
-- "Recent" sections show at most three rows, using the same row components as the full lists, with a "Hammasi" link at the right of the section title.
+- `PeriodPicker` comes next. Everything below it describes the chosen period.
+- One headline figure in plain large text (not on a colored tile), with a single muted line of counts under it.
+- One chart in a `surface` card, then the status breakdown as a list of `StatusBadge`s with their counts.
+- A period with no arizalar shows `EmptyState` in place of the chart and breakdown.
+
+### Period picker: `PeriodPicker`
+- `SegmentedTabs` for Kun, Hafta, Oy. Switching the kind keeps the same date in view.
+- Under it, a row of three grey pills: a back arrow, the period label with a `CalendarDays` icon, and a forward arrow.
+- The label reads `Bugun, 12.10.2026` for today, `12.10 – 18.10.2026` for a week (Monday to Sunday) and `Oktabr 2026` for a month.
+- Tapping the label opens the calendar sheet: pick a day, pick any day to get its week (the whole week is marked), or pick a month from the month grid.
+- The forward arrow is disabled on the current period, and future dates cannot be picked.
+
+### Charts: `BarChart`
+- One series only, as vertical bars in the primary color, rounded at the top and square on the baseline. Up to three faint gridlines; no axis lines.
+- Only the tallest bar carries its number. Hovering, focusing or tapping a bar turns it green and writes its value and name on the line under the chart.
+- A day is drawn in two-hour blocks, a week as seven days, a month as one bar per date with every fifth date labelled.
+- Do not add a second series, a second axis or a legend. A different measure gets its own chart.
 
 ## Logo
 

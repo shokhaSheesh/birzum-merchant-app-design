@@ -25,16 +25,9 @@ export function TabBar() {
         {tabs.map(({ to, label, icon: Icon, center }) =>
           center ? (
             <NavLink key={to} to={to} aria-label={t(label)} className="flex flex-1 justify-center">
-              {({ isActive }) => (
-                <span
-                  className={cn(
-                    'grid size-14 -translate-y-3 place-items-center rounded-full bg-primary text-on-primary shadow-[0_8px_18px_-6px_rgb(7_42_60/0.55)] ring-4 transition-transform active:scale-95',
-                    isActive ? 'ring-green-500' : 'ring-canvas',
-                  )}
-                >
-                  <Icon size={26} />
-                </span>
-              )}
+              <span className="grid size-14 -translate-y-3 place-items-center rounded-full bg-primary text-on-primary shadow-[0_8px_18px_-6px_rgb(7_42_60/0.55)] ring-4 ring-canvas transition-transform active:scale-95">
+                <Icon size={26} />
+              </span>
             </NavLink>
           ) : (
             <NavLink

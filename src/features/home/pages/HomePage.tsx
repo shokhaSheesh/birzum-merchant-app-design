@@ -1,38 +1,77 @@
-import { Bell, Calculator, FileText, UserPlus } from 'lucide-react'
+import { Bell } from 'lucide-react'
+import { useState } from 'react'
 import { Link } from 'react-router-dom'
-import { shortName } from '@/entities/clients/clientName'
-import { ApplicationRow } from '@/entities/clients/ui/ApplicationRow'
-import { ClientRow } from '@/entities/clients/ui/ClientRow'
-import { useApplications } from '@/entities/clients/useApplications'
-import { useClients } from '@/entities/clients/useClients'
+import { applicationStatusTone } from '@/entities/clients/applicationStatus'
+import { APPLICATION_STATUSES } from '@/entities/clients/clients'
+import { useApplications, type ApplicationWithClient } from '@/entities/clients/useApplications'
 import { unreadCount } from '@/entities/notifications/notifications'
 import { currentUser } from '@/entities/session/user'
 import { ROUTES } from '@/shared/config/routes'
+import { calendarNames } from '@/shared/i18n/dictionaries'
 import { useI18n } from '@/shared/i18n/useI18n'
-import { formatSum } from '@/shared/lib/format'
+import { formatDate, formatSum } from '@/shared/lib/format'
+import { inPeriod, periodDays, type Period } from '@/shared/lib/period'
 import { Avatar } from '@/shared/ui/Avatar'
+import { BarChart, type Bar } from '@/shared/ui/BarChart'
+import { EmptyState } from '@/shared/ui/EmptyState'
+import { PeriodPicker } from '@/shared/ui/PeriodPicker'
 import { Section } from '@/shared/ui/Section'
-import { ShortcutTile } from '@/shared/ui/ShortcutTile'
-import { StatTile } from '@/shared/ui/StatTile'
+import { StatusBadge } from '@/shared/ui/StatusBadge'
 
-const RECENT = 3
-const seeAll = 'text-sm font-semibold text-brand'
+// A day is charted in two-hour blocks across shop hours
+const FIRST_HOUR = 8
+const HOUR_BLOCKS = 7
+const pad = (n: number) => String(n).padStart(2, '0')
 
-/** Start screen: who is signed in, the numbers at a glance, shortcuts and the latest activity. */
+/** Counts the period's applications into the bars for its kind: hours, weekdays or dates. */
+function toBars(items: ApplicationWithClient[], period: Period, weekdays: string[]): Bar[] {
+  const { first, last } = periodDays(period)
+
+  if (period.unit === 'day') {
+    return Array.from({ length: HOUR_BLOCKS }, (_, i) => {
+      const from = FIRST_HOUR + i * 2
+      return {
+        label: pad(from),
+        name: `${pad(from)}:00–${pad(from + 2)}:00`,
+        value: items.filter(({ application }) => {
+          const block = Math.floor((application.date.getHours() - FIRST_HOUR) / 2)
+          return Math.min(HOUR_BLOCKS - 1, Math.max(0, block)) === i
+        }).length,
+      }
+    })
+  }
+
+  const count = period.unit === 'week' ? 7 : last.getDate()
+  return Array.from({ length: count }, (_, i) => {
+    const day = new Date(first.getFullYear(), first.getMonth(), first.getDate() + i)
+    const dayOfMonth = day.getDate()
+    return {
+      label:
+        period.unit === 'week'
+          ? weekdays[i]
+          : dayOfMonth === 1 || dayOfMonth % 5 === 0
+            ? String(dayOfMonth)
+            : '',
+      name: formatDate(day),
+      value: items.filter(({ application }) => formatDate(application.date) === formatDate(day))
+        .length,
+    }
+  })
+}
+
+/** Start screen: the chosen day, week or month in numbers. */
 export function HomePage() {
-  const { t } = useI18n()
-  const clients = useClients()
-  const applications = useApplications()
+  const { t, lang } = useI18n()
   const user = currentUser
+  const [period, setPeriod] = useState<Period>(() => ({ unit: 'week', anchor: new Date() }))
 
-  const financed = applications.filter(({ application }) => application.installmentTotal > 0)
-  const total = financed.reduce((sum, { application }) => sum + application.installmentTotal, 0)
-  const processing = applications.filter(
-    ({ application }) => application.status === 'processing',
-  ).length
+  const items = useApplications().filter(({ application }) => inPeriod(application.date, period))
+  const total = items.reduce((sum, { application }) => sum + application.installmentTotal, 0)
+  const clientCount = new Set(items.map(({ client }) => client.id)).size
+  const formatCount = (count: number) => t('home.chart.tip', { count: String(count) })
 
   return (
-    <div className="flex min-h-full flex-col gap-7 px-5 pt-[max(1rem,env(safe-area-inset-top))] pb-tabbar">
+    <div className="flex min-h-full flex-col gap-6 px-5 pt-[max(1rem,env(safe-area-inset-top))] pb-tabbar">
       <header className="flex items-center gap-3">
         <Avatar initials={`${user.firstName[0]}${user.lastName[0]}`} photoUrl={user.photoUrl} />
         <div className="flex min-w-0 flex-1 flex-col">
@@ -55,66 +94,52 @@ export function HomePage() {
         </Link>
       </header>
 
-      <div className="flex flex-col gap-3">
-        <div className="flex flex-col gap-1 rounded-card bg-tile p-5 text-on-tile">
-          <p className="text-sm opacity-75">{t('home.total')}</p>
-          <p className="text-3xl font-bold">{formatSum(total)}</p>
-          <p className="text-sm opacity-75">
-            {t('home.total.hint', { count: String(financed.length) })}
-          </p>
-        </div>
-        <div className="grid grid-cols-3 gap-3">
-          <StatTile label={t('nav.clients')} value={String(clients.length)} to={ROUTES.clients} />
-          <StatTile
-            label={t('nav.applications')}
-            value={String(applications.length)}
-            to={ROUTES.applications}
-          />
-          <StatTile label={t('home.stat.processing')} value={String(processing)} />
-        </div>
+      <PeriodPicker value={period} onChange={setPeriod} />
+
+      <div className="flex flex-col">
+        <p className="text-sm text-ink-muted">{t('home.total')}</p>
+        <p className="text-3xl font-bold">{formatSum(total)}</p>
+        <p className="text-sm text-ink-muted">
+          {t('home.summary', {
+            applications: String(items.length),
+            clients: String(clientCount),
+          })}
+        </p>
       </div>
 
-      <Section title={t('home.shortcuts')}>
-        <div className="grid grid-cols-3 gap-3">
-          <ShortcutTile icon={UserPlus} label={t('home.addClient')} to={ROUTES.newClient} />
-          <ShortcutTile icon={Calculator} label={t('nav.calculator')} to={ROUTES.calculator} />
-          <ShortcutTile icon={FileText} label={t('nav.applications')} to={ROUTES.applications} />
-        </div>
-      </Section>
-
-      <Section
-        title={t('home.recentApplications')}
-        action={
-          <Link to={ROUTES.applications} className={seeAll}>
-            {t('common.all')}
-          </Link>
-        }
-      >
-        <ul className="rounded-card bg-surface px-4">
-          {applications.slice(0, RECENT).map(({ application, client }) => (
-            <ApplicationRow
-              key={application.id}
-              application={application}
-              clientName={shortName(client)}
+      {items.length === 0 ? (
+        <EmptyState title={t('home.empty.title')} hint={t('home.empty.hint')} />
+      ) : (
+        <>
+          <div className="flex flex-col gap-2 rounded-card bg-surface p-4">
+            <h2 className="font-semibold">{t('home.chart.title')}</h2>
+            <BarChart
+              label={t('home.chart.title')}
+              bars={toBars(items, period, calendarNames[lang].weekdays)}
+              formatValue={formatCount}
+              hint={t('home.chart.hint')}
             />
-          ))}
-        </ul>
-      </Section>
+          </div>
 
-      <Section
-        title={t('home.recentClients')}
-        action={
-          <Link to={ROUTES.clients} className={seeAll}>
-            {t('common.all')}
-          </Link>
-        }
-      >
-        <ul className="rounded-card bg-surface px-4">
-          {clients.slice(0, RECENT).map((client) => (
-            <ClientRow key={client.id} client={client} />
-          ))}
-        </ul>
-      </Section>
+          <Section title={t('home.statuses')}>
+            <ul className="rounded-card bg-surface px-4">
+              {APPLICATION_STATUSES.map((status) => (
+                <li
+                  key={status}
+                  className="flex items-center justify-between gap-3 border-b border-line py-3 last:border-b-0"
+                >
+                  <StatusBadge tone={applicationStatusTone[status]}>
+                    {t(`application.status.${status}`)}
+                  </StatusBadge>
+                  <span className="font-bold">
+                    {items.filter(({ application }) => application.status === status).length}
+                  </span>
+                </li>
+              ))}
+            </ul>
+          </Section>
+        </>
+      )}
     </div>
   )
 }
