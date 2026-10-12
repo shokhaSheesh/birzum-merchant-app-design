@@ -1,9 +1,12 @@
 import { useState, type ReactNode } from 'react'
 import { Button } from '@/shared/ui/Button'
+import { Checkbox } from '@/shared/ui/Checkbox'
 import { DatePicker } from '@/shared/ui/DatePicker'
 import { LanguageSwitcher } from '@/shared/ui/LanguageSwitcher'
 import { NumberField } from '@/shared/ui/NumberField'
+import { OtpField } from '@/shared/ui/OtpField'
 import { PasswordField } from '@/shared/ui/PasswordField'
+import { PhoneField } from '@/shared/ui/PhoneField'
 import { Select } from '@/shared/ui/Select'
 import { TextField } from '@/shared/ui/TextField'
 
@@ -29,6 +32,9 @@ export function KitPage() {
   const [term, setTerm] = useState<string | null>('6')
   const [branch, setBranch] = useState<string | null>(null)
   const [date, setDate] = useState<Date | null>(null)
+  const [phone, setPhone] = useState('901234567')
+  const [code, setCode] = useState('482')
+  const [checked, setChecked] = useState(true)
 
   return (
     <div className="flex h-full flex-col gap-8 overflow-y-auto px-5 pt-6 pb-10">
@@ -64,6 +70,20 @@ export function KitPage() {
 
       <Section title="Number input">
         <NumberField label="Xarid summasi" value={amount} onChange={setAmount} suffix="soʻm" />
+      </Section>
+
+      <Section title="Phone and code">
+        <PhoneField label="Telefon raqam" value={phone} onChange={setPhone} />
+        <OtpField label="Tasdiqlash kodi" value={code} onChange={setCode} />
+      </Section>
+
+      <Section title="Checkbox">
+        <Checkbox
+          label="Boshqa qurilmalardan chiqish"
+          description="Avval kirilgan barcha qurilmalarda seans yakunlanadi."
+          checked={checked}
+          onChange={setChecked}
+        />
       </Section>
 
       <Section title="Dropdown">

@@ -6,9 +6,11 @@ import type { TranslationKey } from '@/shared/i18n/dictionaries'
 import { useI18n } from '@/shared/i18n/useI18n'
 import { cn } from '@/shared/lib/cn'
 import { Button } from '@/shared/ui/Button'
+import { Checkbox } from '@/shared/ui/Checkbox'
 import { PasswordField } from '@/shared/ui/PasswordField'
-import { changePassword } from '../api/mockAuth'
+import { changePassword, needsLoginConfirmation } from '../api/mockAuth'
 import { AuthLayout } from '../components/AuthLayout'
+import { IconBadge } from '../components/IconBadge'
 
 const rules: { label: TranslationKey; test: (password: string) => boolean }[] = [
   { label: 'auth.rule.length', test: (p) => p.length >= 8 },
@@ -21,6 +23,7 @@ export function ChangePasswordPage() {
   const navigate = useNavigate()
   const [password, setPassword] = useState('')
   const [confirm, setConfirm] = useState('')
+  const [logoutOthers, setLogoutOthers] = useState(true)
   const [submitted, setSubmitted] = useState(false)
   const [loading, setLoading] = useState(false)
 
@@ -32,8 +35,8 @@ export function ChangePasswordPage() {
     if (!strong || !matches) return
 
     setLoading(true)
-    await changePassword(password)
-    navigate(ROUTES.home, { replace: true })
+    await changePassword(password, logoutOthers)
+    navigate(needsLoginConfirmation() ? ROUTES.confirmLogin : ROUTES.clients, { replace: true })
   }
 
   return (
@@ -45,9 +48,7 @@ export function ChangePasswordPage() {
         </Button>
       }
     >
-      <span className="grid size-14 place-items-center rounded-full bg-green-200 text-navy-900">
-        <KeyRound size={26} />
-      </span>
+      <IconBadge icon={KeyRound} />
       <div className="flex flex-col gap-1.5">
         <h1 className="text-2xl font-bold">{t('auth.change.title')}</h1>
         <p className="text-ink-muted">{t('auth.change.subtitle')}</p>
@@ -87,6 +88,12 @@ export function ChangePasswordPage() {
           value={confirm}
           onChange={(e) => setConfirm(e.target.value)}
           error={submitted && strong && !matches ? t('auth.error.mismatch') : undefined}
+        />
+        <Checkbox
+          label={t('auth.change.logoutOthers')}
+          description={t('auth.change.logoutOthersHint')}
+          checked={logoutOthers}
+          onChange={setLogoutOthers}
         />
       </div>
     </AuthLayout>

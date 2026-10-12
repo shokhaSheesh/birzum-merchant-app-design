@@ -32,7 +32,8 @@ export function I18nProvider({ children }: { children: ReactNode }) {
           // storage unavailable, the choice lasts for this session only
         }
       },
-      t: (key) => dictionaries[lang][key],
+      t: (key, params) =>
+        dictionaries[lang][key].replace(/\{(\w+)\}/g, (match, name) => params?.[name] ?? match),
     }),
     [lang],
   )

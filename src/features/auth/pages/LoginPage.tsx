@@ -6,7 +6,7 @@ import { useI18n } from '@/shared/i18n/useI18n'
 import { Button } from '@/shared/ui/Button'
 import { PasswordField } from '@/shared/ui/PasswordField'
 import { TextField } from '@/shared/ui/TextField'
-import { login as requestLogin } from '../api/mockAuth'
+import { needsLoginConfirmation, login as requestLogin } from '../api/mockAuth'
 import { AuthLayout } from '../components/AuthLayout'
 import { FormAlert } from '../components/FormAlert'
 
@@ -30,7 +30,12 @@ export function LoginPage() {
     setLoading(true)
     try {
       const { mustChangePassword } = await requestLogin(login.trim(), password)
-      navigate(mustChangePassword ? ROUTES.changePassword : ROUTES.home, { replace: true })
+      const next = mustChangePassword
+        ? ROUTES.changePassword
+        : needsLoginConfirmation()
+          ? ROUTES.confirmLogin
+          : ROUTES.clients
+      navigate(next, { replace: true })
     } catch {
       setFailed(true)
       setLoading(false)

@@ -2,7 +2,9 @@ import { createBrowserRouter, Navigate } from 'react-router-dom'
 import { ApplicationsPage } from '@/features/applications/pages/ApplicationsPage'
 import { ChangePasswordPage } from '@/features/auth/pages/ChangePasswordPage'
 import { LoginPage } from '@/features/auth/pages/LoginPage'
-import { HomePage } from '@/features/home/pages/HomePage'
+import { ConfirmLoginPage } from '@/features/auth/pages/ConfirmLoginPage'
+import { CalculatorPage } from '@/features/calculator/pages/CalculatorPage'
+import { ClientsPage } from '@/features/clients/pages/ClientsPage'
 import { KitPage } from '@/features/kit/pages/KitPage'
 import { ProfilePage } from '@/features/profile/pages/ProfilePage'
 import { ROUTES } from '@/shared/config/routes'
@@ -15,16 +17,18 @@ export const router = createBrowserRouter([
     children: [
       { path: ROUTES.login, element: <LoginPage /> },
       { path: ROUTES.changePassword, element: <ChangePasswordPage /> },
+      { path: ROUTES.confirmLogin, element: <ConfirmLoginPage /> },
       { path: ROUTES.kit, element: <KitPage /> },
       {
         element: <TabLayout />,
         children: [
-          { path: ROUTES.home, element: <HomePage /> },
+          { path: ROUTES.clients, element: <ClientsPage /> },
           { path: ROUTES.applications, element: <ApplicationsPage /> },
+          { path: ROUTES.calculator, element: <CalculatorPage /> },
           { path: ROUTES.profile, element: <ProfilePage /> },
         ],
       },
-      { path: '*', element: <Navigate to={ROUTES.home} replace /> },
+      { path: '*', element: <Navigate to={ROUTES.clients} replace /> },
     ],
   },
 ])

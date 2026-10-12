@@ -78,6 +78,10 @@ Use `Button` from `@/shared/ui/Button`. Four variants, each with one job:
 - Back is a left arrow at the top left. Close is an X at the top right of a sheet.
 - The screen title is left aligned under the top bar.
 - The language switcher sits at the top right of the auth screens and in Profile after login.
+
+### Tab bar
+
+Four tabs, always in this order, on every main screen: **Klientlar**, **Arizalar**, **Kalkulyator**, **Profil**. The active tab is navy, the others are `ink-subtle`. Auth screens and step-by-step flows have no tab bar.
 - Destructive actions are never the bottom primary button without a confirmation sheet first.
 
 ## Icons
@@ -98,6 +102,12 @@ Use `Button` from `@/shared/ui/Button`. Four variants, each with one job:
 | Selected, passed | `Check` |
 | Error | `CircleAlert` |
 | Language | `Globe` |
+| Clients tab | `Users` |
+| Applications tab | `FileText` |
+| Calculator tab | `Calculator` |
+| Profile tab | `UserRound` |
+| Phone number | `Smartphone` |
+| SMS code | `MessageSquareText` |
 | Search | `Search` |
 | Add / create | `Plus` |
 
@@ -128,6 +138,22 @@ Always has the show/hide eye button on the right. Never build a password field w
 - Opens the numeric keypad (`inputMode="numeric"`). Do not use `type="number"`, which adds browser spinners and breaks grouping.
 - The unit goes in `suffix` at the right edge (`soʻm`, `oy`), not inside the value or the label.
 - Display amounts elsewhere with `formatSum` from `@/shared/lib/format`.
+
+### Phone input: `PhoneField`
+- `+998` is fixed at the left and cannot be edited. The user types the nine remaining digits.
+- Digits are grouped as `90 123 45 67` while typing. Show a full number elsewhere with `formatPhone`.
+- Opens the numeric keypad.
+
+### Code input: `OtpField`
+- Six boxes, one digit each, 56px tall. Used for every SMS or confirmation code.
+- Supports paste and SMS autofill. The code is checked as soon as the last digit is entered; the bottom button stays as a fallback.
+- A wrong code clears the boxes, turns them red and shows the error below.
+- Under it: a countdown ("Qayta yuborish: 0:59"), replaced by a ghost "Kodni qayta yuborish" button when it reaches zero.
+
+### Checkbox: `Checkbox`
+- 24px box. Checked is a navy fill with a white check mark.
+- The label sits to the right, with an optional one-line description under it. The whole row is tappable.
+- Use for independent yes/no options inside a form. For picking one of several, use `Select`.
 
 ### Dropdown: `Select`
 - Looks like an input with a `ChevronDown` on the right.

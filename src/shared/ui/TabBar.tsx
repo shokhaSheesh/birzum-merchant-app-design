@@ -1,4 +1,4 @@
-import { FileText, House, UserRound, type LucideIcon } from 'lucide-react'
+import { Calculator, FileText, UserRound, Users, type LucideIcon } from 'lucide-react'
 import { NavLink } from 'react-router-dom'
 import { ROUTES } from '@/shared/config/routes'
 import type { TranslationKey } from '@/shared/i18n/dictionaries'
@@ -6,8 +6,9 @@ import { useI18n } from '@/shared/i18n/useI18n'
 import { cn } from '@/shared/lib/cn'
 
 const tabs: { to: string; label: TranslationKey; icon: LucideIcon }[] = [
-  { to: ROUTES.home, label: 'nav.home', icon: House },
+  { to: ROUTES.clients, label: 'nav.clients', icon: Users },
   { to: ROUTES.applications, label: 'nav.applications', icon: FileText },
+  { to: ROUTES.calculator, label: 'nav.calculator', icon: Calculator },
   { to: ROUTES.profile, label: 'nav.profile', icon: UserRound },
 ]
 

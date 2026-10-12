@@ -28,14 +28,15 @@ src/
     layouts/           DeviceLayout (phone-width frame), TabLayout (bottom tabs)
   features/            One folder per product area
     auth/
-    home/
+    clients/
     applications/
+    calculator/
     profile/
       pages/           Routed screens
       components/      Feature-only components (add when needed)
       data/            Mock data and types (add when needed)
   shared/              Used by more than one feature
-    ui/                Button, fields, Select, DatePicker, Sheet, TabBar
+    ui/                Button, fields, Select, DatePicker, OtpField, Checkbox, Sheet, TabBar
     i18n/              Uzbek and Russian strings, useI18n
     lib/               cn, formatSum
     config/            Route paths

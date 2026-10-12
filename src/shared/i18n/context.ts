@@ -4,7 +4,8 @@ import type { Lang, TranslationKey } from './dictionaries'
 export type I18nValue = {
   lang: Lang
   setLang: (lang: Lang) => void
-  t: (key: TranslationKey) => string
+  /** `params` fill `{name}` placeholders in the string. */
+  t: (key: TranslationKey, params?: Record<string, string>) => string
 }
 
 export const I18nContext = createContext<I18nValue | null>(null)
