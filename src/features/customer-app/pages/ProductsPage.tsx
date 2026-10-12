@@ -1,25 +1,48 @@
 import { SlidersHorizontal } from 'lucide-react'
 import { useState, type FormEvent } from 'react'
 import { useSearchParams } from 'react-router-dom'
-import { BRANDS, CATEGORIES, products, type Category } from '@/entities/catalog/products'
+import {
+  BRANDS,
+  CATEGORIES,
+  products,
+  type Category,
+  type Product,
+} from '@/entities/catalog/products'
 import { useI18n } from '@/shared/i18n/useI18n'
 import { cn } from '@/shared/lib/cn'
 import { Button } from '@/shared/ui/Button'
 import { EmptyState } from '@/shared/ui/EmptyState'
 import { NumberField } from '@/shared/ui/NumberField'
+import { RangeSlider } from '@/shared/ui/RangeSlider'
 import { Select } from '@/shared/ui/Select'
 import { Sheet } from '@/shared/ui/Sheet'
 import { PageHeader } from '../components/PageHeader'
 import { ProductCard } from '../components/ProductCard'
 
+const ALL = 'all'
+const PRICE_STEP = 100_000
+// The slider runs from the cheapest to the dearest product, rounded out to whole steps
+const PRICE_MIN = Math.floor(Math.min(...products.map((p) => p.price)) / PRICE_STEP) * PRICE_STEP
+const PRICE_MAX = Math.ceil(Math.max(...products.map((p) => p.price)) / PRICE_STEP) * PRICE_STEP
+
 type Filters = {
   category: 'all' | Category
   brand: string
-  priceFrom: number | null
-  priceTo: number | null
+  priceFrom: number
+  priceTo: number
 }
 
-const ALL = 'all'
+const matches = (product: Product, needle: string, filters: Filters) =>
+  (!needle ||
+    product.name.toLowerCase().includes(needle) ||
+    product.brand.toLowerCase().includes(needle)) &&
+  (filters.category === ALL || product.category === filters.category) &&
+  (filters.brand === ALL || product.brand === filters.brand) &&
+  product.price >= filters.priceFrom &&
+  product.price <= filters.priceTo
+
+const clampPrice = (value: number | null, fallback: number) =>
+  Math.min(PRICE_MAX, Math.max(PRICE_MIN, value ?? fallback))
 
 /** The product listing. It opens from a category, a search result or "Hammasi", and can be filtered. */
 export function ProductsPage() {
@@ -32,27 +55,20 @@ export function ProductsPage() {
   const [filters, setFilters] = useState<Filters>({
     category: CATEGORIES.includes(requestedCategory) ? requestedCategory : ALL,
     brand: BRANDS.includes(requestedBrand) ? requestedBrand : ALL,
-    priceFrom: null,
-    priceTo: null,
+    priceFrom: PRICE_MIN,
+    priceTo: PRICE_MAX,
   })
   const [draft, setDraft] = useState(filters)
   const [open, setOpen] = useState(false)
 
   const needle = query.toLowerCase()
-  const items = products.filter(
-    (product) =>
-      (!needle ||
-        product.name.toLowerCase().includes(needle) ||
-        product.brand.toLowerCase().includes(needle)) &&
-      (filters.category === ALL || product.category === filters.category) &&
-      (filters.brand === ALL || product.brand === filters.brand) &&
-      (filters.priceFrom === null || product.price >= filters.priceFrom) &&
-      (filters.priceTo === null || product.price <= filters.priceTo),
-  )
+  const items = products.filter((product) => matches(product, needle, filters))
+  // What "Qoʻllash" would show, so the shopper sees the effect before applying
+  const draftCount = products.filter((product) => matches(product, needle, draft)).length
   const activeCount = [
     filters.category !== ALL,
     filters.brand !== ALL,
-    filters.priceFrom !== null || filters.priceTo !== null,
+    filters.priceFrom > PRICE_MIN || filters.priceTo < PRICE_MAX,
   ].filter(Boolean).length
 
   const title = query
@@ -70,7 +86,7 @@ export function ProductsPage() {
   }
 
   const clear = () => {
-    setFilters({ category: ALL, brand: ALL, priceFrom: null, priceTo: null })
+    setFilters({ category: ALL, brand: ALL, priceFrom: PRICE_MIN, priceTo: PRICE_MAX })
     setOpen(false)
   }
 
@@ -136,26 +152,53 @@ export function ProductsPage() {
             value={draft.brand}
             onChange={(brand) => setDraft({ ...draft, brand })}
           />
-          <div className="grid grid-cols-2 gap-3">
-            <NumberField
-              label={t('filter.priceFrom')}
-              value={draft.priceFrom}
-              onChange={(priceFrom) => setDraft({ ...draft, priceFrom })}
-              maxDigits={10}
+
+          <fieldset className="flex flex-col gap-3">
+            <legend className="mb-1.5 text-sm font-medium text-ink-muted">
+              {t('filter.price')}, {t('common.currency')}
+            </legend>
+            <div className="grid grid-cols-2 gap-3">
+              <NumberField
+                label={t('filter.from')}
+                value={draft.priceFrom}
+                onChange={(value) =>
+                  setDraft({
+                    ...draft,
+                    priceFrom: Math.min(clampPrice(value, PRICE_MIN), draft.priceTo),
+                  })
+                }
+                maxDigits={10}
+              />
+              <NumberField
+                label={t('filter.to')}
+                value={draft.priceTo}
+                onChange={(value) =>
+                  setDraft({
+                    ...draft,
+                    priceTo: Math.max(clampPrice(value, PRICE_MAX), draft.priceFrom),
+                  })
+                }
+                maxDigits={10}
+              />
+            </div>
+            <RangeSlider
+              min={PRICE_MIN}
+              max={PRICE_MAX}
+              step={PRICE_STEP}
+              value={[draft.priceFrom, draft.priceTo]}
+              onChange={([priceFrom, priceTo]) => setDraft({ ...draft, priceFrom, priceTo })}
+              labels={[t('filter.priceFrom'), t('filter.priceTo')]}
             />
-            <NumberField
-              label={t('filter.priceTo')}
-              value={draft.priceTo}
-              onChange={(priceTo) => setDraft({ ...draft, priceTo })}
-              maxDigits={10}
-            />
-          </div>
+          </fieldset>
+
           <div className="mt-2 flex flex-col gap-1">
             <Button variant="ghost" block onClick={clear}>
               {t('common.clear')}
             </Button>
-            <Button type="submit" block>
-              {t('common.apply')}
+            <Button type="submit" block disabled={draftCount === 0}>
+              {draftCount === 0
+                ? t('filter.showNone')
+                : t('filter.show', { count: String(draftCount) })}
             </Button>
           </div>
         </form>

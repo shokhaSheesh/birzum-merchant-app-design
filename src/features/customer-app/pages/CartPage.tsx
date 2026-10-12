@@ -119,13 +119,16 @@ export function CartPage() {
                   <Trash2 size={20} />
                 </button>
               </div>
-              <p className="font-bold">{formatSum(unitPrice * quantity)}</p>
-              <QuantityStepper
-                label={t('field.quantity')}
-                value={quantity}
-                max={product.stock}
-                onChange={(value) => cartStore.setQuantity(key, value)}
-              />
+              <div className="flex items-center justify-between gap-2">
+                <p className="font-bold">{formatSum(unitPrice * quantity)}</p>
+                <QuantityStepper
+                  size="sm"
+                  label={t('field.quantity')}
+                  value={quantity}
+                  max={product.stock}
+                  onChange={(value) => cartStore.setQuantity(key, value)}
+                />
+              </div>
             </div>
           </li>
         ))}

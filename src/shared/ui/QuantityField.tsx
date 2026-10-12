@@ -1,6 +1,7 @@
 import { Minus, Plus } from 'lucide-react'
 import { useId } from 'react'
 import { useI18n } from '@/shared/i18n/useI18n'
+import { cn } from '@/shared/lib/cn'
 import { controlClass } from './control'
 import { Field } from './Field'
 
@@ -12,33 +13,54 @@ type StepperProps = {
   /** For screen readers, and the input's id when a visible label points at it. */
   label: string
   id?: string
+  /** `sm` is the compact one for rows, such as a cart line. */
+  size?: 'md' | 'sm'
 }
 
 const stepButton =
-  'grid size-10 shrink-0 place-items-center rounded-full text-brand active:bg-surface disabled:text-navy-200'
+  'grid shrink-0 place-items-center rounded-full text-brand active:bg-surface disabled:text-navy-200'
 
 /** Minus, number, plus in one control box. Use `QuantityField` when it needs a visible label. */
-export function QuantityStepper({ value, onChange, min = 1, max = 99, label, id }: StepperProps) {
+export function QuantityStepper({
+  value,
+  onChange,
+  min = 1,
+  max = 99,
+  label,
+  id,
+  size = 'md',
+}: StepperProps) {
   const { t } = useI18n()
   const clamp = (n: number) => Math.min(max, Math.max(min, n))
+  const small = size === 'sm'
+  const button = cn(stepButton, small ? 'size-8' : 'size-10')
+  const icon = small ? 16 : 20
 
   return (
-    <div className={controlClass(false, 'px-1.5')}>
+    <div
+      className={controlClass(
+        false,
+        small ? 'h-10! w-28! shrink-0 gap-0! rounded-xl! px-1!' : 'px-1.5',
+      )}
+    >
       <button
         type="button"
         aria-label={t('quantity.decrease')}
         disabled={value <= min}
         onClick={() => onChange(clamp(value - 1))}
-        className={stepButton}
+        className={button}
       >
-        <Minus size={20} />
+        <Minus size={icon} />
       </button>
       <input
         id={id}
         aria-label={label}
         inputMode="numeric"
         autoComplete="off"
-        className="min-w-0 flex-1 bg-transparent text-center text-base font-semibold outline-none"
+        className={cn(
+          'min-w-0 flex-1 bg-transparent text-center font-semibold outline-none',
+          small ? 'text-sm' : 'text-base',
+        )}
         value={value}
         onChange={(e) => onChange(clamp(Number(e.target.value.replace(/\D/g, '')) || min))}
       />
@@ -47,9 +69,9 @@ export function QuantityStepper({ value, onChange, min = 1, max = 99, label, id 
         aria-label={t('quantity.increase')}
         disabled={value >= max}
         onClick={() => onChange(clamp(value + 1))}
-        className={stepButton}
+        className={button}
       >
-        <Plus size={20} />
+        <Plus size={icon} />
       </button>
     </div>
   )
