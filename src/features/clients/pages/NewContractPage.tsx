@@ -13,6 +13,7 @@ import { NumberField } from '@/shared/ui/NumberField'
 import { QuantityField } from '@/shared/ui/QuantityField'
 import { Section } from '@/shared/ui/Section'
 import { StatusBadge } from '@/shared/ui/StatusBadge'
+import { TermPicker } from '@/shared/ui/TermPicker'
 import { TextField } from '@/shared/ui/TextField'
 import { calculateTerms, createApplication, nextApplicationNumber } from '../api/mockClients'
 import { InstallmentTermsCard } from '@/shared/ui/InstallmentTermsCard'
@@ -192,17 +193,8 @@ export function NewContractPage() {
       <h1 className="text-2xl font-bold">{t('contract.title')}</h1>
 
       <Section title={t('contract.terms')}>
-        <ChoiceGrid
-          label={t('contract.terms.hint')}
-          columns={3}
-          options={TERMS.map((value) => ({
-            value,
-            label: t('term.months', { count: String(value) }),
-            description: groupDigits(client.limits?.[value] ?? 0),
-          }))}
-          value={term}
-          onChange={setTerm}
-        />
+        <TermPicker terms={TERMS} value={term} onChange={setTerm} />
+        <p className="text-sm text-ink-muted">{t('cart.limit', { amount: formatSum(limit) })}</p>
       </Section>
 
       <Section title={t('contract.products')} hint={t('contract.products.hint')}>

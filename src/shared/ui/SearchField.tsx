@@ -10,9 +10,11 @@ type Props = {
   value: string
   onChange: (value: string) => void
   autoFocus?: boolean
+  /** Called when the keyboard's search key (Enter) is pressed. */
+  onSubmit?: () => void
 }
 
-export function SearchField({ label, placeholder, value, onChange, autoFocus }: Props) {
+export function SearchField({ label, placeholder, value, onChange, autoFocus, onSubmit }: Props) {
   const { t } = useI18n()
   const id = useId()
 
@@ -32,6 +34,7 @@ export function SearchField({ label, placeholder, value, onChange, autoFocus }: 
         className={`${inputClass} [&::-webkit-search-cancel-button]:hidden`}
         value={value}
         onChange={(e) => onChange(e.target.value)}
+        onKeyDown={(e) => e.key === 'Enter' && onSubmit?.()}
       />
       {value !== '' && (
         <button

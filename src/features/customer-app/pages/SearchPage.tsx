@@ -1,64 +1,87 @@
+import { ArrowUpRight, Search } from 'lucide-react'
 import { useState } from 'react'
-import { useSearchParams } from 'react-router-dom'
-import { CATEGORIES, products, type Category } from '@/entities/catalog/products'
+import { Link, useNavigate } from 'react-router-dom'
+import { BRANDS, CATEGORIES, products } from '@/entities/catalog/products'
+import { customerProductsPath } from '@/shared/config/routes'
 import { useI18n } from '@/shared/i18n/useI18n'
 import { EmptyState } from '@/shared/ui/EmptyState'
-import { FilterChips } from '@/shared/ui/FilterChips'
 import { SearchField } from '@/shared/ui/SearchField'
+import { CategoryList } from '../components/CategoryList'
 import { PageHeader } from '../components/PageHeader'
-import { ProductCard } from '../components/ProductCard'
 
-type Filter = 'all' | Category
+type Suggestion = { text: string; kind?: string; to: string }
 
-/** Product search on its own screen. A home category opens it with that category chosen. */
+/**
+ * Search on its own screen. Empty, it lists the categories. While typing it suggests brands,
+ * categories and product names; picking one, or pressing Enter, opens the product listing.
+ */
 export function SearchPage() {
   const { t } = useI18n()
-  const [searchParams] = useSearchParams()
-  const requested = searchParams.get('category') as Category
+  const navigate = useNavigate()
   const [query, setQuery] = useState('')
-  const [filter, setFilter] = useState<Filter>(CATEGORIES.includes(requested) ? requested : 'all')
 
   const needle = query.trim().toLowerCase()
-  const items = products.filter(
-    (product) =>
-      (filter === 'all' || product.category === filter) &&
-      product.name.toLowerCase().includes(needle),
-  )
+  const matches = (text: string) => text.toLowerCase().includes(needle)
+  const suggestions: Suggestion[] = needle
+    ? [
+        ...BRANDS.filter(matches).map((brand) => ({
+          text: brand,
+          kind: t('filter.brand'),
+          to: customerProductsPath({ brand }),
+        })),
+        ...CATEGORIES.filter((category) => matches(t(`catalog.category.${category}`))).map(
+          (category) => ({
+            text: t(`catalog.category.${category}`),
+            kind: t('filter.category'),
+            to: customerProductsPath({ category }),
+          }),
+        ),
+        ...products
+          .filter((product) => matches(product.name))
+          .map((product) => ({
+            text: product.name,
+            to: customerProductsPath({ q: product.name }),
+          })),
+      ]
+    : []
 
   return (
     <div className="flex h-full flex-col">
       <PageHeader title={t('search.title')} />
-      <div className="flex shrink-0 flex-col gap-4 px-5 pb-3">
+      <div className="shrink-0 px-5 pb-3">
         <SearchField
           label={t('catalog.search')}
           placeholder={t('catalog.search')}
           value={query}
           onChange={setQuery}
-          autoFocus={!requested}
-        />
-        <FilterChips
-          label={t('chome.categories')}
-          options={[
-            { value: 'all', label: t('catalog.all') },
-            ...CATEGORIES.map((category) => ({
-              value: category,
-              label: t(`catalog.category.${category}`),
-            })),
-          ]}
-          value={filter}
-          onChange={setFilter}
+          onSubmit={() => needle && navigate(customerProductsPath({ q: query.trim() }))}
+          autoFocus
         />
       </div>
 
       <div className="min-h-0 flex-1 overflow-y-auto px-5 pt-1 pb-6">
-        {items.length === 0 ? (
+        {!needle ? (
+          <div className="flex flex-col gap-3">
+            <h2 className="text-lg font-bold">{t('chome.categories')}</h2>
+            <CategoryList />
+          </div>
+        ) : suggestions.length === 0 ? (
           <EmptyState title={t('catalog.empty.title')} hint={t('applications.empty.hint')} />
         ) : (
-          <div className="grid grid-cols-2 gap-x-3 gap-y-5">
-            {items.map((product) => (
-              <ProductCard key={product.id} product={product} />
+          <ul>
+            {suggestions.map((suggestion) => (
+              <li key={suggestion.to} className="border-b border-line last:border-b-0">
+                <Link to={suggestion.to} className="flex min-h-13 items-center gap-3 py-2">
+                  <Search size={20} className="shrink-0 text-ink-subtle" />
+                  <span className="min-w-0 flex-1 truncate font-medium">{suggestion.text}</span>
+                  {suggestion.kind && (
+                    <span className="shrink-0 text-sm text-ink-muted">{suggestion.kind}</span>
+                  )}
+                  <ArrowUpRight size={18} className="shrink-0 text-ink-subtle" />
+                </Link>
+              </li>
             ))}
-          </div>
+          </ul>
         )}
       </div>
     </div>

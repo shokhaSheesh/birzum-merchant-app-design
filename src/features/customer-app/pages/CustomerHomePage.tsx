@@ -5,7 +5,7 @@ import { CATEGORIES, products } from '@/entities/catalog/products'
 import { initials } from '@/entities/clients/clientName'
 import { calculateLimit } from '@/entities/clients/limitsApi'
 import { useCustomer } from '@/entities/session/customer'
-import { customerSearchPath, ROUTES } from '@/shared/config/routes'
+import { customerProductsPath, ROUTES } from '@/shared/config/routes'
 import { useI18n } from '@/shared/i18n/useI18n'
 import { formatSum } from '@/shared/lib/format'
 import { Avatar } from '@/shared/ui/Avatar'
@@ -40,7 +40,7 @@ export function CustomerHomePage() {
         <p className="min-w-0 flex-1 truncate pl-1 text-lg font-bold">
           {t('home.greeting', { name: customer.firstName })}
         </p>
-        <Link to={customerSearchPath()} aria-label={t('search.title')} className={roundButton}>
+        <Link to={ROUTES.customerSearch} aria-label={t('search.title')} className={roundButton}>
           <Search size={22} />
         </Link>
         <Link
@@ -83,14 +83,21 @@ export function CustomerHomePage() {
         </section>
       )}
 
-      <Section title={t('chome.categories')}>
+      <Section
+        title={t('chome.categories')}
+        action={
+          <Link to={ROUTES.customerCategories} className="text-sm font-semibold text-brand">
+            {t('catalog.all')}
+          </Link>
+        }
+      >
         <div className="grid grid-cols-4 gap-2">
           {CATEGORIES.map((category) => {
             const Icon = categoryIcons[category]
             return (
               <Link
                 key={category}
-                to={customerSearchPath(category)}
+                to={customerProductsPath({ category })}
                 className="flex min-w-0 flex-col items-center gap-1.5 text-center text-xs leading-tight font-medium"
               >
                 <span className="grid aspect-square w-full place-items-center rounded-card bg-surface text-brand active:bg-navy-100">
@@ -106,7 +113,7 @@ export function CustomerHomePage() {
       <Section
         title={t('catalog.popular')}
         action={
-          <Link to={customerSearchPath()} className="text-sm font-semibold text-brand">
+          <Link to={customerProductsPath()} className="text-sm font-semibold text-brand">
             {t('catalog.all')}
           </Link>
         }

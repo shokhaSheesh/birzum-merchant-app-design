@@ -19,6 +19,8 @@ export const ROUTES = {
   customerStores: '/customer/stores',
   customerStore: '/customer/stores/:id',
   customerSearch: '/customer/search',
+  customerCategories: '/customer/categories',
+  customerProducts: '/customer/products',
   customerNotifications: '/customer/notifications',
   customerFavorites: '/customer/favorites',
   customerCart: '/customer/cart',
@@ -35,5 +37,12 @@ export const clientContractPath = (id: string, term: number) =>
 export const applicationPath = (number: number) => `/applications/${number}`
 export const customerProductPath = (id: string) => `/customer/product/${id}`
 export const customerStorePath = (id: string) => `/customer/stores/${id}`
-export const customerSearchPath = (category?: string) =>
-  category ? `/customer/search?category=${category}` : '/customer/search'
+/** The product listing, optionally narrowed by a search text, category or brand. */
+export function customerProductsPath(
+  filter: { q?: string; category?: string; brand?: string } = {},
+) {
+  const query = new URLSearchParams(
+    Object.entries(filter).filter((entry): entry is [string, string] => !!entry[1]),
+  ).toString()
+  return query ? `/customer/products?${query}` : '/customer/products'
+}

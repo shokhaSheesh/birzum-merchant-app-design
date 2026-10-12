@@ -23,6 +23,7 @@ export type Product = {
   id: string
   name: string
   category: Category
+  brand: string
   /** Base price in UZS, before variation price changes. */
   price: number
   storeId: string
@@ -66,6 +67,7 @@ export const products: Product[] = [
     id: 'p1',
     name: 'Samsung Galaxy A55',
     category: 'phones',
+    brand: 'Samsung',
     price: 5_500_000,
     storeId: 's1',
     stock: 12,
@@ -86,6 +88,7 @@ export const products: Product[] = [
     id: 'p2',
     name: 'Televizor 43',
     category: 'tvs',
+    brand: 'Artel',
     price: 4_200_000,
     storeId: 's1',
     stock: 5,
@@ -102,6 +105,7 @@ export const products: Product[] = [
     id: 'p3',
     name: 'LG kir yuvish mashinasi',
     category: 'appliances',
+    brand: 'LG',
     price: 6_900_000,
     storeId: 's2',
     stock: 3,
@@ -122,6 +126,7 @@ export const products: Product[] = [
     id: 'p4',
     name: 'Lenovo IdeaPad noutbuk',
     category: 'laptops',
+    brand: 'Lenovo',
     price: 8_400_000,
     storeId: 's2',
     stock: 7,
@@ -143,6 +148,7 @@ export const products: Product[] = [
     id: 'p5',
     name: 'Xiaomi Redmi Note 13',
     category: 'phones',
+    brand: 'Xiaomi',
     price: 3_300_000,
     storeId: 's3',
     stock: 20,
@@ -162,6 +168,7 @@ export const products: Product[] = [
     id: 'p6',
     name: 'Televizor 55 Smart',
     category: 'tvs',
+    brand: 'Samsung',
     price: 7_800_000,
     storeId: 's3',
     stock: 0,
@@ -178,6 +185,7 @@ export const products: Product[] = [
     id: 'p7',
     name: 'Artel konditsioner',
     category: 'appliances',
+    brand: 'Artel',
     price: 6_000_000,
     storeId: 's1',
     stock: 9,
@@ -196,6 +204,7 @@ export const products: Product[] = [
     id: 'p8',
     name: 'HP 15 noutbuk',
     category: 'laptops',
+    brand: 'HP',
     price: 6_500_000,
     storeId: 's3',
     stock: 4,
@@ -214,7 +223,50 @@ export const products: Product[] = [
       ['Kafolat', '12 oy'],
     ],
   },
+  {
+    id: 'p9',
+    name: 'Samsung Galaxy S24',
+    category: 'phones',
+    brand: 'Samsung',
+    price: 11_900_000,
+    storeId: 's2',
+    stock: 6,
+    description: 'Flagman smartfon: yorqin ekran, kuchli protsessor va tungi suratga olish.',
+    variations: [
+      colors('Qora', 'Kumush'),
+      {
+        name: 'Xotira',
+        options: [{ label: '256 GB' }, { label: '512 GB', priceDelta: 1_500_000 }],
+      },
+    ],
+    specs: [
+      ['Ekran', '6,2 dyuym, AMOLED'],
+      ['Kamera', '50 MP'],
+      ['Batareya', '4000 mA·soat'],
+      ['Kafolat', '12 oy'],
+    ],
+  },
+  {
+    id: 'p10',
+    name: 'Samsung Galaxy A35',
+    category: 'phones',
+    brand: 'Samsung',
+    price: 4_300_000,
+    storeId: 's3',
+    stock: 15,
+    description:
+      'Ishonchli oʻrta toifa smartfon: suvga chidamli korpus va uzoq ishlaydigan batareya.',
+    variations: [colors('Koʻk', 'Qora')],
+    specs: [
+      ['Ekran', '6,6 dyuym, AMOLED'],
+      ['Kamera', '50 MP'],
+      ['Batareya', '5000 mA·soat'],
+      ['Kafolat', '12 oy'],
+    ],
+  },
 ]
+
+export const BRANDS = [...new Set(products.map((product) => product.brand))].sort()
 
 export const getProduct = (id: string | undefined) => products.find((p) => p.id === id)
 export const getStore = (id: string | undefined) => stores.find((s) => s.id === id)

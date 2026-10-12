@@ -1,11 +1,15 @@
-import { TERMS, type Term } from '@/entities/clients/clients'
 import { useI18n } from '@/shared/i18n/useI18n'
 import { cn } from '@/shared/lib/cn'
 
-type Props = { value: Term; onChange: (term: Term) => void }
+type Props<T extends number> = {
+  /** The available lengths in months, shortest first. */
+  terms: readonly T[]
+  value: T
+  onChange: (term: T) => void
+}
 
 /** Installment length as one compact strip. Only the chosen term spells out "oy". */
-export function TermPicker({ value, onChange }: Props) {
+export function TermPicker<T extends number>({ terms, value, onChange }: Props<T>) {
   const { t } = useI18n()
 
   return (
@@ -14,7 +18,7 @@ export function TermPicker({ value, onChange }: Props) {
       aria-label={t('cart.term')}
       className="flex gap-1 rounded-control bg-surface p-1"
     >
-      {TERMS.map((term) => {
+      {terms.map((term) => {
         const selected = term === value
         return (
           <button

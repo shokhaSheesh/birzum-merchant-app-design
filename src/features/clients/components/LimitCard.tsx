@@ -5,7 +5,7 @@ import { clientContractPath } from '@/shared/config/routes'
 import { useI18n } from '@/shared/i18n/useI18n'
 import { formatSum } from '@/shared/lib/format'
 import { Button } from '@/shared/ui/Button'
-import { ChoiceGrid } from '@/shared/ui/ChoiceGrid'
+import { TermPicker } from '@/shared/ui/TermPicker'
 import { calculateLimit } from '../api/mockClients'
 import { TERMS, type Client, type Term } from '@/entities/clients/clients'
 
@@ -40,17 +40,7 @@ export function LimitCard({ client }: { client: Client }) {
   return (
     <section className="flex flex-col gap-4 rounded-card bg-green-200 p-4">
       <h2 className="text-lg font-bold">{t('client.limit')}</h2>
-      <ChoiceGrid
-        label={t('client.limit.term')}
-        columns={6}
-        options={TERMS.map((value) => ({
-          value,
-          label: String(value),
-          description: t('common.months'),
-        }))}
-        value={term}
-        onChange={setTerm}
-      />
+      <TermPicker terms={TERMS} value={term} onChange={setTerm} />
       <div className="flex flex-col">
         <p className="text-sm text-navy-700">{t('client.limit.available')}</p>
         <p className="text-3xl font-bold">{formatSum(client.limits[term])}</p>

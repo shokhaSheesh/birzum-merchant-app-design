@@ -13,9 +13,11 @@ import { NewContractPage } from '@/features/clients/pages/NewContractPage'
 import { CustomerProfilePage } from '@/features/customer-app/pages/CustomerProfilePage'
 import { FavoritesPage } from '@/features/customer-app/pages/FavoritesPage'
 import { CartPage } from '@/features/customer-app/pages/CartPage'
+import { CategoriesPage } from '@/features/customer-app/pages/CategoriesPage'
 import { CustomerNotificationsPage } from '@/features/customer-app/pages/CustomerNotificationsPage'
 import { CustomerHomePage } from '@/features/customer-app/pages/CustomerHomePage'
 import { ProductPage } from '@/features/customer-app/pages/ProductPage'
+import { ProductsPage } from '@/features/customer-app/pages/ProductsPage'
 import { PurchasesPage } from '@/features/customer-app/pages/PurchasesPage'
 import { SearchPage } from '@/features/customer-app/pages/SearchPage'
 import { StorePage } from '@/features/customer-app/pages/StorePage'
@@ -59,6 +61,8 @@ export const router = createBrowserRouter([
       { path: ROUTES.customerProduct, element: <ProductPage /> },
       { path: ROUTES.customerStore, element: <StorePage /> },
       { path: ROUTES.customerSearch, element: <SearchPage /> },
+      { path: ROUTES.customerCategories, element: <CategoriesPage /> },
+      { path: ROUTES.customerProducts, element: <ProductsPage /> },
       { path: ROUTES.customerNotifications, element: <CustomerNotificationsPage /> },
       { path: ROUTES.customerFavorites, element: <FavoritesPage /> },
       {

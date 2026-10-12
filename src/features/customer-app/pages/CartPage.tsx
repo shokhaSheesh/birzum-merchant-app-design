@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom'
 import { cartStore, useCart } from '@/entities/cart/cartStore'
 import { ProductPicture } from '@/entities/catalog/ProductPicture'
 import { submitApplication } from '@/entities/clients/applicationsApi'
-import type { Term } from '@/entities/clients/clients'
+import { TERMS, type Term } from '@/entities/clients/clients'
 import { installmentTerms } from '@/entities/clients/installment'
 import { useCustomer } from '@/entities/session/customer'
 import { ROUTES } from '@/shared/config/routes'
@@ -15,7 +15,7 @@ import { Button } from '@/shared/ui/Button'
 import { EmptyState } from '@/shared/ui/EmptyState'
 import { InstallmentTermsCard } from '@/shared/ui/InstallmentTermsCard'
 import { QuantityStepper } from '@/shared/ui/QuantityField'
-import { TermPicker } from '../components/TermPicker'
+import { TermPicker } from '@/shared/ui/TermPicker'
 
 /** The cart doubles as checkout: products, the term, what it will cost, and one button to send. */
 export function CartPage() {
@@ -132,7 +132,7 @@ export function CartPage() {
       </ul>
 
       <div className="flex flex-col gap-3">
-        <TermPicker value={term} onChange={setTerm} />
+        <TermPicker terms={TERMS} value={term} onChange={setTerm} />
         <InstallmentTermsCard terms={installmentTerms(total, term)} showMarkup={false} />
         {limit !== undefined && (
           <p className="text-sm text-ink-muted">{t('cart.limit', { amount: formatSum(limit) })}</p>

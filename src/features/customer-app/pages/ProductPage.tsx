@@ -4,7 +4,7 @@ import { Link, Navigate, useNavigate, useParams } from 'react-router-dom'
 import { cartKey, cartStore, useCart } from '@/entities/cart/cartStore'
 import { ProductPicture } from '@/entities/catalog/ProductPicture'
 import { getProduct, getStore, products, type Product } from '@/entities/catalog/products'
-import type { Term } from '@/entities/clients/clients'
+import { TERMS, type Term } from '@/entities/clients/clients'
 import { installmentTerms } from '@/entities/clients/installment'
 import { useCustomer } from '@/entities/session/customer'
 import { customerStorePath, ROUTES } from '@/shared/config/routes'
@@ -17,11 +17,11 @@ import { InstallmentTermsCard } from '@/shared/ui/InstallmentTermsCard'
 import { QuantityStepper } from '@/shared/ui/QuantityField'
 import { Section } from '@/shared/ui/Section'
 import { StatusBadge } from '@/shared/ui/StatusBadge'
+import { TermPicker } from '@/shared/ui/TermPicker'
 import { LikeButton } from '../components/LikeButton'
 import { PageHeader } from '../components/PageHeader'
 import { ProductCard } from '../components/ProductCard'
 import { StoreRating } from '../components/StoreRating'
-import { TermPicker } from '../components/TermPicker'
 import { VariationPicker } from '../components/VariationPicker'
 
 export function ProductPage() {
@@ -74,6 +74,7 @@ function ProductDetails({ product }: { product: Product }) {
       <PageHeader
         end={
           <>
+            <LikeButton productId={product.id} className="active:bg-surface" />
             <button
               type="button"
               aria-label={t('product.share')}
@@ -82,7 +83,6 @@ function ProductDetails({ product }: { product: Product }) {
             >
               {copied ? <Check size={22} /> : <Share2 size={22} />}
             </button>
-            <LikeButton productId={product.id} className="active:bg-surface" />
           </>
         }
       />
@@ -115,7 +115,7 @@ function ProductDetails({ product }: { product: Product }) {
         ))}
 
         <Section title={t('contract.conditions')}>
-          <TermPicker value={term} onChange={setTerm} />
+          <TermPicker terms={TERMS} value={term} onChange={setTerm} />
           <InstallmentTermsCard terms={installmentTerms(unitPrice, term)} showMarkup={false} />
         </Section>
 
