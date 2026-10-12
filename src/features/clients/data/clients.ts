@@ -4,6 +4,13 @@ export type MaritalStatus = (typeof MARITAL_STATUSES)[number]
 export type IncomeSource = 'salary' | 'business' | 'pension' | 'other'
 export type ApplicationStatus = 'rejected' | 'closed' | 'cancelled'
 
+export const TERMS = [3, 6, 9, 12, 18, 24] as const
+/** Installment length in months. */
+export type Term = (typeof TERMS)[number]
+
+export const RELATIONS = ['spouse', 'parent', 'child', 'brother', 'sister', 'relative'] as const
+export type Relation = (typeof RELATIONS)[number]
+
 export type PaymentCard = {
   id: string
   first4: string
@@ -12,9 +19,10 @@ export type PaymentCard = {
 
 export type Contact = {
   id: string
-  name: string
   /** Nine digits after +998. */
   phone: string
+  relation: Relation
+  comment: string
 }
 
 export type Application = {
@@ -48,8 +56,8 @@ export type Client = {
   /** In UZS. */
   monthlyIncome: number
   incomeSource?: IncomeSource
-  /** Calculated credit limit in UZS; null until it has been calculated. */
-  limit: number | null
+  /** Credit limit in UZS for each term; null until it has been calculated. */
+  limits: Record<Term, number> | null
   cards: PaymentCard[]
   contacts: Contact[]
   applications: Application[]
@@ -81,7 +89,7 @@ function fromSeed({ born, issued, cards = [], applications = [], ...rest }: Seed
       issuedOn.getMonth(),
       issuedOn.getDate(),
     ),
-    limit: null,
+    limits: null,
     cards: cards.map(([first4, last4], i) => ({ id: `${rest.id}-${i}`, first4, last4 })),
     contacts: [],
     applications,

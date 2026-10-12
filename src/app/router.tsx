@@ -8,6 +8,7 @@ import { AddCardPage } from '@/features/clients/pages/AddCardPage'
 import { ClientDetailPage } from '@/features/clients/pages/ClientDetailPage'
 import { ClientsPage } from '@/features/clients/pages/ClientsPage'
 import { NewClientPage } from '@/features/clients/pages/NewClientPage'
+import { NewContractPage } from '@/features/clients/pages/NewContractPage'
 import { KitPage } from '@/features/kit/pages/KitPage'
 import { ProfilePage } from '@/features/profile/pages/ProfilePage'
 import { ROUTES } from '@/shared/config/routes'
@@ -25,6 +26,7 @@ export const router = createBrowserRouter([
       { path: ROUTES.newClient, element: <NewClientPage /> },
       { path: ROUTES.clientDetail, element: <ClientDetailPage /> },
       { path: ROUTES.clientAddCard, element: <AddCardPage /> },
+      { path: ROUTES.clientContract, element: <NewContractPage /> },
       {
         element: <TabLayout />,
         children: [

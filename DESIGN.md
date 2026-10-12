@@ -90,6 +90,9 @@ Every form uses `FormScreen`: back arrow at the top left, scrolling body, primar
 - One question group per step. The button label says what happens next ("Kodni olish", "Tasdiqlash", "Klientni saqlash").
 - Back goes to the previous step. From the first step it leaves the flow.
 - Validation runs when the button is tapped, not while typing. Errors appear under the field.
+- An error about the form as a whole (total too small, over the limit, wrong login) is an `Alert`: a red-tint box with a `CircleAlert` icon, placed next to the numbers it is about.
+- Long forms are split into `Section`s with a title and a one-line hint. Repeating groups such as products are each a `surface` card with a numbered heading, a red `Trash2` button at its top right when more than one exists, and a `secondary` "add" button under the last card.
+- A form that works with totals ends with a summary `InfoList` (limit, total, financed amount) just above the bottom button.
 - When a step offers different ways to continue instead of a form, show them as `ActionCard`s (icon, title, one-line description, chevron) and leave out the bottom button. The MyID step does this for "on this device" and "by QR code".
 - Camera views sit in a rounded dark frame with a green oval guide. QR codes are navy on white inside a bordered card, with a "waiting" line and spinner below.
 
@@ -126,6 +129,10 @@ Four tabs, always in this order, on every main screen: **Klientlar**, **Arizalar
 | QR code | `QrCode` |
 | Bank card | `CreditCard` |
 | Step completed | `CircleCheck` |
+| Calculate limit | `Calculator` |
+| Start a contract | `FileSignature` |
+| Remove an item | `Trash2` |
+| Decrease / increase | `Minus` / `Plus` |
 | Log out | `LogOut` |
 | SMS code | `MessageSquareText` |
 | Search | `Search` |
@@ -192,6 +199,16 @@ Always has the show/hide eye button on the right. Never build a password field w
 - 24px box. Checked is a navy fill with a white check mark.
 - The label sits to the right, with an optional one-line description under it. The whole row is tappable.
 - Use for independent yes/no options inside a form. For picking one of several, use `Select`.
+
+### Choice grid: `ChoiceGrid`
+- A row or grid of tiles for picking one of a few short options that should all stay visible: the term in months, the payment day.
+- Each tile has a bold label and an optional small line under it ("12 oy" over the limit amount).
+- The selected tile is a navy fill with white text, the same as a selected day in the calendar.
+- Use it for up to about ten short options. For longer labels or longer lists use `Select`.
+
+### Quantity: `QuantityField`
+- The control box with a minus on the left, the number in the middle and a plus on the right. The number can also be typed.
+- For small counts such as product quantity. Minimum 1. For amounts of money use `NumberField`.
 
 ### Dropdown: `Select`
 - Looks like an input with a `ChevronDown` on the right.

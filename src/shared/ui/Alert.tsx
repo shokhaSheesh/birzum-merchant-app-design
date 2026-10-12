@@ -1,6 +1,7 @@
 import { CircleAlert } from 'lucide-react'
 
-export function FormAlert({ message }: { message: string }) {
+/** An error that belongs to the whole form, not one field. */
+export function Alert({ message }: { message: string }) {
   return (
     <p
       role="alert"

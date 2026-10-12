@@ -3,9 +3,16 @@
 // - MyID always succeeds: the face capture after a short wait, the QR route after a few seconds.
 // - The real service will return the client's name, photo and passport dates from MyID;
 //   here fixed invented values are used.
-// - The limit is a made-up multiple of the monthly income.
+// - Limits are made up: five times the monthly income, lower for the shortest terms.
 
-import type { Client, Contact, MaritalStatus, PaymentCard } from '../data/clients'
+import {
+  TERMS,
+  type Client,
+  type Contact,
+  type MaritalStatus,
+  type PaymentCard,
+  type Term,
+} from '../data/clients'
 import { clientsStore } from '../data/clientsStore'
 
 const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms))
@@ -64,7 +71,7 @@ export async function createClient({ cardNumber, cardExpiry: _expiry, ...data }:
     pinfl: '41503960120092',
     passportIssuedOn: new Date(2021, 4, 18),
     passportExpiresOn: new Date(2031, 4, 18),
-    limit: null,
+    limits: null,
     cards: [toCard(cardNumber)],
     contacts: [],
     applications: [],
@@ -90,5 +97,10 @@ export async function addContact(clientId: string, contact: Omit<Contact, 'id'>)
 export async function calculateLimit(clientId: string) {
   await delay(1500)
   const client = clientsStore.get(clientId)
-  if (client) clientsStore.update(clientId, { limit: client.monthlyIncome * 3 })
+  if (!client) return
+  const share: Record<Term, number> = { 3: 0.6, 6: 0.8, 9: 0.9, 12: 1, 18: 1, 24: 1 }
+  const limits = Object.fromEntries(
+    TERMS.map((term) => [term, Math.round(client.monthlyIncome * 5 * share[term])]),
+  ) as Record<Term, number>
+  clientsStore.update(clientId, { limits })
 }

@@ -4,6 +4,7 @@ import { ActionCard } from '@/shared/ui/ActionCard'
 import { Button } from '@/shared/ui/Button'
 import { CardExpiryField, CardNumberField } from '@/shared/ui/CardFields'
 import { Checkbox } from '@/shared/ui/Checkbox'
+import { ChoiceGrid } from '@/shared/ui/ChoiceGrid'
 import { DatePicker } from '@/shared/ui/DatePicker'
 import { LanguageSwitcher } from '@/shared/ui/LanguageSwitcher'
 import { NumberField } from '@/shared/ui/NumberField'
@@ -11,6 +12,7 @@ import { OtpField } from '@/shared/ui/OtpField'
 import { PassportField } from '@/shared/ui/PassportField'
 import { PasswordField } from '@/shared/ui/PasswordField'
 import { PhoneField } from '@/shared/ui/PhoneField'
+import { QuantityField } from '@/shared/ui/QuantityField'
 import { SearchField } from '@/shared/ui/SearchField'
 import { Select } from '@/shared/ui/Select'
 import { TextField } from '@/shared/ui/TextField'
@@ -44,6 +46,8 @@ export function KitPage() {
   const [passport, setPassport] = useState('AB1234567')
   const [card, setCard] = useState('8600123456789012')
   const [expiry, setExpiry] = useState('')
+  const [months, setMonths] = useState<number | null>(12)
+  const [quantity, setQuantity] = useState(1)
 
   return (
     <div className="flex h-full flex-col gap-8 overflow-y-auto px-5 pt-6 pb-10">
@@ -89,6 +93,21 @@ export function KitPage() {
 
       <Section title="Number input">
         <NumberField label="Xarid summasi" value={amount} onChange={setAmount} suffix="UZS" />
+      </Section>
+
+      <Section title="Quantity and choice grid">
+        <QuantityField label="Miqdori" value={quantity} onChange={setQuantity} />
+        <ChoiceGrid
+          label="Muddat"
+          columns={6}
+          options={[3, 6, 9, 12, 18, 24].map((value) => ({
+            value,
+            label: String(value),
+            description: 'oy',
+          }))}
+          value={months}
+          onChange={setMonths}
+        />
       </Section>
 
       <Section title="Phone and code">

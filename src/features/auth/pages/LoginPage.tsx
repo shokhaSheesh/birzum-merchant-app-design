@@ -3,12 +3,12 @@ import { useNavigate } from 'react-router-dom'
 import logo from '@/shared/assets/logo.svg'
 import { ROUTES } from '@/shared/config/routes'
 import { useI18n } from '@/shared/i18n/useI18n'
+import { Alert } from '@/shared/ui/Alert'
 import { Button } from '@/shared/ui/Button'
 import { PasswordField } from '@/shared/ui/PasswordField'
 import { TextField } from '@/shared/ui/TextField'
 import { needsLoginConfirmation, login as requestLogin } from '../api/mockAuth'
 import { AuthLayout } from '../components/AuthLayout'
-import { FormAlert } from '../components/FormAlert'
 
 export function LoginPage() {
   const { t } = useI18n()
@@ -57,7 +57,7 @@ export function LoginPage() {
         <p className="text-ink-muted">{t('auth.login.subtitle')}</p>
       </div>
 
-      {failed && <FormAlert message={t('auth.error.invalid')} />}
+      {failed && <Alert message={t('auth.error.invalid')} />}
 
       <div className="flex flex-col gap-4">
         <TextField
