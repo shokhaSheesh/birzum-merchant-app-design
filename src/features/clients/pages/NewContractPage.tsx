@@ -1,5 +1,5 @@
-import { FileSignature, Plus, Trash2 } from 'lucide-react'
-import { useState } from 'react'
+import { Plus, Trash2 } from 'lucide-react'
+import { useCallback, useState } from 'react'
 import { Navigate, useNavigate, useParams, useSearchParams } from 'react-router-dom'
 import { clientPath, ROUTES } from '@/shared/config/routes'
 import { useI18n } from '@/shared/i18n/useI18n'
@@ -8,13 +8,19 @@ import { Alert } from '@/shared/ui/Alert'
 import { Button } from '@/shared/ui/Button'
 import { ChoiceGrid } from '@/shared/ui/ChoiceGrid'
 import { FormScreen } from '@/shared/ui/FormScreen'
-import { IconBadge } from '@/shared/ui/IconBadge'
 import { InfoList, InfoRow } from '@/shared/ui/InfoList'
 import { NumberField } from '@/shared/ui/NumberField'
 import { QuantityField } from '@/shared/ui/QuantityField'
-import { ScreenIntro } from '@/shared/ui/ScreenIntro'
 import { Section } from '@/shared/ui/Section'
+import { StatusBadge } from '@/shared/ui/StatusBadge'
 import { TextField } from '@/shared/ui/TextField'
+import {
+  calculateTerms,
+  createApplication,
+  nextApplicationNumber,
+  type InstallmentTerms,
+} from '../api/mockClients'
+import { InstallmentTermsCard } from '../components/InstallmentTermsCard'
 import { TERMS, type Term } from '../data/clients'
 import { useClient } from '../data/useClients'
 
@@ -24,7 +30,11 @@ const MIN_TOTAL = 100_000
 const PAYMENT_DAYS = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
 const emptyProduct = (id: number): Product => ({ id, name: '', price: null, quantity: 1 })
 
-/** New installment contract for a client: term, products, down payment and payment day. */
+/**
+ * New installment contract for a client. The form collects term, products, down payment
+ * and payment day; "Davom etish" first reveals the installment terms, then opens a review
+ * step, and confirming the review creates the application.
+ */
 export function NewContractPage() {
   const { t } = useI18n()
   const navigate = useNavigate()
@@ -39,7 +49,15 @@ export function NewContractPage() {
   const [downPayment, setDownPayment] = useState<number | null>(null)
   const [paymentDay, setPaymentDay] = useState<number | null>(null)
   const [submitted, setSubmitted] = useState(false)
-  const [done, setDone] = useState(false)
+  const [loading, setLoading] = useState(false)
+  const [calculated, setCalculated] = useState<{ terms: InstallmentTerms; inputs: string } | null>(
+    null,
+  )
+  const [review, setReview] = useState<{ number: number } | null>(null)
+  const scrollIntoView = useCallback(
+    (el: HTMLElement | null) => el?.scrollIntoView({ behavior: 'smooth', block: 'end' }),
+    [],
+  )
 
   if (!client) return <Navigate to={ROUTES.clients} replace />
   if (!client.limits) return <Navigate to={clientPath(client.id)} replace />
@@ -49,15 +67,21 @@ export function NewContractPage() {
   const total = products.reduce((sum, product) => sum + (product.price ?? 0) * product.quantity, 0)
   const financed = Math.max(0, total - (downPayment ?? 0))
 
+  // Terms are only valid for the numbers they were calculated from
+  const inputs = JSON.stringify([term, products.map((p) => [p.price, p.quantity]), downPayment])
+  const terms = calculated?.inputs === inputs ? calculated.terms : null
+
   const productsValid = products.every((product) => product.name.trim() !== '' && product.price)
-  const formError =
-    total < MIN_TOTAL
-      ? t('error.minTotal', { amount: formatSum(MIN_TOTAL) })
-      : (downPayment ?? 0) >= total
-        ? t('error.downPayment')
-        : financed > limit
-          ? t('error.overLimit')
-          : undefined
+  // Shown as soon as the numbers stop adding up, without waiting for the button
+  const liveError =
+    total > 0 && (downPayment ?? 0) >= total
+      ? t('error.downPayment')
+      : financed > limit
+        ? t('error.overLimit', { limit: formatSum(limit) })
+        : undefined
+  const submitError =
+    total < MIN_TOTAL ? t('error.minTotal', { amount: formatSum(MIN_TOTAL) }) : undefined
+  const formError = liveError ?? (submitted ? submitError : undefined)
 
   const updateProduct = (productId: number, patch: Partial<Product>) =>
     setProducts((list) =>
@@ -69,31 +93,109 @@ export function NewContractPage() {
     setNextProductId((n) => n + 1)
   }
 
-  const submit = () => {
+  const backToClient = () => navigate(clientPath(client.id), { replace: true })
+
+  const submitForm = async () => {
     setSubmitted(true)
-    if (productsValid && !formError && paymentDay !== null) setDone(true)
+    if (!productsValid || liveError || submitError || paymentDay === null) return
+    if (terms) {
+      setReview({ number: nextApplicationNumber() })
+      return
+    }
+    setLoading(true)
+    setCalculated({ terms: await calculateTerms(financed, term), inputs })
+    setLoading(false)
   }
 
-  if (done) {
+  const confirm = async () => {
+    if (!terms || !review) return
+    setLoading(true)
+    await createApplication(client.id, {
+      id: review.number,
+      goodsTotal: total,
+      installmentTotal: terms.installmentTotal,
+    })
+    backToClient()
+  }
+
+  if (review && terms) {
     return (
-      <FormScreen onSubmit={() => {}} onBack={() => setDone(false)}>
-        <IconBadge icon={FileSignature} />
-        <ScreenIntro
-          title={t('contract.title')}
-          subtitle="Keyingi qadam dizayni tasdiqlangach shu yerda yigʻiladi."
-        />
+      <FormScreen
+        onSubmit={() => void confirm()}
+        onBack={() => setReview(null)}
+        footer={
+          <div className="flex flex-col gap-1">
+            <Button variant="ghost" block disabled={loading} onClick={backToClient}>
+              {t('common.cancel')}
+            </Button>
+            <Button type="submit" block loading={loading}>
+              {t('review.submit')}
+            </Button>
+          </div>
+        }
+      >
+        <div className="flex flex-col items-start gap-2">
+          <StatusBadge tone="warning">{t('application.status.processing')}</StatusBadge>
+          <h1 className="text-2xl font-bold">{t('review.title')}</h1>
+          <p className="text-ink-muted">
+            {t('review.number', { number: groupDigits(review.number) })}
+          </p>
+        </div>
+
+        <Section title={t('contract.products')}>
+          <ul className="rounded-card bg-surface px-4">
+            {products.map((product) => (
+              <li
+                key={product.id}
+                className="flex items-start justify-between gap-3 border-b border-line py-3"
+              >
+                <div className="flex min-w-0 flex-col gap-0.5">
+                  <p className="font-semibold break-words">{product.name}</p>
+                  <p className="text-sm text-ink-muted">
+                    {formatSum(product.price ?? 0)} ×{' '}
+                    {t('common.pieces', { count: String(product.quantity) })}
+                  </p>
+                </div>
+                <p className="shrink-0 font-semibold">
+                  {formatSum((product.price ?? 0) * product.quantity)}
+                </p>
+              </li>
+            ))}
+            <li className="flex items-baseline justify-between gap-3 py-3">
+              <p className="text-sm text-ink-muted">
+                {t('contract.summary.total')} · {t('common.pieces', { count: String(count) })}
+              </p>
+              <p className="text-lg font-bold">{formatSum(total)}</p>
+            </li>
+          </ul>
+        </Section>
+
+        <Section title={t('contract.payment')}>
+          <InfoList>
+            <InfoRow label={t('field.downPayment')} value={formatSum(downPayment ?? 0)} />
+            <InfoRow label={t('field.paymentDay')} value={String(paymentDay)} />
+          </InfoList>
+        </Section>
+
+        <Section title={t('contract.conditions')}>
+          <InstallmentTermsCard terms={terms} />
+        </Section>
       </FormScreen>
     )
   }
 
   return (
     <FormScreen
-      onSubmit={submit}
-      onBack={() => navigate(clientPath(client.id))}
+      onSubmit={() => void submitForm()}
+      onBack={backToClient}
       footer={
-        <Button type="submit" block>
-          {t('common.continue')}
-        </Button>
+        <div className="flex flex-col gap-3">
+          {/* Lives beside the button so it stays visible while the numbers above are edited */}
+          {formError && <Alert message={formError} />}
+          <Button type="submit" block loading={loading}>
+            {t('common.continue')}
+          </Button>
+        </div>
       }
     >
       <h1 className="text-2xl font-bold">{t('contract.title')}</h1>
@@ -140,6 +242,7 @@ export function NewContractPage() {
               value={product.price}
               onChange={(price) => updateProduct(product.id, { price })}
               suffix={t('common.currency')}
+              maxDigits={10}
               error={submitted && !product.price ? t('error.price') : undefined}
             />
             <QuantityField
@@ -165,6 +268,7 @@ export function NewContractPage() {
           value={downPayment}
           onChange={setDownPayment}
           suffix={t('common.currency')}
+          maxDigits={10}
         />
         <ChoiceGrid
           label={t('field.paymentDay')}
@@ -177,15 +281,20 @@ export function NewContractPage() {
         />
       </Section>
 
-      <div className="flex flex-col gap-3">
-        <InfoList>
-          <InfoRow label={t('client.limit.available')} value={formatSum(limit)} />
-          <InfoRow label={t('contract.summary.count')} value={String(count)} />
-          <InfoRow label={t('contract.summary.total')} value={formatSum(total)} />
-          <InfoRow label={t('contract.summary.financed')} value={formatSum(financed)} />
-        </InfoList>
-        {submitted && formError && <Alert message={formError} />}
-      </div>
+      <InfoList>
+        <InfoRow label={t('client.limit.available')} value={formatSum(limit)} />
+        <InfoRow label={t('contract.summary.count')} value={String(count)} />
+        <InfoRow label={t('contract.summary.total')} value={formatSum(total)} />
+        <InfoRow label={t('contract.summary.financed')} value={formatSum(financed)} />
+      </InfoList>
+
+      {terms && (
+        <div ref={scrollIntoView}>
+          <Section title={t('contract.conditions')}>
+            <InstallmentTermsCard terms={terms} />
+          </Section>
+        </div>
+      )}
     </FormScreen>
   )
 }

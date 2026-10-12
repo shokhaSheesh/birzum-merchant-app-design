@@ -90,7 +90,11 @@ Every form uses `FormScreen`: back arrow at the top left, scrolling body, primar
 - One question group per step. The button label says what happens next ("Kodni olish", "Tasdiqlash", "Klientni saqlash").
 - Back goes to the previous step. From the first step it leaves the flow.
 - Validation runs when the button is tapped, not while typing. Errors appear under the field.
-- An error about the form as a whole (total too small, over the limit, wrong login) is an `Alert`: a red-tint box with a `CircleAlert` icon, placed next to the numbers it is about.
+- An error about the form as a whole (total too small, over the limit, wrong login) is an `Alert`: a red-tint box with a `CircleAlert` icon.
+- On a long form the `Alert` sits directly above the pinned button, so it stays on screen while the fields above are edited.
+- Limits that depend on amounts are the exception to "validate on tap": going over the limit shows the `Alert` immediately, while typing, and names the limit.
+- A calculated result (the installment terms) appears as a new section at the end of the form after the first tap on the button, and the screen scrolls to it. Changing any number it was based on removes it until it is calculated again.
+- The last step before something is created is a review screen: read-only sections of what was entered, a ghost "Bekor qilish" above, and a primary button that names the result ("Arizani yaratish").
 - Long forms are split into `Section`s with a title and a one-line hint. Repeating groups such as products are each a `surface` card with a numbered heading, a red `Trash2` button at its top right when more than one exists, and a `secondary` "add" button under the last card.
 - A form that works with totals ends with a summary `InfoList` (limit, total, financed amount) just above the bottom button.
 - When a step offers different ways to continue instead of a form, show them as `ActionCard`s (icon, title, one-line description, chevron) and leave out the bottom button. The MyID step does this for "on this device" and "by QR code".

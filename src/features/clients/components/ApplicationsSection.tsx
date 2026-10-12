@@ -5,6 +5,7 @@ import { StatusBadge, type StatusTone } from '@/shared/ui/StatusBadge'
 import type { ApplicationStatus, Client } from '../data/clients'
 
 const tones: Record<ApplicationStatus, StatusTone> = {
+  processing: 'warning',
   rejected: 'danger',
   closed: 'neutral',
   cancelled: 'neutral',

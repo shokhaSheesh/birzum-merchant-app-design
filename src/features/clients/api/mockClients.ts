@@ -3,10 +3,12 @@
 // - MyID always succeeds: the face capture after a short wait, the QR route after a few seconds.
 // - The real service will return the client's name, photo and passport dates from MyID;
 //   here fixed invented values are used.
+// - Markup rates per term are made up (12 months is 38%, as seen on the web version).
 // - Limits are made up: five times the monthly income, lower for the shortest terms.
 
 import {
   TERMS,
+  type Application,
   type Client,
   type Contact,
   type MaritalStatus,
@@ -103,4 +105,44 @@ export async function calculateLimit(clientId: string) {
     TERMS.map((term) => [term, Math.round(client.monthlyIncome * 5 * share[term])]),
   ) as Record<Term, number>
   clientsStore.update(clientId, { limits })
+}
+
+export type InstallmentTerms = {
+  term: Term
+  markupPercent: number
+  /** Financed amount plus markup, in UZS. */
+  installmentTotal: number
+  monthlyPayment: number
+}
+
+const MARKUP_PERCENT: Record<Term, number> = { 3: 12, 6: 20, 9: 29, 12: 38, 18: 55, 24: 72 }
+
+/** Works out the installment terms for the amount being financed. */
+export async function calculateTerms(financed: number, term: Term): Promise<InstallmentTerms> {
+  await delay(700)
+  const markupPercent = MARKUP_PERCENT[term]
+  const installmentTotal = Math.round(financed * (1 + markupPercent / 100))
+  return {
+    term,
+    markupPercent,
+    installmentTotal,
+    monthlyPayment: Math.round(installmentTotal / term),
+  }
+}
+
+/** The number the next application will get. The real one is issued by the backend. */
+export function nextApplicationNumber() {
+  const numbers = clientsStore.getAll().flatMap((c) => c.applications.map((a) => a.id))
+  return Math.max(252476, ...numbers) + 1
+}
+
+export async function createApplication(
+  clientId: string,
+  application: Pick<Application, 'id' | 'goodsTotal' | 'installmentTotal'>,
+) {
+  await delay(700)
+  const client = clientsStore.get(clientId)
+  if (!client) return
+  const created: Application = { ...application, date: new Date(), status: 'processing' }
+  clientsStore.update(clientId, { applications: [created, ...client.applications] })
 }

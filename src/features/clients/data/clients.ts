@@ -2,7 +2,7 @@ export const MARITAL_STATUSES = ['single', 'married', 'divorced', 'widowed'] as 
 export type MaritalStatus = (typeof MARITAL_STATUSES)[number]
 
 export type IncomeSource = 'salary' | 'business' | 'pension' | 'other'
-export type ApplicationStatus = 'rejected' | 'closed' | 'cancelled'
+export type ApplicationStatus = 'processing' | 'rejected' | 'closed' | 'cancelled'
 
 export const TERMS = [3, 6, 9, 12, 18, 24] as const
 /** Installment length in months. */
