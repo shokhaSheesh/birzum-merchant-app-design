@@ -1,10 +1,23 @@
 export const CATEGORIES = ['phones', 'tvs', 'appliances', 'laptops'] as const
 export type Category = (typeof CATEGORIES)[number]
 
-export type Store = { id: string; name: string; address: string }
+export type Store = {
+  id: string
+  name: string
+  address: string
+  /** Average of shopper ratings, 1 to 5. */
+  rating: number
+  reviews: number
+}
 
 /** A choice the shopper makes on a product, e.g. memory or color. An option may change the price. */
-export type Variation = { name: string; options: { label: string; priceDelta?: number }[] }
+export type VariationOption = {
+  label: string
+  priceDelta?: number
+  /** For colors: the product is drawn in this color on the option's picture. */
+  swatch?: string
+}
+export type Variation = { name: string; options: VariationOption[] }
 
 export type Product = {
   id: string
@@ -23,14 +36,29 @@ export type Product = {
 
 // Invented sample shops and catalogue. Replace with the API.
 export const stores: Store[] = [
-  { id: 's1', name: 'Mega Texno', address: 'Toshkent, Chilonzor' },
-  { id: 's2', name: 'Texno Dunyo', address: 'Toshkent, Yunusobod' },
-  { id: 's3', name: 'Elektro Market', address: 'Samarqand, Registon koʻchasi' },
+  { id: 's1', name: 'Mega Texno', address: 'Toshkent, Chilonzor', rating: 4.9, reviews: 318 },
+  { id: 's2', name: 'Texno Dunyo', address: 'Toshkent, Yunusobod', rating: 4.7, reviews: 142 },
+  {
+    id: 's3',
+    name: 'Elektro Market',
+    address: 'Samarqand, Registon koʻchasi',
+    rating: 4.5,
+    reviews: 86,
+  },
 ]
+
+const SWATCHES: Record<string, string> = {
+  Qora: '#2b3440',
+  Koʻk: '#3f74b8',
+  Binafsha: '#8468c4',
+  Oq: '#f4f5f6',
+  Kumush: '#b9c1c7',
+  Yashil: '#5aa277',
+}
 
 const colors = (...labels: string[]): Variation => ({
   name: 'Rang',
-  options: labels.map((label) => ({ label })),
+  options: labels.map((label) => ({ label, swatch: SWATCHES[label] })),
 })
 
 export const products: Product[] = [
@@ -44,8 +72,8 @@ export const products: Product[] = [
     description:
       'Katta AMOLED ekranli, suvga chidamli smartfon. 50 MP asosiy kamera va bir kunga yetadigan batareya.',
     variations: [
-      { name: 'Xotira', options: [{ label: '128 GB' }, { label: '256 GB', priceDelta: 600_000 }] },
       colors('Qora', 'Koʻk', 'Binafsha'),
+      { name: 'Xotira', options: [{ label: '128 GB' }, { label: '256 GB', priceDelta: 600_000 }] },
     ],
     specs: [
       ['Ekran', '6,6 dyuym, AMOLED'],
@@ -80,8 +108,8 @@ export const products: Product[] = [
     description:
       'Bugʻ bilan yuvish rejimiga ega avtomat mashina. Jim ishlaydi va elektr energiyasini tejaydi.',
     variations: [
-      { name: 'Sigʻimi', options: [{ label: '7 kg' }, { label: '9 kg', priceDelta: 1_100_000 }] },
       colors('Oq', 'Kumush'),
+      { name: 'Sigʻimi', options: [{ label: '7 kg' }, { label: '9 kg', priceDelta: 1_100_000 }] },
     ],
     specs: [
       ['Aylanish', '1200 ayl/daq'],
@@ -120,8 +148,8 @@ export const products: Product[] = [
     stock: 20,
     description: 'Hamyonbop smartfon: 120 Gts ekran, tez quvvatlash va 108 MP kamera.',
     variations: [
-      { name: 'Xotira', options: [{ label: '128 GB' }, { label: '256 GB', priceDelta: 400_000 }] },
       colors('Qora', 'Yashil'),
+      { name: 'Xotira', options: [{ label: '128 GB' }, { label: '256 GB', priceDelta: 400_000 }] },
     ],
     specs: [
       ['Ekran', '6,67 dyuym, AMOLED'],
@@ -173,11 +201,11 @@ export const products: Product[] = [
     stock: 4,
     description: 'Kundalik ishlar uchun ishonchli noutbuk. Katta ekran va qulay klaviatura.',
     variations: [
+      colors('Kumush', 'Qora'),
       {
         name: 'Operativ xotira',
         options: [{ label: '8 GB' }, { label: '16 GB', priceDelta: 800_000 }],
       },
-      colors('Kumush', 'Qora'),
     ],
     specs: [
       ['Ekran', '15,6 dyuym, Full HD'],

@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom'
 import { products, stores } from '@/entities/catalog/products'
 import { customerStorePath } from '@/shared/config/routes'
 import { useI18n } from '@/shared/i18n/useI18n'
+import { StoreRating } from '../components/StoreRating'
 
 /** The shops whose products can be bought on nasiya. */
 export function StoresPage() {
@@ -21,6 +22,7 @@ export function StoresPage() {
               <div className="flex min-w-0 flex-1 flex-col gap-0.5">
                 <p className="truncate font-semibold">{store.name}</p>
                 <p className="truncate text-sm text-ink-muted">{store.address}</p>
+                <StoreRating store={store} />
                 <p className="text-sm text-ink-muted">
                   {t('stores.count', {
                     count: String(products.filter((p) => p.storeId === store.id).length),

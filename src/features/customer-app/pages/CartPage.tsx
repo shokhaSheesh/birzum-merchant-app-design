@@ -4,18 +4,18 @@ import { useNavigate } from 'react-router-dom'
 import { cartStore, useCart } from '@/entities/cart/cartStore'
 import { ProductPicture } from '@/entities/catalog/ProductPicture'
 import { submitApplication } from '@/entities/clients/applicationsApi'
-import { TERMS, type Term } from '@/entities/clients/clients'
+import type { Term } from '@/entities/clients/clients'
 import { installmentTerms } from '@/entities/clients/installment'
 import { useCustomer } from '@/entities/session/customer'
 import { ROUTES } from '@/shared/config/routes'
 import { useI18n } from '@/shared/i18n/useI18n'
-import { formatSum, groupDigits } from '@/shared/lib/format'
+import { formatSum } from '@/shared/lib/format'
 import { Alert } from '@/shared/ui/Alert'
 import { Button } from '@/shared/ui/Button'
-import { ChoiceGrid } from '@/shared/ui/ChoiceGrid'
 import { EmptyState } from '@/shared/ui/EmptyState'
 import { InstallmentTermsCard } from '@/shared/ui/InstallmentTermsCard'
 import { QuantityStepper } from '@/shared/ui/QuantityField'
+import { TermPicker } from '../components/TermPicker'
 
 /** The cart doubles as checkout: products, the term, what it will cost, and one button to send. */
 export function CartPage() {
@@ -95,9 +95,13 @@ export function CartPage() {
       {title}
 
       <ul className="flex flex-col gap-3">
-        {lines.map(({ key, product, variant, unitPrice, quantity }) => (
+        {lines.map(({ key, product, variant, color, unitPrice, quantity }) => (
           <li key={key} className="flex gap-3 rounded-card bg-surface p-3">
-            <ProductPicture category={product.category} className="w-20 shrink-0 rounded-control" />
+            <ProductPicture
+              category={product.category}
+              color={color}
+              className="w-20 shrink-0 rounded-control"
+            />
             <div className="flex min-w-0 flex-1 flex-col gap-2">
               <div className="flex items-start justify-between gap-2">
                 <div className="flex min-w-0 flex-col gap-0.5">
@@ -127,19 +131,13 @@ export function CartPage() {
         ))}
       </ul>
 
-      <ChoiceGrid
-        label={t('cart.term')}
-        columns={3}
-        options={TERMS.map((value) => ({
-          value,
-          label: t('term.months', { count: String(value) }),
-          description: customer?.limits ? groupDigits(customer.limits[value]) : undefined,
-        }))}
-        value={term}
-        onChange={setTerm}
-      />
-
-      <InstallmentTermsCard terms={installmentTerms(total, term)} />
+      <div className="flex flex-col gap-3">
+        <TermPicker value={term} onChange={setTerm} />
+        <InstallmentTermsCard terms={installmentTerms(total, term)} showMarkup={false} />
+        {limit !== undefined && (
+          <p className="text-sm text-ink-muted">{t('cart.limit', { amount: formatSum(limit) })}</p>
+        )}
+      </div>
 
       <div className="flex flex-col gap-3">
         {error && <Alert message={error} />}

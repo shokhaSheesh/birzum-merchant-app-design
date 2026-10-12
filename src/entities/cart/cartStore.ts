@@ -6,6 +6,8 @@ export type CartLine = {
   product: Product
   /** The chosen option of each variation, in order, e.g. ["256 GB", "Qora"]. */
   variant: string[]
+  /** Body color of the chosen color option, if the product has one. */
+  color?: string
   /** Price of one piece with the chosen options, in UZS. */
   unitPrice: number
   quantity: number
@@ -30,10 +32,10 @@ export const cartStore = {
     }
   },
   get: () => lines,
-  add(product: Product, variant: string[], unitPrice: number) {
+  add(product: Product, variant: string[], unitPrice: number, color?: string) {
     const key = cartKey(product.id, variant)
     if (lines.some((line) => line.key === key)) return
-    change([...lines, { key, product, variant, unitPrice, quantity: 1 }])
+    change([...lines, { key, product, variant, color, unitPrice, quantity: 1 }])
   },
   /** Setting the quantity to zero removes the line. */
   setQuantity(key: string, quantity: number) {

@@ -20,6 +20,7 @@ export const ROUTES = {
   customerStore: '/customer/stores/:id',
   customerSearch: '/customer/search',
   customerNotifications: '/customer/notifications',
+  customerFavorites: '/customer/favorites',
   customerCart: '/customer/cart',
   customerProduct: '/customer/product/:id',
   customerPurchases: '/customer/purchases',

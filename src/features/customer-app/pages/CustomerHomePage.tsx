@@ -1,4 +1,4 @@
-import { Bell, Search, Sparkles } from 'lucide-react'
+import { Bell, Heart, Search, Sparkles } from 'lucide-react'
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { CATEGORIES, products } from '@/entities/catalog/products'
@@ -42,6 +42,13 @@ export function CustomerHomePage() {
         </p>
         <Link to={customerSearchPath()} aria-label={t('search.title')} className={roundButton}>
           <Search size={22} />
+        </Link>
+        <Link
+          to={ROUTES.customerFavorites}
+          aria-label={t('favorites.title')}
+          className={roundButton}
+        >
+          <Heart size={22} />
         </Link>
         <Link
           to={ROUTES.customerNotifications}

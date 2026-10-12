@@ -10,7 +10,13 @@ type Terms = {
   monthlyPayment: number
 }
 
-export function InstallmentTermsCard({ terms }: { terms: Terms }) {
+type Props = {
+  terms: Terms
+  /** The client app leaves the markup out; shoppers see what they pay, not how it is built up. */
+  showMarkup?: boolean
+}
+
+export function InstallmentTermsCard({ terms, showMarkup = true }: Props) {
   const { t } = useI18n()
 
   return (
@@ -26,10 +32,12 @@ export function InstallmentTermsCard({ terms }: { terms: Terms }) {
         </div>
       </div>
       <dl className="px-4">
-        <div className="flex items-baseline justify-between gap-4 border-b border-line py-3">
-          <dt className="text-sm text-ink-muted">{t('contract.markup')}</dt>
-          <dd className="font-semibold">{terms.markupPercent}%</dd>
-        </div>
+        {showMarkup && (
+          <div className="flex items-baseline justify-between gap-4 border-b border-line py-3">
+            <dt className="text-sm text-ink-muted">{t('contract.markup')}</dt>
+            <dd className="font-semibold">{terms.markupPercent}%</dd>
+          </div>
+        )}
         <div className="flex items-baseline justify-between gap-4 py-3">
           <dt className="text-sm text-ink-muted">{t('contract.installmentTotal')}</dt>
           <dd className="font-semibold">{formatSum(terms.installmentTotal)}</dd>

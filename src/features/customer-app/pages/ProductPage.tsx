@@ -1,10 +1,10 @@
-import { ChevronRight, ShoppingCart, Store as StoreIcon } from 'lucide-react'
+import { Check, ChevronRight, Share2, ShoppingCart, Store as StoreIcon } from 'lucide-react'
 import { useState } from 'react'
 import { Link, Navigate, useNavigate, useParams } from 'react-router-dom'
 import { cartKey, cartStore, useCart } from '@/entities/cart/cartStore'
 import { ProductPicture } from '@/entities/catalog/ProductPicture'
 import { getProduct, getStore, products, type Product } from '@/entities/catalog/products'
-import { TERMS, type Term } from '@/entities/clients/clients'
+import type { Term } from '@/entities/clients/clients'
 import { installmentTerms } from '@/entities/clients/installment'
 import { useCustomer } from '@/entities/session/customer'
 import { customerStorePath, ROUTES } from '@/shared/config/routes'
@@ -12,14 +12,17 @@ import { useI18n } from '@/shared/i18n/useI18n'
 import { formatSum } from '@/shared/lib/format'
 import { Alert } from '@/shared/ui/Alert'
 import { Button } from '@/shared/ui/Button'
-import { ChoiceGrid } from '@/shared/ui/ChoiceGrid'
 import { InfoList, InfoRow } from '@/shared/ui/InfoList'
 import { InstallmentTermsCard } from '@/shared/ui/InstallmentTermsCard'
 import { QuantityStepper } from '@/shared/ui/QuantityField'
 import { Section } from '@/shared/ui/Section'
 import { StatusBadge } from '@/shared/ui/StatusBadge'
+import { LikeButton } from '../components/LikeButton'
 import { PageHeader } from '../components/PageHeader'
 import { ProductCard } from '../components/ProductCard'
+import { StoreRating } from '../components/StoreRating'
+import { TermPicker } from '../components/TermPicker'
+import { VariationPicker } from '../components/VariationPicker'
 
 export function ProductPage() {
   const { id } = useParams()
@@ -38,10 +41,28 @@ function ProductDetails({ product }: { product: Product }) {
   const [term, setTerm] = useState<Term>(12)
   /** The picked option of each variation, by position. */
   const [picked, setPicked] = useState<number[]>(() => product.variations.map(() => 0))
+  const [copied, setCopied] = useState(false)
+
+  /** Opens the phone's share sheet; where there is none, copies the link instead. */
+  const share = async () => {
+    const url = window.location.href
+    try {
+      if (navigator.share) {
+        await navigator.share({ title: product.name, url })
+      } else {
+        await navigator.clipboard.writeText(url)
+        setCopied(true)
+        setTimeout(() => setCopied(false), 1500)
+      }
+    } catch {
+      // The shopper closed the share sheet, or the browser refused: nothing to do
+    }
+  }
 
   const store = getStore(product.storeId)
   const options = product.variations.map((variation, i) => variation.options[picked[i]])
   const variant = options.map((option) => option.label)
+  const color = options.find((option) => option.swatch)?.swatch
   const unitPrice = product.price + options.reduce((sum, o) => sum + (o.priceDelta ?? 0), 0)
   const line = lines.find((l) => l.key === cartKey(product.id, variant))
   const hasLimit = !!customer?.limits
@@ -50,10 +71,28 @@ function ProductDetails({ product }: { product: Product }) {
 
   return (
     <div className="flex h-full flex-col">
-      <PageHeader />
+      <PageHeader
+        end={
+          <>
+            <button
+              type="button"
+              aria-label={t('product.share')}
+              onClick={() => void share()}
+              className="grid size-10 place-items-center rounded-full text-brand active:bg-surface"
+            >
+              {copied ? <Check size={22} /> : <Share2 size={22} />}
+            </button>
+            <LikeButton productId={product.id} className="active:bg-surface" />
+          </>
+        }
+      />
 
       <div className="flex min-h-0 flex-1 flex-col gap-6 overflow-y-auto px-5 pb-4">
-        <ProductPicture category={product.category} className="aspect-[1/0.8]! rounded-card" />
+        <ProductPicture
+          category={product.category}
+          color={color}
+          className="aspect-[1/0.8]! rounded-card"
+        />
 
         <div className="flex flex-col items-start gap-2">
           <StatusBadge tone={inStock ? 'success' : 'danger'}>
@@ -66,18 +105,19 @@ function ProductDetails({ product }: { product: Product }) {
         </div>
 
         {product.variations.map((variation, i) => (
-          <ChoiceGrid
+          <VariationPicker
             key={variation.name}
-            label={variation.name}
-            columns={3}
-            options={variation.options.map((option, index) => ({
-              value: index,
-              label: option.label,
-            }))}
+            variation={variation}
+            category={product.category}
             value={picked[i]}
             onChange={(index) => setPicked((list) => list.map((v, at) => (at === i ? index : v)))}
           />
         ))}
+
+        <Section title={t('contract.conditions')}>
+          <TermPicker value={term} onChange={setTerm} />
+          <InstallmentTermsCard terms={installmentTerms(unitPrice, term)} showMarkup={false} />
+        </Section>
 
         {store && (
           <Section title={t('product.store')}>
@@ -90,27 +130,12 @@ function ProductDetails({ product }: { product: Product }) {
               </span>
               <div className="flex min-w-0 flex-1 flex-col gap-0.5">
                 <p className="truncate font-semibold">{store.name}</p>
-                <p className="truncate text-sm text-ink-muted">{store.address}</p>
+                <StoreRating store={store} />
               </div>
               <ChevronRight size={20} className="shrink-0 text-ink-subtle" />
             </Link>
           </Section>
         )}
-
-        <Section title={t('contract.conditions')}>
-          <ChoiceGrid
-            label={t('cart.term')}
-            columns={6}
-            options={TERMS.map((value) => ({
-              value,
-              label: String(value),
-              description: t('common.months'),
-            }))}
-            value={term}
-            onChange={setTerm}
-          />
-          <InstallmentTermsCard terms={installmentTerms(unitPrice, term)} />
-        </Section>
 
         <Section title={t('product.description')}>
           <p className="text-ink-muted">{product.description}</p>
@@ -160,7 +185,7 @@ function ProductDetails({ product }: { product: Product }) {
           <Button
             block
             disabled={!hasLimit || !inStock}
-            onClick={() => cartStore.add(product, variant, unitPrice)}
+            onClick={() => cartStore.add(product, variant, unitPrice, color)}
           >
             <ShoppingCart size={20} />
             {inStock ? t('product.addToCart') : t('product.stock.out')}

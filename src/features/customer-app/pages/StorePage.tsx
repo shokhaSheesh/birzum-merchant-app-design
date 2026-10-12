@@ -4,6 +4,7 @@ import { ROUTES } from '@/shared/config/routes'
 import { useI18n } from '@/shared/i18n/useI18n'
 import { PageHeader } from '../components/PageHeader'
 import { ProductCard } from '../components/ProductCard'
+import { StoreRating } from '../components/StoreRating'
 
 /** One shop and everything it sells. */
 export function StorePage() {
@@ -20,6 +21,7 @@ export function StorePage() {
       <div className="flex min-h-0 flex-1 flex-col gap-5 overflow-y-auto px-5 pb-6">
         <div className="flex flex-col gap-1">
           <h1 className="text-2xl font-bold">{store.name}</h1>
+          <StoreRating store={store} />
           <p className="text-ink-muted">
             {store.address} · {t('stores.count', { count: String(items.length) })}
           </p>

@@ -11,6 +11,7 @@ import { ClientsPage } from '@/features/clients/pages/ClientsPage'
 import { NewClientPage } from '@/features/clients/pages/NewClientPage'
 import { NewContractPage } from '@/features/clients/pages/NewContractPage'
 import { CustomerProfilePage } from '@/features/customer-app/pages/CustomerProfilePage'
+import { FavoritesPage } from '@/features/customer-app/pages/FavoritesPage'
 import { CartPage } from '@/features/customer-app/pages/CartPage'
 import { CustomerNotificationsPage } from '@/features/customer-app/pages/CustomerNotificationsPage'
 import { CustomerHomePage } from '@/features/customer-app/pages/CustomerHomePage'
@@ -59,6 +60,7 @@ export const router = createBrowserRouter([
       { path: ROUTES.customerStore, element: <StorePage /> },
       { path: ROUTES.customerSearch, element: <SearchPage /> },
       { path: ROUTES.customerNotifications, element: <CustomerNotificationsPage /> },
+      { path: ROUTES.customerFavorites, element: <FavoritesPage /> },
       {
         element: <TabLayout tabs={merchantTabs} />,
         children: [
