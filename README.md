@@ -20,6 +20,10 @@ npm run lint
 npm run format
 ```
 
+## Deployment
+
+The app is a single-page app, so the host must serve `index.html` for every path (`/login`, `/clients/1`, and so on). `vercel.json` does this on Vercel. On another host, add the equivalent fallback rule.
+
 ## Structure
 
 ```
