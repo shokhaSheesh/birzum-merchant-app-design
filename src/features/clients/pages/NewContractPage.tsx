@@ -14,20 +14,15 @@ import { QuantityField } from '@/shared/ui/QuantityField'
 import { Section } from '@/shared/ui/Section'
 import { StatusBadge } from '@/shared/ui/StatusBadge'
 import { TextField } from '@/shared/ui/TextField'
-import {
-  calculateTerms,
-  createApplication,
-  nextApplicationNumber,
-  type InstallmentTerms,
-} from '../api/mockClients'
+import { calculateTerms, createApplication, nextApplicationNumber } from '../api/mockClients'
 import { InstallmentTermsCard } from '@/shared/ui/InstallmentTermsCard'
 import { TERMS, type Term } from '@/entities/clients/clients'
+import { MIN_APPLICATION_TOTAL, type InstallmentTerms } from '@/entities/clients/installment'
 import { ProductsSummary } from '@/entities/clients/ui/ProductsSummary'
 import { useClient } from '@/entities/clients/useClients'
 
 type Product = { id: number; name: string; price: number | null; quantity: number }
 
-const MIN_TOTAL = 100_000
 const PAYMENT_DAYS = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
 const emptyProduct = (id: number): Product => ({ id, name: '', price: null, quantity: 1 })
 
@@ -80,7 +75,9 @@ export function NewContractPage() {
         ? t('error.overLimit', { limit: formatSum(limit) })
         : undefined
   const submitError =
-    total < MIN_TOTAL ? t('error.minTotal', { amount: formatSum(MIN_TOTAL) }) : undefined
+    total < MIN_APPLICATION_TOTAL
+      ? t('error.minTotal', { amount: formatSum(MIN_APPLICATION_TOTAL) })
+      : undefined
   const formError = liveError ?? (submitted ? submitError : undefined)
 
   const updateProduct = (productId: number, patch: Partial<Product>) =>

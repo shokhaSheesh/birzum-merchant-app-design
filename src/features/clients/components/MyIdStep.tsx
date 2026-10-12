@@ -128,7 +128,7 @@ function FaceCapture({ progress, onBack, onDone }: Props) {
           className="size-full -scale-x-100 object-cover"
         />
         {unavailable && (
-          <p className="absolute inset-x-6 top-1/2 -translate-y-1/2 text-center text-sm text-navy-200">
+          <p className="absolute inset-x-6 top-1/2 -translate-y-1/2 text-center text-sm text-on-tile opacity-80">
             {t('myid.scan.noCamera')}
           </p>
         )}
@@ -151,7 +151,7 @@ function QrHandover({ progress, onBack, onDone }: Props) {
   return (
     <FormScreen onSubmit={() => {}} onBack={onBack} progress={progress}>
       <ScreenIntro title={t('myid.qr.screenTitle')} subtitle={t('myid.qr.screenHint')} />
-      <div className="mx-auto rounded-card border-[1.5px] border-line p-5 text-navy-900">
+      <div className="mx-auto rounded-card border-[1.5px] border-line bg-white p-5 text-navy-900">
         <QRCodeSVG value={MYID_QR_URL} size={216} fgColor="currentColor" bgColor="transparent" />
       </div>
       <p

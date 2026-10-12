@@ -13,7 +13,7 @@ export function Avatar({ initials, photoUrl, size = 'md' }: Props) {
   return (
     <span
       className={cn(
-        'grid shrink-0 place-items-center overflow-hidden rounded-full bg-navy-200 font-bold text-navy-900',
+        'grid shrink-0 place-items-center overflow-hidden rounded-full bg-navy-200 font-bold text-brand',
         sizes[size],
       )}
     >

@@ -6,10 +6,10 @@ type Variant = 'primary' | 'secondary' | 'ghost' | 'danger'
 type Size = 'md' | 'sm'
 
 const variants: Record<Variant, string> = {
-  primary: 'bg-navy-900 text-white active:bg-navy-950',
-  secondary: 'bg-surface text-navy-900 active:bg-navy-100',
-  ghost: 'bg-transparent text-navy-900 active:bg-surface',
-  danger: 'bg-danger text-white active:opacity-90',
+  primary: 'bg-primary text-on-primary active:bg-primary-pressed',
+  secondary: 'bg-surface text-brand active:bg-navy-100',
+  ghost: 'bg-transparent text-brand active:bg-surface',
+  danger: 'bg-danger text-on-primary active:opacity-90',
 }
 
 const sizes: Record<Size, string> = {

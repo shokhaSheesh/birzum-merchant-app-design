@@ -1,14 +1,25 @@
 import { LogOut } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
+import { currentUser } from '@/entities/session/user'
 import { logout } from '@/features/auth/api/mockAuth'
 import { ROUTES } from '@/shared/config/routes'
+import { LANG_NAMES, LANGS } from '@/shared/i18n/dictionaries'
 import { useI18n } from '@/shared/i18n/useI18n'
+import { formatPhone } from '@/shared/lib/phone'
+import { THEMES } from '@/shared/theme/context'
+import { useTheme } from '@/shared/theme/useTheme'
+import { Avatar } from '@/shared/ui/Avatar'
 import { Button } from '@/shared/ui/Button'
-import { LanguageSwitcher } from '@/shared/ui/LanguageSwitcher'
+import { ChoiceGrid } from '@/shared/ui/ChoiceGrid'
+import { InfoList, InfoRow } from '@/shared/ui/InfoList'
+import { Section } from '@/shared/ui/Section'
+import { Select } from '@/shared/ui/Select'
 
 export function ProfilePage() {
-  const { t } = useI18n()
+  const { t, lang, setLang } = useI18n()
+  const { theme, setTheme } = useTheme()
   const navigate = useNavigate()
+  const user = currentUser
 
   const handleLogout = () => {
     logout()
@@ -16,11 +27,42 @@ export function ProfilePage() {
   }
 
   return (
-    <div className="flex min-h-full flex-col gap-6 px-5 pt-14 pb-5">
-      <header className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold">{t('nav.profile')}</h1>
-        <LanguageSwitcher />
-      </header>
+    <div className="flex min-h-full flex-col gap-7 px-5 pt-[max(1.5rem,env(safe-area-inset-top))] pb-6">
+      <h1 className="flex min-h-10 items-center text-2xl font-bold">{t('nav.profile')}</h1>
+
+      <div className="flex items-center gap-4">
+        <Avatar initials={`${user.firstName[0]}${user.lastName[0]}`} size="lg" />
+        <div className="flex min-w-0 flex-col gap-1">
+          <p className="text-xl leading-tight font-bold">
+            {user.firstName} {user.lastName}
+          </p>
+          <p className="text-ink-muted">{t('profile.role')}</p>
+        </div>
+      </div>
+
+      <InfoList>
+        <InfoRow label={t('field.login')} value={user.login} />
+        <InfoRow label={t('field.phone')} value={formatPhone(user.phone)} />
+        <InfoRow label={t('profile.store')} value={user.store} />
+        <InfoRow label={t('profile.branch')} value={user.branch} />
+      </InfoList>
+
+      <Section title={t('profile.settings')}>
+        <Select
+          label={t('profile.language')}
+          options={LANGS.map((value) => ({ value, label: LANG_NAMES[value] }))}
+          value={lang}
+          onChange={setLang}
+        />
+        <ChoiceGrid
+          label={t('profile.theme')}
+          columns={3}
+          options={THEMES.map((value) => ({ value, label: t(`theme.${value}`) }))}
+          value={theme}
+          onChange={setTheme}
+        />
+      </Section>
+
       <Button variant="secondary" block className="mt-auto" onClick={handleLogout}>
         <LogOut size={20} />
         {t('profile.logout')}

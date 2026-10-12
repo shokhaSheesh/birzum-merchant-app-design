@@ -25,9 +25,9 @@ const EARLIEST_YEAR = 1930
 const startOfDay = (d: Date) => new Date(d.getFullYear(), d.getMonth(), d.getDate())
 const sameDay = (a: Date, b: Date) => startOfDay(a).getTime() === startOfDay(b).getTime()
 const navButton =
-  'grid size-10 place-items-center rounded-full text-navy-900 active:bg-surface disabled:text-navy-200'
+  'grid size-10 place-items-center rounded-full text-brand active:bg-surface disabled:text-navy-200'
 const cell = 'grid place-items-center rounded-control text-base disabled:text-navy-200'
-const cellSelected = 'bg-navy-900 font-semibold text-white'
+const cellSelected = 'bg-primary font-semibold text-on-primary'
 
 /** "12101995" -> "12.10.1995" (works on partial input too) */
 const maskDate = (digits: string) =>
@@ -110,7 +110,7 @@ export function DatePicker({ label, value, onChange, min, max, error, hint }: Pr
           aria-haspopup="dialog"
           aria-expanded={open}
           onClick={openSheet}
-          className="-mr-2 grid size-10 shrink-0 place-items-center rounded-full text-navy-900 active:bg-surface"
+          className="-mr-2 grid size-10 shrink-0 place-items-center rounded-full text-brand active:bg-surface"
         >
           <CalendarDays size={20} />
         </button>

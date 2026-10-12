@@ -20,14 +20,38 @@ All colors are tokens in `src/shared/styles/index.css`. No hex values in compone
 | Text | `ink` | `#072A3C` | Titles and body text |
 | Secondary text | `ink-muted` | `#56707F` | Labels, subtitles, descriptions |
 | Placeholder text | `ink-subtle` | `#8499A4` | Placeholders, inactive tabs, decorative icons |
-| Brand navy | `navy-900` | `#0B3D57` | Primary buttons, active tab, selected date, links |
+| Primary | `primary` / `on-primary` | `#0B3D57` / white | Fill and text of primary buttons, selected tiles, chips, dates and checkboxes |
+| Brand ink | `brand` | `#0B3D57` | Navy text and icons: links, secondary button labels, the active tab |
+| Card tile | `tile` / `on-tile` | `#0B3D57` / white | Bank card tiles |
 | Brand green | `green-500` | `#85C905` | Accents only (see below) |
 | Green tint | `green-200` | `#E7F4CD` | Selected option, focus ring, icon badges |
 | Approved | `success` | `#1E8E4A` | Approved status, passed checks |
 | Pending | `warning` | `#B26A00` | Pending status |
 | Rejected / error | `danger` | `#C93B3B` | Rejected status, field errors, destructive buttons |
 
+Components use the role tokens above (`bg-primary`, `text-brand`), never `navy-900` directly. That is what lets the dark theme swap them.
+
+### Dark theme
+
+The user picks Yorugʻ, Qorongʻi or Tizim in Profile. `ThemeProvider` sets `data-theme` on `<html>` and the dark block in `index.css` gives every token a dark value. Components need no dark-specific classes.
+
+| Role | Light | Dark |
+| --- | --- | --- |
+| `canvas` | `#FFFFFF` | `#0C1E28` |
+| `surface` | `#F2F5F6` | `#14303D` |
+| `ink` | `#072A3C` | `#EAF1F4` |
+| `primary` / `on-primary` | navy / white | green `#85C905` / navy |
+| `brand` | navy | pale blue-grey `#D3E4EC` |
+| Green tint (`green-200`) | `#E7F4CD` | `#223F14` |
+
+- In the dark theme the primary button is green with navy text, because navy would disappear on the dark background. The rule "one action color per theme, the same on every screen" still holds.
+- Use `logo.svg` on light and `logo-on-dark.svg` (white wordmark) on dark, switched with `dark:hidden` / `hidden dark:block`.
+- A QR code always stays navy on white, in both themes, so phone cameras can read it.
+- Check every new screen in both themes before opening a merge request.
+
 ### Navy acts, green highlights
+
+These three rules describe the light theme; the dark theme swaps the action color as described above.
 
 - **Navy is the action color.** Every main button on every screen is navy with white text. "Create", "Save", "Continue" and "Log in" all look the same.
 - **Green is never a button color and never text.** It is too light to read on white. Use it as a fill behind navy content: selected states, the focus ring, badges, today's date outline.
@@ -136,6 +160,8 @@ Four tabs, always in this order, on every main screen: **Klientlar**, **Arizalar
 | Calculate limit | `Calculator` |
 | Start a contract | `FileSignature` |
 | Remove an item | `Trash2` |
+| Download a document | `Download` |
+| Change a value or status | `PencilLine` |
 | Decrease / increase | `Minus` / `Plus` |
 | Log out | `LogOut` |
 | SMS code | `MessageSquareText` |
@@ -182,6 +208,11 @@ Always has the show/hide eye button on the right. Never build a password field w
 - A single row of pills under the search field for filtering a list by one property, such as status. Scrolls sideways when it does not fit.
 - The first chip is always "Hammasi". The selected chip is navy with white text; the rest are grey.
 - One filter row per list. Tapping a chip filters immediately.
+
+### Date range filter: `DateRangeChip`
+- A chip with a `CalendarDays` icon that goes first in the `FilterChips` row, labelled "Sana".
+- Opens a sheet with two `DatePicker`s, "Dan" and "Gacha", a ghost "Tozalash" and a primary "Qoʻllash". Either date may be left empty.
+- Once a range is set the chip turns into the selected style and shows the dates, `01.08.2026 – 05.08.2026`.
 
 ### Phone input: `PhoneField`
 - `+998` is fixed at the left and cannot be edited. The user types the nine remaining digits.
@@ -290,3 +321,4 @@ A detail screen (a client, later an application) is read top to bottom, so it is
 - [ ] Icons are from lucide, in the sizes above
 - [ ] All strings exist in Uzbek and Russian
 - [ ] Loading, error and empty states are designed
+- [ ] The screen is checked in the light and dark themes

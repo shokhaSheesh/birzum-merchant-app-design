@@ -3,7 +3,6 @@
 // - MyID always succeeds: the face capture after a short wait, the QR route after a few seconds.
 // - The real service will return the client's name, photo and passport dates from MyID;
 //   here fixed invented values are used.
-// - Markup rates per term are made up (12 months is 38%, as seen on the web version).
 // - Limits are made up: five times the monthly income, lower for the shortest terms.
 
 import {
@@ -16,6 +15,7 @@ import {
   type Term,
 } from '@/entities/clients/clients'
 import { clientsStore } from '@/entities/clients/clientsStore'
+import { installmentTerms, type InstallmentTerms } from '@/entities/clients/installment'
 
 const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms))
 const newId = () => String(Date.now())
@@ -107,27 +107,10 @@ export async function calculateLimit(clientId: string) {
   clientsStore.update(clientId, { limits })
 }
 
-export type InstallmentTerms = {
-  term: Term
-  markupPercent: number
-  /** Financed amount plus markup, in UZS. */
-  installmentTotal: number
-  monthlyPayment: number
-}
-
-const MARKUP_PERCENT: Record<Term, number> = { 3: 12, 6: 20, 9: 29, 12: 38, 18: 55, 24: 72 }
-
 /** Works out the installment terms for the amount being financed. */
 export async function calculateTerms(financed: number, term: Term): Promise<InstallmentTerms> {
   await delay(700)
-  const markupPercent = MARKUP_PERCENT[term]
-  const installmentTotal = Math.round(financed * (1 + markupPercent / 100))
-  return {
-    term,
-    markupPercent,
-    installmentTotal,
-    monthlyPayment: Math.round(installmentTotal / term),
-  }
+  return installmentTerms(financed, term)
 }
 
 /** The number the next application will get. The real one is issued by the backend. */

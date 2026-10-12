@@ -50,13 +50,13 @@ export function ChoiceGrid<T extends string | number>({
                 'flex min-h-13 min-w-0 flex-col items-center justify-center rounded-control border-[1.5px] px-1 py-1.5 text-center transition-colors',
                 'focus-visible:ring-3 focus-visible:ring-green-200 focus-visible:outline-none',
                 selected
-                  ? 'border-navy-900 bg-navy-900 text-white'
+                  ? 'border-primary bg-primary text-on-primary'
                   : 'border-line bg-canvas active:bg-surface',
               )}
             >
               <span className="font-semibold">{option.label}</span>
               {option.description && (
-                <span className={cn('text-xs', selected ? 'text-navy-200' : 'text-ink-muted')}>
+                <span className={cn('text-xs', selected ? 'opacity-70' : 'text-ink-muted')}>
                   {option.description}
                 </span>
               )}

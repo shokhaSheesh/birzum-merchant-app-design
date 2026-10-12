@@ -40,7 +40,7 @@ export function OtpField({
                 error
                   ? 'border-danger'
                   : focused && i === activeIndex
-                    ? 'border-navy-900 ring-3 ring-green-200'
+                    ? 'border-primary ring-3 ring-green-200'
                     : 'border-line',
                 disabled && 'opacity-45',
               )}

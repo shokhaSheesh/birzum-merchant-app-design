@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import logoOnDark from '@/shared/assets/logo-on-dark.svg'
 import logo from '@/shared/assets/logo.svg'
 import { ROUTES } from '@/shared/config/routes'
 import { useI18n } from '@/shared/i18n/useI18n'
@@ -51,7 +52,8 @@ export function LoginPage() {
         </Button>
       }
     >
-      <img src={logo} alt="Birzum nasiya" className="h-12 self-start" />
+      <img src={logo} alt="Birzum nasiya" className="h-12 self-start dark:hidden" />
+      <img src={logoOnDark} alt="Birzum nasiya" className="hidden h-12 self-start dark:block" />
       <div className="flex flex-col gap-1.5">
         <h1 className="text-2xl font-bold">{t('auth.login.title')}</h1>
         <p className="text-ink-muted">{t('auth.login.subtitle')}</p>

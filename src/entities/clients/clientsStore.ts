@@ -1,4 +1,4 @@
-import { seedClients, type Client } from './clients'
+import { seedClients, type Application, type Client } from './clients'
 
 // In-memory store standing in for the backend. A page refresh resets it.
 let clients = seedClients
@@ -20,6 +20,19 @@ export const clientsStore = {
   },
   update(id: string, patch: Partial<Client>) {
     clients = clients.map((client) => (client.id === id ? { ...client, ...patch } : client))
+    emit()
+  },
+  updateApplication(number: number, patch: Partial<Application>) {
+    clients = clients.map((client) =>
+      client.applications.some((application) => application.id === number)
+        ? {
+            ...client,
+            applications: client.applications.map((application) =>
+              application.id === number ? { ...application, ...patch } : application,
+            ),
+          }
+        : client,
+    )
     emit()
   },
 }

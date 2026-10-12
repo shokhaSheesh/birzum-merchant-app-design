@@ -1,6 +1,9 @@
-import { ArrowLeft, ChevronRight, SearchX } from 'lucide-react'
+import { ArrowLeft, ChevronRight, Download, PencilLine, SearchX } from 'lucide-react'
+import { useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import { applicationStatusTone } from '@/entities/clients/applicationStatus'
+import { APPLICATION_STATUSES } from '@/entities/clients/clients'
+import { clientsStore } from '@/entities/clients/clientsStore'
 import { fullName, initials } from '@/entities/clients/clientName'
 import { ProductsSummary } from '@/entities/clients/ui/ProductsSummary'
 import { useApplication } from '@/entities/clients/useApplications'
@@ -10,17 +13,21 @@ import { formatDate, formatSum, groupDigits } from '@/shared/lib/format'
 import { formatPassport } from '@/shared/lib/passport'
 import { formatPhone } from '@/shared/lib/phone'
 import { Avatar } from '@/shared/ui/Avatar'
+import { Button } from '@/shared/ui/Button'
 import { EmptyState } from '@/shared/ui/EmptyState'
 import { InfoList, InfoRow } from '@/shared/ui/InfoList'
 import { InstallmentTermsCard } from '@/shared/ui/InstallmentTermsCard'
+import { OptionSheet } from '@/shared/ui/OptionSheet'
 import { Section } from '@/shared/ui/Section'
 import { StatusBadge } from '@/shared/ui/StatusBadge'
+import { downloadContract } from '../lib/contractPdf'
 
 export function ApplicationDetailPage() {
   const { t } = useI18n()
   const navigate = useNavigate()
   const { number } = useParams()
   const found = useApplication(Number(number))
+  const [statusOpen, setStatusOpen] = useState(false)
 
   return (
     <div className="flex h-full flex-col">
@@ -29,7 +36,7 @@ export function ApplicationDetailPage() {
           type="button"
           onClick={() => navigate(-1)}
           aria-label={t('common.back')}
-          className="-ml-2 grid size-10 place-items-center rounded-full text-navy-900 active:bg-surface"
+          className="-ml-2 grid size-10 place-items-center rounded-full text-brand active:bg-surface"
         >
           <ArrowLeft size={24} />
         </button>
@@ -59,11 +66,42 @@ export function ApplicationDetailPage() {
               label={t('contract.installmentTotal')}
               value={formatSum(found.application.installmentTotal)}
             />
-            <InfoRow
-              label={t('application.contractNumber')}
-              value={found.application.contractNumber ?? t('common.none')}
-            />
           </InfoList>
+
+          <Button variant="secondary" block className="-mt-4" onClick={() => setStatusOpen(true)}>
+            <PencilLine size={20} />
+            {t('application.changeStatus')}
+          </Button>
+          <OptionSheet
+            open={statusOpen}
+            onClose={() => setStatusOpen(false)}
+            title={t('application.changeStatus')}
+            options={APPLICATION_STATUSES.map((status) => ({
+              value: status,
+              label: t(`application.status.${status}`),
+            }))}
+            value={found.application.status}
+            onChange={(status) => clientsStore.updateApplication(found.application.id, { status })}
+          />
+
+          <Section title={t('application.contract.section')}>
+            {found.application.contractNumber ? (
+              <>
+                <InfoList>
+                  <InfoRow
+                    label={t('application.contractNumber')}
+                    value={found.application.contractNumber}
+                  />
+                </InfoList>
+                <Button block onClick={() => downloadContract(found)}>
+                  <Download size={20} />
+                  {t('application.contract.download')}
+                </Button>
+              </>
+            ) : (
+              <p className="text-sm text-ink-muted">{t('application.contract.none')}</p>
+            )}
+          </Section>
 
           <Section title={t('client.title')}>
             <Link

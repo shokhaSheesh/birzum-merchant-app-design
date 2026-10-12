@@ -4,8 +4,8 @@ import { cn } from '@/shared/lib/cn'
 export function controlClass(invalid?: boolean, className?: string) {
   return cn(
     'flex h-13 w-full items-center gap-2 rounded-control border-[1.5px] bg-canvas px-4 text-left text-base text-ink transition-colors',
-    'focus-within:border-navy-900 focus-within:ring-3 focus-within:ring-green-200',
-    'focus-visible:border-navy-900 focus-visible:ring-3 focus-visible:ring-green-200 focus-visible:outline-none',
+    'focus-within:border-primary focus-within:ring-3 focus-within:ring-green-200',
+    'focus-visible:border-primary focus-visible:ring-3 focus-visible:ring-green-200 focus-visible:outline-none',
     invalid ? 'border-danger' : 'border-line',
     className,
   )

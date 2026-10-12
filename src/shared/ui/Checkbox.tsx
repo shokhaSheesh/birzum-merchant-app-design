@@ -22,7 +22,7 @@ export function Checkbox({ label, description, checked, onChange, disabled }: Pr
         onChange={(e) => onChange(e.target.checked)}
         className="peer sr-only"
       />
-      <span className="mt-0.5 grid size-6 shrink-0 place-items-center rounded-lg border-[1.5px] border-navy-400 text-transparent transition-colors peer-checked:border-navy-900 peer-checked:bg-navy-900 peer-checked:text-white peer-focus-visible:ring-3 peer-focus-visible:ring-green-200 peer-disabled:opacity-45">
+      <span className="mt-0.5 grid size-6 shrink-0 place-items-center rounded-lg border-[1.5px] border-navy-400 text-transparent transition-colors peer-checked:border-primary peer-checked:bg-primary peer-checked:text-on-primary peer-focus-visible:ring-3 peer-focus-visible:ring-green-200 peer-disabled:opacity-45">
         <Check size={16} strokeWidth={3} />
       </span>
       <span className="flex min-w-0 flex-col gap-0.5 peer-disabled:opacity-45">

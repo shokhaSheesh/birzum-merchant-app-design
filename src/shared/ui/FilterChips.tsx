@@ -1,3 +1,4 @@
+import type { ReactNode } from 'react'
 import { cn } from '@/shared/lib/cn'
 
 type Props<T extends string> = {
@@ -6,16 +7,25 @@ type Props<T extends string> = {
   options: { value: T; label: string }[]
   value: T
   onChange: (value: T) => void
+  /** Extra chip shown first, e.g. a date range. */
+  leading?: ReactNode
 }
 
 /** One-tap list filter. Scrolls sideways when the chips do not fit. */
-export function FilterChips<T extends string>({ label, options, value, onChange }: Props<T>) {
+export function FilterChips<T extends string>({
+  label,
+  options,
+  value,
+  onChange,
+  leading,
+}: Props<T>) {
   return (
     <div
       role="radiogroup"
       aria-label={label}
       className="-mx-5 flex scroll-px-5 gap-2 overflow-x-auto px-5"
     >
+      {leading}
       {options.map((option) => {
         const selected = option.value === value
         return (
@@ -27,7 +37,7 @@ export function FilterChips<T extends string>({ label, options, value, onChange 
             onClick={() => onChange(option.value)}
             className={cn(
               'h-10 shrink-0 rounded-full px-4 text-sm font-semibold whitespace-nowrap transition-colors',
-              selected ? 'bg-navy-900 text-white' : 'bg-surface text-navy-900 active:bg-navy-100',
+              selected ? 'bg-primary text-on-primary' : 'bg-surface text-brand active:bg-navy-100',
             )}
           >
             {option.label}

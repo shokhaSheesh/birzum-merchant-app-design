@@ -25,7 +25,7 @@ export function TabBar() {
           className={({ isActive }) =>
             cn(
               'flex flex-1 flex-col items-center gap-1 py-2.5 text-xs font-medium',
-              isActive ? 'text-navy-900' : 'text-ink-subtle',
+              isActive ? 'text-brand' : 'text-ink-subtle',
             )
           }
         >

@@ -56,5 +56,6 @@ Read [DESIGN.md](DESIGN.md) before building a screen. It defines colors, buttons
 - Data or domain UI that two features need moves to `entities`; generic controls move to `shared/ui`.
 - Import with the `@/` alias (`@/shared/ui/Button`), not long relative paths.
 - Colors, fonts and radii come from the tokens in `src/shared/styles/index.css`. Do not hardcode hex values in components.
+- Use the role tokens (`bg-primary`, `text-brand`, `bg-surface`) so the dark theme keeps working.
 - Money is formatted with `formatSum` from `@/shared/lib/format`.
 - The app is designed at phone width. `DeviceLayout` centers it at 430px on larger screens.

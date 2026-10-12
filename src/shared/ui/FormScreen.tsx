@@ -33,7 +33,7 @@ export function FormScreen({ onSubmit, onBack, headerEnd, progress, footer, chil
             type="button"
             onClick={onBack}
             aria-label={t('common.back')}
-            className="-ml-2 grid size-10 shrink-0 place-items-center rounded-full text-navy-900 active:bg-surface"
+            className="-ml-2 grid size-10 shrink-0 place-items-center rounded-full text-brand active:bg-surface"
           >
             <ArrowLeft size={24} />
           </button>

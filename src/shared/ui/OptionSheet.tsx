@@ -41,7 +41,7 @@ export function OptionSheet<T extends string>({
                 )}
               >
                 {option.label}
-                {selected && <Check size={20} className="text-navy-900" />}
+                {selected && <Check size={20} className="text-brand" />}
               </button>
             </li>
           )

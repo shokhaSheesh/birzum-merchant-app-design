@@ -13,7 +13,7 @@ type Props = {
 }
 
 const stepButton =
-  'grid size-10 shrink-0 place-items-center rounded-full text-navy-900 active:bg-surface disabled:text-navy-200'
+  'grid size-10 shrink-0 place-items-center rounded-full text-brand active:bg-surface disabled:text-navy-200'
 
 /** A small count with minus and plus buttons. The number can also be typed. */
 export function QuantityField({ label, value, onChange, min = 1, max = 99 }: Props) {

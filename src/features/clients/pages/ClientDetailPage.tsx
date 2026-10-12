@@ -28,7 +28,7 @@ export function ClientDetailPage() {
           type="button"
           onClick={() => navigate(-1)}
           aria-label={t('common.back')}
-          className="-ml-2 grid size-10 place-items-center rounded-full text-navy-900 active:bg-surface"
+          className="-ml-2 grid size-10 place-items-center rounded-full text-brand active:bg-surface"
         >
           <ArrowLeft size={24} />
         </button>
