@@ -2,7 +2,7 @@ import { Plus } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import { clientAddCardPath } from '@/shared/config/routes'
 import { useI18n } from '@/shared/i18n/useI18n'
-import type { Client } from '../data/clients'
+import type { Client } from '@/entities/clients/clients'
 import { cardBrand } from '../lib/cardBrand'
 
 const tile = 'flex h-28 w-52 shrink-0 snap-start flex-col justify-between rounded-card p-4'

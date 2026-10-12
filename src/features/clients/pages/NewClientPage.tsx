@@ -24,7 +24,7 @@ import {
 } from '../api/mockClients'
 import { CardForm } from '../components/CardForm'
 import { MyIdStep } from '../components/MyIdStep'
-import { MARITAL_STATUSES, type MaritalStatus } from '../data/clients'
+import { MARITAL_STATUSES, type MaritalStatus } from '@/entities/clients/clients'
 
 const STEPS = ['phone', 'phoneCode', 'details', 'myid', 'card', 'cardCode'] as const
 type Step = (typeof STEPS)[number]

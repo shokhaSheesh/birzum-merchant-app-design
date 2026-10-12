@@ -9,7 +9,7 @@ import { Select } from '@/shared/ui/Select'
 import { Sheet } from '@/shared/ui/Sheet'
 import { TextField } from '@/shared/ui/TextField'
 import { addContact } from '../api/mockClients'
-import { RELATIONS, type Client, type Relation } from '../data/clients'
+import { RELATIONS, type Client, type Relation } from '@/entities/clients/clients'
 
 export function ContactsSection({ client }: { client: Client }) {
   const { t } = useI18n()

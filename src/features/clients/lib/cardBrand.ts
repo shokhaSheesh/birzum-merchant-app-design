@@ -1,4 +1,4 @@
-import type { PaymentCard } from '../data/clients'
+import type { PaymentCard } from '@/entities/clients/clients'
 
 /** Uzbek card schemes by their number prefix. */
 export function cardBrand(card: PaymentCard) {

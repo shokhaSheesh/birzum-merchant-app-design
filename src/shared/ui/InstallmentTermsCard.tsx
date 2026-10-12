@@ -1,9 +1,16 @@
 import { useI18n } from '@/shared/i18n/useI18n'
 import { formatSum } from '@/shared/lib/format'
-import type { InstallmentTerms } from '../api/mockClients'
 
 /** "Nasiya shartlari": monthly payment and term up top, markup and total below. */
-export function InstallmentTermsCard({ terms }: { terms: InstallmentTerms }) {
+type Terms = {
+  /** Months. */
+  term: number
+  markupPercent: number
+  installmentTotal: number
+  monthlyPayment: number
+}
+
+export function InstallmentTermsCard({ terms }: { terms: Terms }) {
   const { t } = useI18n()
 
   return (

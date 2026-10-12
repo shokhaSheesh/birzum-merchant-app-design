@@ -26,6 +26,8 @@ npm run format
 src/
   app/                 App shell: router and layouts
     layouts/           DeviceLayout (phone-width frame), TabLayout (bottom tabs)
+  entities/            Business data shared by several features
+    clients/           Client and application types, mock store, hooks, shared rows
   features/            One folder per product area
     auth/
     clients/
@@ -50,7 +52,8 @@ Read [DESIGN.md](DESIGN.md) before building a screen. It defines colors, buttons
 
 ## Rules
 
-- Features import from `shared`, never from each other. Anything two features need moves to `shared`.
+- Features import from `entities` and `shared`, never from each other. `entities` imports only from `shared`.
+- Data or domain UI that two features need moves to `entities`; generic controls move to `shared/ui`.
 - Import with the `@/` alias (`@/shared/ui/Button`), not long relative paths.
 - Colors, fonts and radii come from the tokens in `src/shared/styles/index.css`. Do not hardcode hex values in components.
 - Money is formatted with `formatSum` from `@/shared/lib/format`.

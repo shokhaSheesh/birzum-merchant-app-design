@@ -6,7 +6,7 @@ import { formatPhone } from '@/shared/lib/phone'
 import { OtpScreen } from '@/shared/ui/OtpScreen'
 import { addCard, sendCardCode, verifyCardCode } from '../api/mockClients'
 import { CardForm } from '../components/CardForm'
-import { useClient } from '../data/useClients'
+import { useClient } from '@/entities/clients/useClients'
 
 /** Add another card to an existing client: card details, then the SMS code. */
 export function AddCardPage() {

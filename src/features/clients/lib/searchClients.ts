@@ -1,5 +1,5 @@
 import { PHONE_PREFIX } from '@/shared/lib/phone'
-import type { Client } from '../data/clients'
+import type { Client } from '@/entities/clients/clients'
 
 /** Matches on phone number, JSHSHIR, or passport series and number. Spaces, "+" and case are ignored. */
 export function searchClients(clients: Client[], query: string) {

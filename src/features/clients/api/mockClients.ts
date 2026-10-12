@@ -14,8 +14,8 @@ import {
   type MaritalStatus,
   type PaymentCard,
   type Term,
-} from '../data/clients'
-import { clientsStore } from '../data/clientsStore'
+} from '@/entities/clients/clients'
+import { clientsStore } from '@/entities/clients/clientsStore'
 
 const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms))
 const newId = () => String(Date.now())
@@ -138,7 +138,7 @@ export function nextApplicationNumber() {
 
 export async function createApplication(
   clientId: string,
-  application: Pick<Application, 'id' | 'goodsTotal' | 'installmentTotal'>,
+  application: Pick<Application, 'id' | 'goodsTotal' | 'installmentTotal' | 'details'>,
 ) {
   await delay(700)
   const client = clientsStore.get(clientId)

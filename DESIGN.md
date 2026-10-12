@@ -178,6 +178,11 @@ Always has the show/hide eye button on the right. Never build a password field w
 - The placeholder lists what can be searched ("Telefon, JSHSHIR yoki pasport"). It filters as the user types; there is no search button.
 - Spaces, `+` and letter case in the query are ignored, so `90 123` and `90123` find the same thing.
 
+### List filter: `FilterChips`
+- A single row of pills under the search field for filtering a list by one property, such as status. Scrolls sideways when it does not fit.
+- The first chip is always "Hammasi". The selected chip is navy with white text; the rest are grey.
+- One filter row per list. Tapping a chip filters immediately.
+
 ### Phone input: `PhoneField`
 - `+998` is fixed at the left and cannot be edited. The user types the nine remaining digits.
 - Digits are grouped as `90 123 45 67` while typing. Show a full number elsewhere with `formatPhone`.
@@ -237,6 +242,8 @@ Always has the show/hide eye button on the right. Never build a password field w
 - A list is a group of rows inside one `surface` card, separated by `line` dividers. Rows are at least 64px tall.
 - Row layout: initials avatar on the left, name in `font-semibold`, details under it in `text-sm text-ink-muted`.
 - Above the list, a small count line ("8 ta klient") in `text-sm text-ink-muted`.
+- A row that opens a detail screen ends with a `ChevronRight`; the whole row is the tap target.
+- The same kind of item uses the same row everywhere. An application looks identical in the Arizalar tab and on a client's screen (`ApplicationRow`), apart from the client name line.
 - When a list or search has no results, show `EmptyState`: an icon badge, a short title and one line on what to do next. Never leave a blank screen.
 
 ## Detail screens

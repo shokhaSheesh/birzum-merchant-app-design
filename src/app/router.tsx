@@ -1,4 +1,5 @@
 import { createBrowserRouter, Navigate } from 'react-router-dom'
+import { ApplicationDetailPage } from '@/features/applications/pages/ApplicationDetailPage'
 import { ApplicationsPage } from '@/features/applications/pages/ApplicationsPage'
 import { ChangePasswordPage } from '@/features/auth/pages/ChangePasswordPage'
 import { LoginPage } from '@/features/auth/pages/LoginPage'
@@ -27,6 +28,7 @@ export const router = createBrowserRouter([
       { path: ROUTES.clientDetail, element: <ClientDetailPage /> },
       { path: ROUTES.clientAddCard, element: <AddCardPage /> },
       { path: ROUTES.clientContract, element: <NewContractPage /> },
+      { path: ROUTES.applicationDetail, element: <ApplicationDetailPage /> },
       {
         element: <TabLayout />,
         children: [

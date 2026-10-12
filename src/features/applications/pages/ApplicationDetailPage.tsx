@@ -1,0 +1,123 @@
+import { ArrowLeft, ChevronRight, SearchX } from 'lucide-react'
+import { Link, useNavigate, useParams } from 'react-router-dom'
+import { applicationStatusTone } from '@/entities/clients/applicationStatus'
+import { fullName, initials } from '@/entities/clients/clientName'
+import { ProductsSummary } from '@/entities/clients/ui/ProductsSummary'
+import { useApplication } from '@/entities/clients/useApplications'
+import { clientPath } from '@/shared/config/routes'
+import { useI18n } from '@/shared/i18n/useI18n'
+import { formatDate, formatSum, groupDigits } from '@/shared/lib/format'
+import { formatPassport } from '@/shared/lib/passport'
+import { formatPhone } from '@/shared/lib/phone'
+import { Avatar } from '@/shared/ui/Avatar'
+import { EmptyState } from '@/shared/ui/EmptyState'
+import { InfoList, InfoRow } from '@/shared/ui/InfoList'
+import { InstallmentTermsCard } from '@/shared/ui/InstallmentTermsCard'
+import { Section } from '@/shared/ui/Section'
+import { StatusBadge } from '@/shared/ui/StatusBadge'
+
+export function ApplicationDetailPage() {
+  const { t } = useI18n()
+  const navigate = useNavigate()
+  const { number } = useParams()
+  const found = useApplication(Number(number))
+
+  return (
+    <div className="flex h-full flex-col">
+      <header className="flex shrink-0 items-center gap-2 px-5 pt-[max(0.75rem,env(safe-area-inset-top))] pb-2">
+        <button
+          type="button"
+          onClick={() => navigate(-1)}
+          aria-label={t('common.back')}
+          className="-ml-2 grid size-10 place-items-center rounded-full text-navy-900 active:bg-surface"
+        >
+          <ArrowLeft size={24} />
+        </button>
+        <p className="text-lg font-bold">{t('application.title')}</p>
+      </header>
+
+      {!found ? (
+        <EmptyState icon={SearchX} title={t('applications.empty.title')} />
+      ) : (
+        <div className="flex min-h-0 flex-1 flex-col gap-7 overflow-y-auto px-5 pt-3 pb-8">
+          <div className="flex flex-col items-start gap-2">
+            <StatusBadge tone={applicationStatusTone[found.application.status]}>
+              {t(`application.status.${found.application.status}`)}
+            </StatusBadge>
+            <h1 className="text-2xl font-bold">
+              {t('review.number', { number: groupDigits(found.application.id) })}
+            </h1>
+          </div>
+
+          <InfoList>
+            <InfoRow label={t('application.date')} value={formatDate(found.application.date)} />
+            <InfoRow
+              label={t('application.goodsTotal')}
+              value={formatSum(found.application.goodsTotal)}
+            />
+            <InfoRow
+              label={t('contract.installmentTotal')}
+              value={formatSum(found.application.installmentTotal)}
+            />
+            <InfoRow
+              label={t('application.contractNumber')}
+              value={found.application.contractNumber ?? t('common.none')}
+            />
+          </InfoList>
+
+          <Section title={t('client.title')}>
+            <Link
+              to={clientPath(found.client.id)}
+              className="flex items-center gap-3 rounded-card bg-surface p-4 active:bg-navy-100"
+            >
+              <Avatar initials={initials(found.client)} photoUrl={found.client.photoUrl} />
+              <div className="flex min-w-0 flex-1 flex-col gap-0.5">
+                <p className="font-semibold">{fullName(found.client)}</p>
+                <p className="text-sm text-ink-muted">{formatPhone(found.client.phone)}</p>
+              </div>
+              <ChevronRight size={20} className="shrink-0 text-ink-subtle" />
+            </Link>
+            <InfoList>
+              <InfoRow label={t('client.passport')} value={formatPassport(found.client.passport)} />
+              <InfoRow label={t('clients.pinfl')} value={found.client.pinfl} />
+            </InfoList>
+          </Section>
+
+          {found.application.details ? (
+            <>
+              <Section title={t('contract.products')}>
+                <ProductsSummary products={found.application.details.products} />
+              </Section>
+
+              <Section title={t('contract.payment')}>
+                <InfoList>
+                  <InfoRow
+                    label={t('field.downPayment')}
+                    value={formatSum(found.application.details.downPayment)}
+                  />
+                  <InfoRow
+                    label={t('field.paymentDay')}
+                    value={String(found.application.details.paymentDay)}
+                  />
+                </InfoList>
+              </Section>
+
+              <Section title={t('contract.conditions')}>
+                <InstallmentTermsCard
+                  terms={{
+                    ...found.application.details,
+                    installmentTotal: found.application.installmentTotal,
+                  }}
+                />
+              </Section>
+            </>
+          ) : (
+            <Section title={t('contract.products')}>
+              <p className="text-sm text-ink-muted">{t('application.noProducts')}</p>
+            </Section>
+          )}
+        </div>
+      )}
+    </div>
+  )
+}

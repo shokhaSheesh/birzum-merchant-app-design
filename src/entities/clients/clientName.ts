@@ -1,4 +1,4 @@
-import type { Client } from '../data/clients'
+import type { Client } from './clients'
 
 type Named = Pick<Client, 'lastName' | 'firstName' | 'middleName'>
 

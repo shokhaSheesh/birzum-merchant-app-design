@@ -25,6 +25,19 @@ export type Contact = {
   comment: string
 }
 
+export type ApplicationProduct = { name: string; price: number; quantity: number }
+
+/** What was entered when the contract was drawn up. Missing on applications rejected before that. */
+export type ApplicationDetails = {
+  products: ApplicationProduct[]
+  downPayment: number
+  /** Day of the month, 1 to 10. */
+  paymentDay: number
+  term: Term
+  markupPercent: number
+  monthlyPayment: number
+}
+
 export type Application = {
   /** Application number as shown to staff, e.g. 252401. */
   id: number
@@ -34,6 +47,7 @@ export type Application = {
   installmentTotal: number
   status: ApplicationStatus
   contractNumber?: string
+  details?: ApplicationDetails
 }
 
 export type Client = {
@@ -130,6 +144,17 @@ export const seedClients: Client[] = [
         installmentTotal: 15_870_000,
         status: 'closed',
         contractNumber: 'B-37067/26',
+        details: {
+          products: [
+            { name: 'Samsung Galaxy A55, 256 GB', price: 5_500_000, quantity: 1 },
+            { name: 'Artel konditsioner 12', price: 6_000_000, quantity: 1 },
+          ],
+          downPayment: 0,
+          paymentDay: 5,
+          term: 12,
+          markupPercent: 38,
+          monthlyPayment: 1_322_500,
+        },
       },
       {
         id: 252394,
@@ -176,6 +201,14 @@ export const seedClients: Client[] = [
         installmentTotal: 8_280_000,
         status: 'closed',
         contractNumber: 'B-35502/26',
+        details: {
+          products: [{ name: 'LG kir yuvish mashinasi', price: 6_900_000, quantity: 1 }],
+          downPayment: 0,
+          paymentDay: 10,
+          term: 6,
+          markupPercent: 20,
+          monthlyPayment: 1_380_000,
+        },
       },
     ],
   }),
@@ -276,4 +309,11 @@ export const seedClients: Client[] = [
     monthlyIncome: 3_900_000,
     incomeSource: 'salary',
   }),
+]
+
+export const APPLICATION_STATUSES: ApplicationStatus[] = [
+  'processing',
+  'closed',
+  'rejected',
+  'cancelled',
 ]

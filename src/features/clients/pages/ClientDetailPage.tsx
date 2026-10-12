@@ -1,6 +1,5 @@
 import { ArrowLeft, SearchX } from 'lucide-react'
 import { useNavigate, useParams } from 'react-router-dom'
-import { ROUTES } from '@/shared/config/routes'
 import { useI18n } from '@/shared/i18n/useI18n'
 import { formatDate, formatSum } from '@/shared/lib/format'
 import { formatPassport } from '@/shared/lib/passport'
@@ -9,12 +8,12 @@ import { Avatar } from '@/shared/ui/Avatar'
 import { EmptyState } from '@/shared/ui/EmptyState'
 import { InfoList, InfoRow } from '@/shared/ui/InfoList'
 import { Section } from '@/shared/ui/Section'
-import { ApplicationsSection } from '../components/ApplicationsSection'
 import { ContactsSection } from '../components/ContactsSection'
 import { LimitCard } from '../components/LimitCard'
 import { PaymentCards } from '../components/PaymentCards'
-import { useClient } from '../data/useClients'
-import { fullName, initials } from '../lib/clientName'
+import { ApplicationRow } from '@/entities/clients/ui/ApplicationRow'
+import { useClient } from '@/entities/clients/useClients'
+import { fullName, initials } from '@/entities/clients/clientName'
 
 export function ClientDetailPage() {
   const { t } = useI18n()
@@ -27,7 +26,7 @@ export function ClientDetailPage() {
       <header className="flex shrink-0 items-center gap-2 px-5 pt-[max(0.75rem,env(safe-area-inset-top))] pb-2">
         <button
           type="button"
-          onClick={() => navigate(ROUTES.clients)}
+          onClick={() => navigate(-1)}
           aria-label={t('common.back')}
           className="-ml-2 grid size-10 place-items-center rounded-full text-navy-900 active:bg-surface"
         >
@@ -86,7 +85,17 @@ export function ClientDetailPage() {
           </Section>
 
           <ContactsSection client={client} />
-          <ApplicationsSection client={client} />
+          <Section title={t('client.applications')}>
+            {client.applications.length === 0 ? (
+              <p className="text-sm text-ink-muted">{t('client.applications.empty')}</p>
+            ) : (
+              <ul className="rounded-card bg-surface px-4">
+                {client.applications.map((application) => (
+                  <ApplicationRow key={application.id} application={application} />
+                ))}
+              </ul>
+            )}
+          </Section>
         </div>
       )}
     </div>

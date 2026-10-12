@@ -7,7 +7,7 @@ import { formatSum } from '@/shared/lib/format'
 import { Button } from '@/shared/ui/Button'
 import { ChoiceGrid } from '@/shared/ui/ChoiceGrid'
 import { calculateLimit } from '../api/mockClients'
-import { TERMS, type Client, type Term } from '../data/clients'
+import { TERMS, type Client, type Term } from '@/entities/clients/clients'
 
 /** The screen's one primary action lives here, so the card is tinted to stand out. */
 export function LimitCard({ client }: { client: Client }) {

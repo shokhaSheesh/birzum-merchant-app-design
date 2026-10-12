@@ -20,9 +20,10 @@ import {
   nextApplicationNumber,
   type InstallmentTerms,
 } from '../api/mockClients'
-import { InstallmentTermsCard } from '../components/InstallmentTermsCard'
-import { TERMS, type Term } from '../data/clients'
-import { useClient } from '../data/useClients'
+import { InstallmentTermsCard } from '@/shared/ui/InstallmentTermsCard'
+import { TERMS, type Term } from '@/entities/clients/clients'
+import { ProductsSummary } from '@/entities/clients/ui/ProductsSummary'
+import { useClient } from '@/entities/clients/useClients'
 
 type Product = { id: number; name: string; price: number | null; quantity: number }
 
@@ -63,7 +64,6 @@ export function NewContractPage() {
   if (!client.limits) return <Navigate to={clientPath(client.id)} replace />
 
   const limit = client.limits[term]
-  const count = products.reduce((sum, product) => sum + product.quantity, 0)
   const total = products.reduce((sum, product) => sum + (product.price ?? 0) * product.quantity, 0)
   const financed = Math.max(0, total - (downPayment ?? 0))
 
@@ -114,6 +114,18 @@ export function NewContractPage() {
       id: review.number,
       goodsTotal: total,
       installmentTotal: terms.installmentTotal,
+      details: {
+        products: products.map((p) => ({
+          name: p.name.trim(),
+          price: p.price ?? 0,
+          quantity: p.quantity,
+        })),
+        downPayment: downPayment ?? 0,
+        paymentDay: paymentDay ?? 1,
+        term: terms.term,
+        markupPercent: terms.markupPercent,
+        monthlyPayment: terms.monthlyPayment,
+      },
     })
     backToClient()
   }
@@ -143,31 +155,13 @@ export function NewContractPage() {
         </div>
 
         <Section title={t('contract.products')}>
-          <ul className="rounded-card bg-surface px-4">
-            {products.map((product) => (
-              <li
-                key={product.id}
-                className="flex items-start justify-between gap-3 border-b border-line py-3"
-              >
-                <div className="flex min-w-0 flex-col gap-0.5">
-                  <p className="font-semibold break-words">{product.name}</p>
-                  <p className="text-sm text-ink-muted">
-                    {formatSum(product.price ?? 0)} ×{' '}
-                    {t('common.pieces', { count: String(product.quantity) })}
-                  </p>
-                </div>
-                <p className="shrink-0 font-semibold">
-                  {formatSum((product.price ?? 0) * product.quantity)}
-                </p>
-              </li>
-            ))}
-            <li className="flex items-baseline justify-between gap-3 py-3">
-              <p className="text-sm text-ink-muted">
-                {t('contract.summary.total')} · {t('common.pieces', { count: String(count) })}
-              </p>
-              <p className="text-lg font-bold">{formatSum(total)}</p>
-            </li>
-          </ul>
+          <ProductsSummary
+            products={products.map((p) => ({
+              name: p.name,
+              price: p.price ?? 0,
+              quantity: p.quantity,
+            }))}
+          />
         </Section>
 
         <Section title={t('contract.payment')}>
@@ -280,13 +274,6 @@ export function NewContractPage() {
           error={submitted && paymentDay === null ? t('error.choose') : undefined}
         />
       </Section>
-
-      <InfoList>
-        <InfoRow label={t('client.limit.available')} value={formatSum(limit)} />
-        <InfoRow label={t('contract.summary.count')} value={String(count)} />
-        <InfoRow label={t('contract.summary.total')} value={formatSum(total)} />
-        <InfoRow label={t('contract.summary.financed')} value={formatSum(financed)} />
-      </InfoList>
 
       {terms && (
         <div ref={scrollIntoView}>

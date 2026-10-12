@@ -7,7 +7,7 @@ import { Button } from '@/shared/ui/Button'
 import { EmptyState } from '@/shared/ui/EmptyState'
 import { SearchField } from '@/shared/ui/SearchField'
 import { ClientRow } from '../components/ClientRow'
-import { useClients } from '../data/useClients'
+import { useClients } from '@/entities/clients/useClients'
 import { searchClients } from '../lib/searchClients'
 
 export function ClientsPage() {
