@@ -1,4 +1,4 @@
-import { CircleCheck, IdCard, LoaderCircle, ScanLine } from 'lucide-react'
+import { Check, IdCard, LoaderCircle, ScanLine } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { MARITAL_STATUSES, type MaritalStatus } from '@/entities/clients/clients'
@@ -49,6 +49,7 @@ export function CustomerAuthPage() {
   const [loading, setLoading] = useState(false)
 
   const [phone, setPhone] = useState('')
+  const [fullName, setFullName] = useState('')
   const [passport, setPassport] = useState('')
   const [birthDate, setBirthDate] = useState<Date | null>(null)
   const [maritalStatus, setMaritalStatus] = useState<MaritalStatus | null>(null)
@@ -91,7 +92,8 @@ export function CustomerAuthPage() {
 
   const captureFace = async () => {
     setLoading(true)
-    await verifyCustomerFace()
+    const result = await verifyCustomerFace()
+    setFullName(result.fullName)
     goTo('done')
   }
 
@@ -211,8 +213,15 @@ export function CustomerAuthPage() {
           </Button>
         }
       >
-        <IconBadge icon={CircleCheck} />
-        <ScreenIntro title={t('customer.done.title')} subtitle={t('customer.done.hint')} />
+        <div className="flex flex-1 flex-col items-center justify-center gap-4 text-center">
+          <span className="grid size-20 place-items-center rounded-full bg-green-500 text-navy-950">
+            <Check size={40} strokeWidth={3} />
+          </span>
+          <div className="flex flex-col gap-1">
+            <p className="font-semibold text-ink-muted">{t('customer.done.title')}</p>
+            <h1 className="text-2xl leading-tight font-bold text-balance">{fullName}</h1>
+          </div>
+        </div>
       </FormScreen>
     )
   }
@@ -220,8 +229,6 @@ export function CustomerAuthPage() {
   return (
     <FormScreen
       onSubmit={() => void submitPhone()}
-      // Design prototype only: the arrow leads back to the merchant app
-      onBack={() => navigate(ROUTES.profile)}
       headerEnd={<LanguageSwitcher />}
       footer={
         <Button type="submit" block loading={loading}>
