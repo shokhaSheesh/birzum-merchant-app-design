@@ -34,7 +34,7 @@ export function ClientsPage() {
         />
       </header>
 
-      <div className="min-h-0 flex-1 overflow-y-auto px-5 pb-3">
+      <div className="min-h-0 flex-1 overflow-y-auto px-5 pb-tabbar">
         {clients.length === 0 ? (
           <EmptyState title={t('clients.empty.title')} hint={t('clients.empty.hint')} />
         ) : (

@@ -1,7 +1,6 @@
 import user1Photo from '@/shared/assets/people/user-1.jpg'
 import user2Photo from '@/shared/assets/people/user-2.jpg'
 import user3Photo from '@/shared/assets/people/user-3.jpg'
-import { mockPortrait } from '@/shared/lib/mockPortrait'
 
 export const MARITAL_STATUSES = ['single', 'married', 'divorced', 'widowed'] as const
 export type MaritalStatus = (typeof MARITAL_STATUSES)[number]
@@ -221,13 +220,6 @@ export const seedClients: Client[] = [
   }),
   fromSeed({
     id: '3',
-    photoUrl: mockPortrait({
-      hair: 'bun',
-      hairColor: '#3d2b1f',
-      skin: '#f1c9a5',
-      shirt: '#3c6479',
-      background: '#f3e7d3',
-    }),
     lastName: 'Yusupova',
     firstName: 'Malika',
     middleName: 'Baxtiyor qizi',
@@ -268,13 +260,6 @@ export const seedClients: Client[] = [
   }),
   fromSeed({
     id: '5',
-    photoUrl: mockPortrait({
-      hair: 'scarf',
-      hairColor: '#3c6479',
-      skin: '#e0ac82',
-      shirt: '#0b3d57',
-      background: '#dde9f0',
-    }),
     lastName: 'Nazarova',
     firstName: 'Sevara',
     middleName: 'Ilhom qizi',
@@ -289,13 +274,6 @@ export const seedClients: Client[] = [
   }),
   fromSeed({
     id: '6',
-    photoUrl: mockPortrait({
-      hair: 'short',
-      hairColor: '#3d2b1f',
-      skin: '#f1c9a5',
-      shirt: '#b6df69',
-      background: '#ced8dd',
-    }),
     lastName: 'Ergashev',
     firstName: 'Otabek',
     middleName: 'Murod oʻgʻli',
@@ -311,13 +289,6 @@ export const seedClients: Client[] = [
   }),
   fromSeed({
     id: '7',
-    photoUrl: mockPortrait({
-      hair: 'scarf',
-      hairColor: '#b6537a',
-      skin: '#e0ac82',
-      shirt: '#6d8b9a',
-      background: '#f3e7d3',
-    }),
     lastName: 'Abdullayeva',
     firstName: 'Gulnora',
     middleName: 'Hamid qizi',
@@ -333,13 +304,6 @@ export const seedClients: Client[] = [
   }),
   fromSeed({
     id: '8',
-    photoUrl: mockPortrait({
-      hair: 'side',
-      hairColor: '#1e1e1e',
-      skin: '#e0ac82',
-      shirt: '#85c905',
-      background: '#e7f4cd',
-    }),
     lastName: 'Qodirov',
     firstName: 'Sardor',
     middleName: 'Olim oʻgʻli',

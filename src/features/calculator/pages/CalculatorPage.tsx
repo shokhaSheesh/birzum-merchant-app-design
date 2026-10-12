@@ -44,7 +44,7 @@ export function CalculatorPage() {
   }
 
   return (
-    <div className="flex min-h-full flex-col gap-7 px-5 pt-[max(1.5rem,env(safe-area-inset-top))] pb-6">
+    <div className="flex min-h-full flex-col gap-7 px-5 pt-[max(1.5rem,env(safe-area-inset-top))] pb-tabbar">
       <form onSubmit={(e) => void calculate(e)} noValidate className="flex flex-col gap-4">
         <div className="flex flex-col gap-1">
           <h1 className="flex min-h-10 items-center text-2xl font-bold">{t('nav.calculator')}</h1>

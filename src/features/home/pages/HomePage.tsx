@@ -32,7 +32,7 @@ export function HomePage() {
   ).length
 
   return (
-    <div className="flex min-h-full flex-col gap-7 px-5 pt-[max(1rem,env(safe-area-inset-top))] pb-6">
+    <div className="flex min-h-full flex-col gap-7 px-5 pt-[max(1rem,env(safe-area-inset-top))] pb-tabbar">
       <header className="flex items-center gap-3">
         <Avatar initials={`${user.firstName[0]}${user.lastName[0]}`} photoUrl={user.photoUrl} />
         <div className="flex min-w-0 flex-1 flex-col">

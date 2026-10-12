@@ -29,7 +29,7 @@ export function ProfilePage() {
   }
 
   return (
-    <div className="flex min-h-full flex-col gap-7 px-5 pt-[max(1.5rem,env(safe-area-inset-top))] pb-6">
+    <div className="flex min-h-full flex-col gap-7 px-5 pt-[max(1.5rem,env(safe-area-inset-top))] pb-tabbar">
       <h1 className="flex min-h-10 items-center text-2xl font-bold">{t('nav.profile')}</h1>
 
       <div className="flex items-center gap-4">

@@ -126,7 +126,12 @@ Every form uses `FormScreen`: back arrow at the top left, scrolling body, primar
 
 ### Tab bar
 
-Five tabs, always in this order, on every main screen: **Asosiy**, **Klientlar**, **Arizalar**, **Kalkulyator**, **Profil**. Five is the maximum; anything else is reached from inside a tab. The active tab is navy, the others are `ink-subtle`. Auth screens and step-by-step flows have no tab bar.
+Five tabs, always in this order, on every main screen: **Asosiy**, **Klientlar**, **Kalkulyator**, **Arizalar**, **Profil**. Five is the maximum; anything else is reached from inside a tab. Auth screens and step-by-step flows have no tab bar.
+
+- **Liquid glass.** The bar is a floating pill, 16px from the screen edges: translucent, blurred, with a bright rim (the `.glass` class). Content scrolls underneath it. This is the only glass surface in the app; do not use the effect on cards, sheets or buttons.
+- **Kalkulyator is the middle item**, a raised round button in the primary color with the icon only. It gets a green ring while it is the current tab.
+- The other four are an icon over an 11px label. The active one sits in a soft tinted capsule in the brand color; the rest are `ink-muted`.
+- Every tab screen ends its scrolling area with `pb-tabbar`, so the last item can scroll clear of the bar.
 - Destructive actions are never the bottom primary button without a confirmation sheet first.
 
 ## Icons
@@ -294,7 +299,7 @@ A detail screen (a client, later an application) is read top to bottom, so it is
 
 - Top bar: back arrow and a short screen name ("Klient"). No tab bar.
 - Hero: `Avatar` (photo, or initials when there is none), the full name, and one key line under it.
-- People are always shown with `Avatar`, a circle, in lists and on detail screens. A person without a photo gets their initials. Sample photos live in `src/shared/assets/people`, cropped square around the face.
+- People are always shown with `Avatar`, a circle, in lists and on detail screens. A person without a photo gets their initials on a grey circle; never a drawn or cartoon face. Sample photos live in `src/shared/assets/people`, cropped square around the face.
 - Each block is a `Section` with a `text-lg font-bold` title. 28px between sections.
 - Read-only facts go in an `InfoList`: label on the left in `text-sm text-ink-muted`, value on the right in `font-semibold`. Group related facts into one list; do not mix unrelated ones.
 - Statuses use `StatusBadge`: red for rejected, amber for pending, green for approved, grey for closed or cancelled. The badge text is the status name, never just a color.

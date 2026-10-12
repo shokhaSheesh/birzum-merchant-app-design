@@ -61,7 +61,7 @@ export function ApplicationsPage() {
         />
       </header>
 
-      <div className="min-h-0 flex-1 overflow-y-auto px-5 pb-3">
+      <div className="min-h-0 flex-1 overflow-y-auto px-5 pb-tabbar">
         {items.length === 0 ? (
           <EmptyState title={t('applications.empty.title')} hint={t('applications.empty.hint')} />
         ) : (
