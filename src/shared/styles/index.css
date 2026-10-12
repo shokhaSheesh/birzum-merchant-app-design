@@ -1,0 +1,51 @@
+@import 'tailwindcss';
+
+/*
+ * Design tokens. Provisional until the font and color direction is signed off
+ * on the mockup — change values here only, never hardcode them in components.
+ */
+@theme {
+  --font-sans: 'Onest', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
+
+  /* Brand, sampled from the Birzum nasiya logo */
+  --color-navy-950: #12242e;
+  --color-navy-900: #203c4b;
+  --color-navy-700: #35566a;
+  --color-navy-100: #dde6eb;
+  --color-lime-500: #a2e84e;
+  --color-lime-600: #86cf2f;
+  --color-lime-100: #e9f9d3;
+
+  /* Surfaces and text */
+  --color-canvas: #f3f6f4;
+  --color-surface: #ffffff;
+  --color-line: #e2e8e5;
+  --color-ink: #14252e;
+  --color-ink-muted: #5d6f78;
+  --color-ink-subtle: #8a9aa2;
+
+  /* Status */
+  --color-success: #1e8e4a;
+  --color-success-soft: #e2f5e9;
+  --color-warning: #b26a00;
+  --color-warning-soft: #fdf0d8;
+  --color-danger: #c93b3b;
+  --color-danger-soft: #fbe6e6;
+
+  --radius-control: 14px;
+  --radius-card: 20px;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
+body {
+  background: var(--color-navy-950);
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+  font-variant-numeric: tabular-nums;
+  -webkit-font-smoothing: antialiased;
+}
