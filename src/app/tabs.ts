@@ -4,9 +4,9 @@ import {
   House,
   LayoutGrid,
   ShoppingBag,
+  ShoppingCart,
   UserRound,
   Users,
-  Wallet,
 } from 'lucide-react'
 import { ROUTES } from '@/shared/config/routes'
 import type { Tab } from '@/shared/ui/TabBar'
@@ -22,7 +22,7 @@ export const merchantTabs: Tab[] = [
 export const customerTabs: Tab[] = [
   { to: ROUTES.customerHome, label: 'nav.home', icon: House },
   { to: ROUTES.customerCatalog, label: 'customer.nav.catalog', icon: LayoutGrid },
-  { to: ROUTES.customerPayments, label: 'customer.nav.payments', icon: Wallet, center: true },
+  { to: ROUTES.customerCart, label: 'customer.nav.cart', icon: ShoppingCart, center: true },
   { to: ROUTES.customerPurchases, label: 'customer.nav.purchases', icon: ShoppingBag },
   { to: ROUTES.customerProfile, label: 'nav.profile', icon: UserRound },
 ]

@@ -23,6 +23,11 @@ export const clientsStore = {
     clients = clients.map((client) => (client.id === id ? { ...client, ...patch } : client))
     emit()
   },
+  /** The number the next application will get. The real one is issued by the backend. */
+  nextApplicationNumber() {
+    const numbers = clients.flatMap((c) => c.applications.map((a) => a.id))
+    return Math.max(252476, ...numbers) + 1
+  },
   updateApplication(number: number, patch: Partial<Application>) {
     clients = clients.map((client) =>
       client.applications.some((application) => application.id === number)

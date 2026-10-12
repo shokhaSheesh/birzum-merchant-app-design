@@ -1,16 +1,18 @@
-import { Bell } from 'lucide-react'
+import { Bell, ShoppingBag } from 'lucide-react'
 import { useState } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { applicationStatusTone } from '@/entities/clients/applicationStatus'
 import { APPLICATION_STATUSES } from '@/entities/clients/clients'
 import { useApplications, type ApplicationWithClient } from '@/entities/clients/useApplications'
 import { unreadCount } from '@/entities/notifications/notifications'
+import { useOrders } from '@/entities/orders/orders'
 import { currentUser } from '@/entities/session/user'
 import { ROUTES } from '@/shared/config/routes'
 import { calendarNames } from '@/shared/i18n/dictionaries'
 import { useI18n } from '@/shared/i18n/useI18n'
 import { formatDate, formatSum } from '@/shared/lib/format'
 import { inPeriod, periodDays, type Period } from '@/shared/lib/period'
+import { ActionCard } from '@/shared/ui/ActionCard'
 import { Avatar } from '@/shared/ui/Avatar'
 import { BarChart, type Bar } from '@/shared/ui/BarChart'
 import { EmptyState } from '@/shared/ui/EmptyState'
@@ -63,6 +65,8 @@ function toBars(items: ApplicationWithClient[], period: Period, weekdays: string
 export function HomePage() {
   const { t, lang } = useI18n()
   const user = currentUser
+  const navigate = useNavigate()
+  const pendingOrders = useOrders().filter((order) => order.status === 'pending').length
   const [period, setPeriod] = useState<Period>(() => ({ unit: 'week', anchor: new Date() }))
 
   const items = useApplications().filter(({ application }) => inPeriod(application.date, period))
@@ -93,6 +97,15 @@ export function HomePage() {
           )}
         </Link>
       </header>
+
+      {pendingOrders > 0 && (
+        <ActionCard
+          icon={ShoppingBag}
+          title={t('orders.new')}
+          description={t('orders.new.count', { count: String(pendingOrders) })}
+          onClick={() => navigate(ROUTES.orders)}
+        />
+      )}
 
       <PeriodPicker value={period} onChange={setPeriod} />
 

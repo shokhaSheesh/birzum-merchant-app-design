@@ -1,0 +1,11 @@
+import { useCart } from '@/entities/cart/cartStore'
+import { customerTabs } from '../tabs'
+import { TabLayout } from './TabLayout'
+
+/** The shopper's tabs, with the number of items in the cart on the middle button. */
+export function CustomerTabLayout() {
+  const { count } = useCart()
+  return (
+    <TabLayout tabs={customerTabs.map((tab) => (tab.center ? { ...tab, badge: count } : tab))} />
+  )
+}

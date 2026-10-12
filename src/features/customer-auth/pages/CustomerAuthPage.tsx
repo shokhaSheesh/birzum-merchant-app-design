@@ -2,6 +2,7 @@ import { Check, IdCard, LoaderCircle, ScanLine } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { MARITAL_STATUSES, type MaritalStatus } from '@/entities/clients/clients'
+import { setCustomerId } from '@/entities/session/customer'
 import logoOnDark from '@/shared/assets/logo-on-dark.svg'
 import logo from '@/shared/assets/logo.svg'
 import { ROUTES } from '@/shared/config/routes'
@@ -105,7 +106,8 @@ export function CustomerAuthPage() {
         headerEnd={<LanguageSwitcher />}
         resend={() => sendCustomerCode(phone)}
         verify={async (code) => {
-          const { registered } = await verifyCustomerCode(phone, code)
+          const { registered, clientId } = await verifyCustomerCode(phone, code)
+          if (clientId) setCustomerId(clientId)
           if (registered) enterApp()
           else goTo('details')
         }}

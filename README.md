@@ -32,6 +32,9 @@ src/
     layouts/           DeviceLayout (phone-width frame), TabLayout (bottom tabs)
   entities/            Business data shared by several features
     clients/           Client and application types, mock store, hooks, shared rows
+    catalog/           Products and their pictures
+    cart/              The shopper's cart
+    orders/            Orders sent by shoppers and approved by the merchant
   features/            One folder per product area
     auth/
     home/
@@ -41,7 +44,8 @@ src/
     notifications/
     profile/
     customer-auth/     Client app: sign-in and sign-up
-    customer-app/      Client app: tab screens
+    customer-app/      Client app: home, catalogue, product, cart, purchases
+    orders/            Merchant: incoming orders and approval
       pages/           Routed screens
       components/      Feature-only components (add when needed)
       data/            Mock data and types (add when needed)

@@ -20,7 +20,8 @@ export async function sendCustomerCode(_phone: string) {
 export async function verifyCustomerCode(phone: string, code: string) {
   await delay(700)
   if (code === '000000') throw new Error('invalid_code')
-  return { registered: clientsStore.getAll().some((client) => client.phone === phone) }
+  const client = clientsStore.getAll().find((c) => c.phone === phone)
+  return { registered: !!client, clientId: client?.id }
 }
 
 export type CustomerDetails = {

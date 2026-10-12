@@ -11,16 +11,23 @@ import { ClientsPage } from '@/features/clients/pages/ClientsPage'
 import { NewClientPage } from '@/features/clients/pages/NewClientPage'
 import { NewContractPage } from '@/features/clients/pages/NewContractPage'
 import { CustomerProfilePage } from '@/features/customer-app/pages/CustomerProfilePage'
-import { CustomerStubPage } from '@/features/customer-app/pages/CustomerStubPage'
+import { CartPage } from '@/features/customer-app/pages/CartPage'
+import { CatalogPage } from '@/features/customer-app/pages/CatalogPage'
+import { CustomerHomePage } from '@/features/customer-app/pages/CustomerHomePage'
+import { ProductPage } from '@/features/customer-app/pages/ProductPage'
+import { PurchasesPage } from '@/features/customer-app/pages/PurchasesPage'
 import { CustomerAuthPage } from '@/features/customer-auth/pages/CustomerAuthPage'
 import { HomePage } from '@/features/home/pages/HomePage'
 import { KitPage } from '@/features/kit/pages/KitPage'
 import { NotificationsPage } from '@/features/notifications/pages/NotificationsPage'
+import { OrderDetailPage } from '@/features/orders/pages/OrderDetailPage'
+import { OrdersPage } from '@/features/orders/pages/OrdersPage'
 import { ProfilePage } from '@/features/profile/pages/ProfilePage'
 import { ROUTES } from '@/shared/config/routes'
 import { DeviceLayout } from './layouts/DeviceLayout'
 import { TabLayout } from './layouts/TabLayout'
-import { customerTabs, merchantTabs } from './tabs'
+import { CustomerTabLayout } from './layouts/CustomerTabLayout'
+import { merchantTabs } from './tabs'
 
 export const router = createBrowserRouter([
   {
@@ -38,24 +45,18 @@ export const router = createBrowserRouter([
       { path: ROUTES.notifications, element: <NotificationsPage /> },
       { path: ROUTES.customerApp, element: <CustomerAuthPage /> },
       {
-        element: <TabLayout tabs={customerTabs} />,
+        element: <CustomerTabLayout />,
         children: [
-          { path: ROUTES.customerHome, element: <CustomerStubPage title="nav.home" /> },
-          {
-            path: ROUTES.customerCatalog,
-            element: <CustomerStubPage title="customer.nav.catalog" />,
-          },
-          {
-            path: ROUTES.customerPayments,
-            element: <CustomerStubPage title="customer.nav.payments" />,
-          },
-          {
-            path: ROUTES.customerPurchases,
-            element: <CustomerStubPage title="customer.nav.purchases" />,
-          },
+          { path: ROUTES.customerHome, element: <CustomerHomePage /> },
+          { path: ROUTES.customerCatalog, element: <CatalogPage /> },
+          { path: ROUTES.customerCart, element: <CartPage /> },
+          { path: ROUTES.customerPurchases, element: <PurchasesPage /> },
           { path: ROUTES.customerProfile, element: <CustomerProfilePage /> },
         ],
       },
+      { path: ROUTES.customerProduct, element: <ProductPage /> },
+      { path: ROUTES.orders, element: <OrdersPage /> },
+      { path: ROUTES.orderDetail, element: <OrderDetailPage /> },
       {
         element: <TabLayout tabs={merchantTabs} />,
         children: [

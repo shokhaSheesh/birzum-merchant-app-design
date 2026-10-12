@@ -3,10 +3,8 @@
 // - MyID always succeeds: the face capture after a short wait, the QR route after a few seconds.
 // - The real service will return the client's name, photo and passport dates from MyID;
 //   here fixed invented values are used.
-// - Limits are made up: five times the monthly income, lower for the shortest terms.
 
 import {
-  TERMS,
   type Application,
   type Client,
   type Contact,
@@ -96,16 +94,7 @@ export async function addContact(clientId: string, contact: Omit<Contact, 'id'>)
   }
 }
 
-export async function calculateLimit(clientId: string) {
-  await delay(1500)
-  const client = clientsStore.get(clientId)
-  if (!client) return
-  const share: Record<Term, number> = { 3: 0.6, 6: 0.8, 9: 0.9, 12: 1, 18: 1, 24: 1 }
-  const limits = Object.fromEntries(
-    TERMS.map((term) => [term, Math.round(client.monthlyIncome * 5 * share[term])]),
-  ) as Record<Term, number>
-  clientsStore.update(clientId, { limits })
-}
+export { calculateLimit } from '@/entities/clients/limitsApi'
 
 /** Works out the installment terms for the amount being financed. */
 export async function calculateTerms(financed: number, term: Term): Promise<InstallmentTerms> {
@@ -113,11 +102,7 @@ export async function calculateTerms(financed: number, term: Term): Promise<Inst
   return installmentTerms(financed, term)
 }
 
-/** The number the next application will get. The real one is issued by the backend. */
-export function nextApplicationNumber() {
-  const numbers = clientsStore.getAll().flatMap((c) => c.applications.map((a) => a.id))
-  return Math.max(252476, ...numbers) + 1
-}
+export const nextApplicationNumber = () => clientsStore.nextApplicationNumber()
 
 export async function createApplication(
   clientId: string,
