@@ -1,8 +1,8 @@
 @import 'tailwindcss';
 
 /*
- * Design tokens. Provisional until the font and color direction is signed off
- * on the mockup — change values here only, never hardcode them in components.
+ * Design tokens for the signed-off direction: Light surfaces, Source Sans 3,
+ * upright titles. Change values here only, never hardcode them in components.
  */
 @theme {
   /* Stand-in for the brandbook's Myriad until licensed font files are supplied */
@@ -21,9 +21,9 @@
   --color-green-200: #e7f4cd;
   --color-green-100: #f3fae6;
 
-  /* Surfaces and text */
-  --color-canvas: #f2f5f6;
-  --color-surface: #ffffff;
+  /* Surfaces and text: white screens, grey cards */
+  --color-canvas: #ffffff;
+  --color-surface: #f2f5f6;
   --color-line: #dfe6e9;
   --color-ink: #072a3c;
   --color-ink-muted: #56707f;

@@ -7,7 +7,7 @@ export function LoginPage() {
   const navigate = useNavigate()
 
   return (
-    <div className="flex h-full flex-col justify-between bg-surface px-5 pt-20 pb-8">
+    <div className="flex h-full flex-col justify-between bg-canvas px-5 pt-20 pb-8">
       <div className="flex flex-col gap-3">
         <img src={logo} alt="Birzum nasiya" className="w-32" />
         <h1 className="text-2xl font-bold">Kirish</h1>

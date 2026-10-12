@@ -11,7 +11,7 @@ const tabs: { to: string; label: string; icon: LucideIcon }[] = [
 
 export function TabBar() {
   return (
-    <nav className="flex border-t border-line bg-surface pb-[env(safe-area-inset-bottom)]">
+    <nav className="flex border-t border-line bg-canvas pb-[env(safe-area-inset-bottom)]">
       {tabs.map(({ to, label, icon: Icon }) => (
         <NavLink
           key={to}
