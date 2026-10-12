@@ -11,6 +11,7 @@ export const ROUTES = {
   applicationDetail: '/applications/:number',
   calculator: '/calculator',
   profile: '/profile',
+  notifications: '/notifications',
   kit: '/kit',
 } as const
 

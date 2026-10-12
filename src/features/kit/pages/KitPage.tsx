@@ -6,6 +6,7 @@ import { CardExpiryField, CardNumberField } from '@/shared/ui/CardFields'
 import { Checkbox } from '@/shared/ui/Checkbox'
 import { ChoiceGrid } from '@/shared/ui/ChoiceGrid'
 import { DatePicker } from '@/shared/ui/DatePicker'
+import { EmptyState } from '@/shared/ui/EmptyState'
 import { LanguageSwitcher } from '@/shared/ui/LanguageSwitcher'
 import { NumberField } from '@/shared/ui/NumberField'
 import { OtpField } from '@/shared/ui/OtpField'
@@ -14,6 +15,7 @@ import { PasswordField } from '@/shared/ui/PasswordField'
 import { PhoneField } from '@/shared/ui/PhoneField'
 import { QuantityField } from '@/shared/ui/QuantityField'
 import { SearchField } from '@/shared/ui/SearchField'
+import { SegmentedTabs } from '@/shared/ui/SegmentedTabs'
 import { Select } from '@/shared/ui/Select'
 import { TextField } from '@/shared/ui/TextField'
 
@@ -48,6 +50,7 @@ export function KitPage() {
   const [expiry, setExpiry] = useState('')
   const [months, setMonths] = useState<number | null>(12)
   const [quantity, setQuantity] = useState(1)
+  const [tab, setTab] = useState('a')
 
   return (
     <div className="flex h-full flex-col gap-8 overflow-y-auto px-5 pt-6 pb-10">
@@ -149,6 +152,22 @@ export function KitPage() {
           ]}
           value={branch}
           onChange={setBranch}
+        />
+      </Section>
+
+      <Section title="Tabs and empty state">
+        <SegmentedTabs
+          label="Example tabs"
+          options={[
+            { value: 'a', label: 'Arizalar' },
+            { value: 'b', label: 'Yangiliklar' },
+          ]}
+          value={tab}
+          onChange={setTab}
+        />
+        <EmptyState
+          title="Hozircha yangiliklar yoʻq"
+          hint="Yangi xabarlar paydo boʻlganda shu yerda koʻrinadi."
         />
       </Section>
 

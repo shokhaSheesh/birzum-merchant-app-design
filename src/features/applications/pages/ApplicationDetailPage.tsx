@@ -1,4 +1,4 @@
-import { ArrowLeft, ChevronRight, Download, PencilLine, SearchX } from 'lucide-react'
+import { ArrowLeft, ChevronRight, Download, PencilLine } from 'lucide-react'
 import { useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import { applicationStatusTone } from '@/entities/clients/applicationStatus'
@@ -44,7 +44,7 @@ export function ApplicationDetailPage() {
       </header>
 
       {!found ? (
-        <EmptyState icon={SearchX} title={t('applications.empty.title')} />
+        <EmptyState title={t('applications.empty.title')} />
       ) : (
         <div className="flex min-h-0 flex-1 flex-col gap-7 overflow-y-auto px-5 pt-3 pb-8">
           <div className="flex flex-col items-start gap-2">

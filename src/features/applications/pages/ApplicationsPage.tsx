@@ -1,4 +1,3 @@
-import { SearchX } from 'lucide-react'
 import { useState } from 'react'
 import { shortName } from '@/entities/clients/clientName'
 import { APPLICATION_STATUSES, type ApplicationStatus } from '@/entities/clients/clients'
@@ -64,11 +63,7 @@ export function ApplicationsPage() {
 
       <div className="min-h-0 flex-1 overflow-y-auto px-5 pb-3">
         {items.length === 0 ? (
-          <EmptyState
-            icon={SearchX}
-            title={t('applications.empty.title')}
-            hint={t('applications.empty.hint')}
-          />
+          <EmptyState title={t('applications.empty.title')} hint={t('applications.empty.hint')} />
         ) : (
           <div className="flex flex-col gap-2">
             <p className="text-sm text-ink-muted">

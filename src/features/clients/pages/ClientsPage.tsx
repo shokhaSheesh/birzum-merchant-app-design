@@ -1,4 +1,4 @@
-import { Plus, SearchX } from 'lucide-react'
+import { Plus } from 'lucide-react'
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { ROUTES } from '@/shared/config/routes'
@@ -36,11 +36,7 @@ export function ClientsPage() {
 
       <div className="min-h-0 flex-1 overflow-y-auto px-5 pb-3">
         {clients.length === 0 ? (
-          <EmptyState
-            icon={SearchX}
-            title={t('clients.empty.title')}
-            hint={t('clients.empty.hint')}
-          />
+          <EmptyState title={t('clients.empty.title')} hint={t('clients.empty.hint')} />
         ) : (
           <div className="flex flex-col gap-2">
             <p className="text-sm text-ink-muted">

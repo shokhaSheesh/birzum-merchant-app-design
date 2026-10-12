@@ -161,6 +161,8 @@ Four tabs, always in this order, on every main screen: **Klientlar**, **Arizalar
 | Start a contract | `FileSignature` |
 | Remove an item | `Trash2` |
 | Download a document | `Download` |
+| Notifications | `Bell` |
+| Rejected / cancelled notice | `CircleX` / `Ban` |
 | Change a value or status | `PencilLine` |
 | Decrease / increase | `Minus` / `Plus` |
 | Log out | `LogOut` |
@@ -203,6 +205,11 @@ Always has the show/hide eye button on the right. Never build a password field w
 - Sits directly under the screen title and stays in place while the list scrolls.
 - The placeholder lists what can be searched ("Telefon, JSHSHIR yoki pasport"). It filters as the user types; there is no search button.
 - Spaces, `+` and letter case in the query are ignored, so `90 123` and `90123` find the same thing.
+
+### View tabs: `SegmentedTabs`
+- Two or three equal segments in a grey track, directly under the top bar. The selected segment is white (the canvas color) with dark text.
+- Tabs switch between different content on the same screen ("Arizalar" and "Yangiliklar" in notifications). To narrow one list, use `FilterChips` instead.
+- Each tab has its own empty state.
 
 ### List filter: `FilterChips`
 - A single row of pills under the search field for filtering a list by one property, such as status. Scrolls sideways when it does not fit.
@@ -275,7 +282,10 @@ Always has the show/hide eye button on the right. Never build a password field w
 - Above the list, a small count line ("8 ta klient") in `text-sm text-ink-muted`.
 - A row that opens a detail screen ends with a `ChevronRight`; the whole row is the tap target.
 - The same kind of item uses the same row everywhere. An application looks identical in the Arizalar tab and on a client's screen (`ApplicationRow`), apart from the client name line.
-- When a list or search has no results, show `EmptyState`: an icon badge, a short title and one line on what to do next. Never leave a blank screen.
+- When a list, search or tab has nothing to show, use `EmptyState`: the illustration, a short title and one line on what happens next. Never leave a blank screen.
+- **There is one empty-state picture for the whole app**, `EmptyIllustration`: a blank card on a soft green ground. It shows no particular object, so it fits clients, applications, notifications and search alike. Do not draw a different picture per screen and do not swap it for an icon.
+- The illustration is drawn with theme tokens, so it follows the light and dark themes. Only the title and hint change from screen to screen.
+- A small empty block inside a detail screen (no contacts, no contract) stays a single muted line; the illustration is for a whole empty list or view.
 
 ## Detail screens
 
@@ -291,6 +301,8 @@ A detail screen (a client, later an application) is read top to bottom, so it is
 - Other section actions ("Kontakt kiritish") are `secondary` buttons, full width, under their list.
 - Short add forms with two or three fields open in a `Sheet`, with their own primary button inside it. Longer ones are a `FormScreen`.
 - An empty section says so in one muted line ("Hali kontakt kiritilmagan."). It is never hidden.
+- A link to another screen from a settings-like page (Profile to notifications) is an `ActionCard`, with the count or state as its description.
+- Notification rows: a tinted round icon for the kind of event, a bold title, one line of detail, the date and time in small text, and a green dot on the right while unread.
 
 ## Logo
 

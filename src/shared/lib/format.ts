@@ -11,6 +11,12 @@ export function formatSum(amount: number, withCurrency = true) {
   return withCurrency ? `${grouped}${NBSP}UZS` : grouped
 }
 
+/** -> "12.10.2026, 14:20" */
+export function formatDateTime(date: Date) {
+  const time = `${String(date.getHours()).padStart(2, '0')}:${String(date.getMinutes()).padStart(2, '0')}`
+  return `${formatDate(date)}, ${time}`
+}
+
 /** -> "12.10.2026" */
 export function formatDate(date: Date) {
   const day = String(date.getDate()).padStart(2, '0')

@@ -11,6 +11,7 @@ import { ClientsPage } from '@/features/clients/pages/ClientsPage'
 import { NewClientPage } from '@/features/clients/pages/NewClientPage'
 import { NewContractPage } from '@/features/clients/pages/NewContractPage'
 import { KitPage } from '@/features/kit/pages/KitPage'
+import { NotificationsPage } from '@/features/notifications/pages/NotificationsPage'
 import { ProfilePage } from '@/features/profile/pages/ProfilePage'
 import { ROUTES } from '@/shared/config/routes'
 import { DeviceLayout } from './layouts/DeviceLayout'
@@ -29,6 +30,7 @@ export const router = createBrowserRouter([
       { path: ROUTES.clientAddCard, element: <AddCardPage /> },
       { path: ROUTES.clientContract, element: <NewContractPage /> },
       { path: ROUTES.applicationDetail, element: <ApplicationDetailPage /> },
+      { path: ROUTES.notifications, element: <NotificationsPage /> },
       {
         element: <TabLayout />,
         children: [

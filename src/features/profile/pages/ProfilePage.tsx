@@ -1,5 +1,6 @@
-import { LogOut } from 'lucide-react'
+import { Bell, LogOut } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
+import { unreadCount } from '@/entities/notifications/notifications'
 import { currentUser } from '@/entities/session/user'
 import { logout } from '@/features/auth/api/mockAuth'
 import { ROUTES } from '@/shared/config/routes'
@@ -8,6 +9,7 @@ import { useI18n } from '@/shared/i18n/useI18n'
 import { formatPhone } from '@/shared/lib/phone'
 import { THEMES } from '@/shared/theme/context'
 import { useTheme } from '@/shared/theme/useTheme'
+import { ActionCard } from '@/shared/ui/ActionCard'
 import { Avatar } from '@/shared/ui/Avatar'
 import { Button } from '@/shared/ui/Button'
 import { ChoiceGrid } from '@/shared/ui/ChoiceGrid'
@@ -46,6 +48,15 @@ export function ProfilePage() {
         <InfoRow label={t('profile.store')} value={user.store} />
         <InfoRow label={t('profile.branch')} value={user.branch} />
       </InfoList>
+
+      <ActionCard
+        icon={Bell}
+        title={t('notifications.title')}
+        description={
+          unreadCount > 0 ? t('notifications.unread', { count: String(unreadCount) }) : undefined
+        }
+        onClick={() => navigate(ROUTES.notifications)}
+      />
 
       <Section title={t('profile.settings')}>
         <Select

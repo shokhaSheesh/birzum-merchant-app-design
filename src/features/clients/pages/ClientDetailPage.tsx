@@ -1,4 +1,4 @@
-import { ArrowLeft, SearchX } from 'lucide-react'
+import { ArrowLeft } from 'lucide-react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { useI18n } from '@/shared/i18n/useI18n'
 import { formatDate, formatSum } from '@/shared/lib/format'
@@ -36,7 +36,7 @@ export function ClientDetailPage() {
       </header>
 
       {!client ? (
-        <EmptyState icon={SearchX} title={t('clients.empty.title')} />
+        <EmptyState title={t('clients.empty.title')} />
       ) : (
         <div className="flex min-h-0 flex-1 flex-col gap-7 overflow-y-auto px-5 pt-3 pb-8">
           <div className="flex items-center gap-4">
