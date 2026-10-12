@@ -1,13 +1,11 @@
-import { CreditCard, IdCard, Smartphone } from 'lucide-react'
+import { IdCard, Smartphone } from 'lucide-react'
 import { useCallback, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { ROUTES } from '@/shared/config/routes'
+import { clientPath, ROUTES } from '@/shared/config/routes'
 import { useI18n } from '@/shared/i18n/useI18n'
-import { isCardExpiry, isCardNumber } from '@/shared/lib/card'
 import { isPassport } from '@/shared/lib/passport'
 import { formatPhone, PHONE_DIGITS } from '@/shared/lib/phone'
 import { Button } from '@/shared/ui/Button'
-import { CardExpiryField, CardNumberField } from '@/shared/ui/CardFields'
 import { DatePicker } from '@/shared/ui/DatePicker'
 import { FormScreen } from '@/shared/ui/FormScreen'
 import { IconBadge } from '@/shared/ui/IconBadge'
@@ -24,6 +22,7 @@ import {
   verifyCardCode,
   verifyClientCode,
 } from '../api/mockClients'
+import { CardForm } from '../components/CardForm'
 import { MyIdStep } from '../components/MyIdStep'
 import { MARITAL_STATUSES, type MaritalStatus } from '../data/clients'
 
@@ -77,17 +76,9 @@ export function NewClientPage() {
     if (isPassport(passport) && birthDate && maritalStatus && monthlyIncome) goTo('myid')
   }
 
-  const submitCard = async () => {
-    setSubmitted(true)
-    if (!isCardNumber(cardNumber) || !isCardExpiry(cardExpiry)) return
-    setLoading(true)
-    await sendCardCode(cardNumber, cardExpiry)
-    goTo('cardCode')
-  }
-
   const saveClient = async () => {
     if (!birthDate || !maritalStatus || !monthlyIncome) return
-    await createClient({
+    const client = await createClient({
       phone,
       passport,
       birthDate,
@@ -96,7 +87,7 @@ export function NewClientPage() {
       cardNumber,
       cardExpiry,
     })
-    navigate(ROUTES.clients, { replace: true })
+    navigate(clientPath(client.id), { replace: true })
   }
 
   if (step === 'phone') {
@@ -146,33 +137,15 @@ export function NewClientPage() {
 
   if (step === 'card') {
     return (
-      <FormScreen
-        onSubmit={() => void submitCard()}
-        onBack={() => goTo('details')}
+      <CardForm
         progress={progress}
-        footer={
-          <Button type="submit" block loading={loading}>
-            {t('auth.confirm.send')}
-          </Button>
-        }
-      >
-        <IconBadge icon={CreditCard} />
-        <ScreenIntro title={t('card.title')} subtitle={t('card.subtitle')} />
-        <div className="flex flex-col gap-4">
-          <CardNumberField
-            label={t('field.cardNumber')}
-            value={cardNumber}
-            onChange={setCardNumber}
-            error={submitted && !isCardNumber(cardNumber) ? t('error.cardNumber') : undefined}
-          />
-          <CardExpiryField
-            label={t('field.cardExpiry')}
-            value={cardExpiry}
-            onChange={setCardExpiry}
-            error={submitted && !isCardExpiry(cardExpiry) ? t('error.cardExpiry') : undefined}
-          />
-        </div>
-      </FormScreen>
+        onBack={() => goTo('details')}
+        onCodeSent={(number, expiry) => {
+          setCardNumber(number)
+          setCardExpiry(expiry)
+          goTo('cardCode')
+        }}
+      />
     )
   }
 

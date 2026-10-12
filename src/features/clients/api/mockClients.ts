@@ -1,16 +1,26 @@
 // Stand-in for the real client API.
 // - Any 6-digit code works except "000000".
 // - MyID always succeeds: the face capture after a short wait, the QR route after a few seconds.
-// - The real service will return the client's name from MyID; here a fixed invented name is used.
+// - The real service will return the client's name, photo and passport dates from MyID;
+//   here fixed invented values are used.
+// - The limit is a made-up multiple of the monthly income.
 
-import { addClient, type Client, type MaritalStatus } from '../data/clients'
+import type { Client, Contact, MaritalStatus, PaymentCard } from '../data/clients'
+import { clientsStore } from '../data/clientsStore'
 
 const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms))
+const newId = () => String(Date.now())
 
 async function checkCode(code: string) {
   await delay(700)
   if (code === '000000') throw new Error('invalid_code')
 }
+
+const toCard = (cardNumber: string): PaymentCard => ({
+  id: newId(),
+  first4: cardNumber.slice(0, 4),
+  last4: cardNumber.slice(-4),
+})
 
 export async function sendClientCode(_phone: string) {
   await delay(700)
@@ -43,18 +53,42 @@ export type NewClient = {
   cardExpiry: string
 }
 
-export async function createClient(data: NewClient) {
+export async function createClient({ cardNumber, cardExpiry: _expiry, ...data }: NewClient) {
   await delay(700)
   const client: Client = {
-    id: String(Date.now()),
-    fullName: 'Aziza Tursunova',
+    ...data,
+    id: newId(),
+    lastName: 'Tursunova',
+    firstName: 'Aziza',
+    middleName: 'Farhod qizi',
     pinfl: '41503960120092',
-    phone: data.phone,
-    passport: data.passport,
-    birthDate: data.birthDate,
-    maritalStatus: data.maritalStatus,
-    monthlyIncome: data.monthlyIncome,
+    passportIssuedOn: new Date(2021, 4, 18),
+    passportExpiresOn: new Date(2031, 4, 18),
+    limit: null,
+    cards: [toCard(cardNumber)],
+    contacts: [],
+    applications: [],
   }
-  addClient(client)
+  clientsStore.add(client)
   return client
+}
+
+export async function addCard(clientId: string, cardNumber: string) {
+  await delay(400)
+  const client = clientsStore.get(clientId)
+  if (client) clientsStore.update(clientId, { cards: [...client.cards, toCard(cardNumber)] })
+}
+
+export async function addContact(clientId: string, contact: Omit<Contact, 'id'>) {
+  await delay(400)
+  const client = clientsStore.get(clientId)
+  if (client) {
+    clientsStore.update(clientId, { contacts: [...client.contacts, { ...contact, id: newId() }] })
+  }
+}
+
+export async function calculateLimit(clientId: string) {
+  await delay(1500)
+  const client = clientsStore.get(clientId)
+  if (client) clientsStore.update(clientId, { limit: client.monthlyIncome * 3 })
 }

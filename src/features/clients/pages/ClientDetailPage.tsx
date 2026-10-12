@@ -1,0 +1,94 @@
+import { ArrowLeft, SearchX } from 'lucide-react'
+import { useNavigate, useParams } from 'react-router-dom'
+import { ROUTES } from '@/shared/config/routes'
+import { useI18n } from '@/shared/i18n/useI18n'
+import { formatDate, formatSum } from '@/shared/lib/format'
+import { formatPassport } from '@/shared/lib/passport'
+import { formatPhone } from '@/shared/lib/phone'
+import { Avatar } from '@/shared/ui/Avatar'
+import { EmptyState } from '@/shared/ui/EmptyState'
+import { InfoList, InfoRow } from '@/shared/ui/InfoList'
+import { Section } from '@/shared/ui/Section'
+import { ApplicationsSection } from '../components/ApplicationsSection'
+import { ContactsSection } from '../components/ContactsSection'
+import { LimitCard } from '../components/LimitCard'
+import { PaymentCards } from '../components/PaymentCards'
+import { useClient } from '../data/useClients'
+import { fullName, initials } from '../lib/clientName'
+
+export function ClientDetailPage() {
+  const { t } = useI18n()
+  const navigate = useNavigate()
+  const { id } = useParams()
+  const client = useClient(id)
+
+  return (
+    <div className="flex h-full flex-col">
+      <header className="flex shrink-0 items-center gap-2 px-5 pt-[max(0.75rem,env(safe-area-inset-top))] pb-2">
+        <button
+          type="button"
+          onClick={() => navigate(ROUTES.clients)}
+          aria-label={t('common.back')}
+          className="-ml-2 grid size-10 place-items-center rounded-full text-navy-900 active:bg-surface"
+        >
+          <ArrowLeft size={24} />
+        </button>
+        <p className="text-lg font-bold">{t('client.title')}</p>
+      </header>
+
+      {!client ? (
+        <EmptyState icon={SearchX} title={t('clients.empty.title')} />
+      ) : (
+        <div className="flex min-h-0 flex-1 flex-col gap-7 overflow-y-auto px-5 pt-3 pb-8">
+          <div className="flex items-center gap-4">
+            <Avatar initials={initials(client)} photoUrl={client.photoUrl} size="lg" />
+            <div className="flex min-w-0 flex-col gap-1">
+              <h1 className="text-xl leading-tight font-bold">{fullName(client)}</h1>
+              <p className="text-ink-muted">{formatPhone(client.phone)}</p>
+            </div>
+          </div>
+
+          <LimitCard client={client} />
+
+          <Section title={t('client.personal')}>
+            <InfoList>
+              <InfoRow label={t('client.passport')} value={formatPassport(client.passport)} />
+              <InfoRow
+                label={t('client.passportIssued')}
+                value={formatDate(client.passportIssuedOn)}
+              />
+              <InfoRow
+                label={t('client.passportExpires')}
+                value={formatDate(client.passportExpiresOn)}
+              />
+              <InfoRow label={t('field.birthDate')} value={formatDate(client.birthDate)} />
+              <InfoRow label={t('clients.pinfl')} value={client.pinfl} />
+              <InfoRow label={t('field.phone')} value={formatPhone(client.phone)} />
+            </InfoList>
+          </Section>
+
+          <Section title={t('client.income')}>
+            <InfoList>
+              <InfoRow label={t('field.monthlyIncome')} value={formatSum(client.monthlyIncome)} />
+              <InfoRow
+                label={t('field.incomeSource')}
+                value={client.incomeSource ? t(`income.${client.incomeSource}`) : t('common.none')}
+              />
+              <InfoRow
+                label={t('field.maritalStatus')}
+                value={t(`marital.${client.maritalStatus}`)}
+              />
+            </InfoList>
+          </Section>
+
+          <Section title={t('client.cards')}>
+            <PaymentCards client={client} />
+          </Section>
+
+          <ContactsSection client={client} />
+          <ApplicationsSection client={client} />
+        </div>
+      )}
+    </div>
+  )
+}

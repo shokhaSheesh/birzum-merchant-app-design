@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import logo from '@/shared/assets/logo-stacked.png'
+import logo from '@/shared/assets/logo.svg'
 import { ROUTES } from '@/shared/config/routes'
 import { useI18n } from '@/shared/i18n/useI18n'
 import { Button } from '@/shared/ui/Button'
@@ -51,7 +51,7 @@ export function LoginPage() {
         </Button>
       }
     >
-      <img src={logo} alt="Birzum nasiya" className="w-28" />
+      <img src={logo} alt="Birzum nasiya" className="h-12 self-start" />
       <div className="flex flex-col gap-1.5">
         <h1 className="text-2xl font-bold">{t('auth.login.title')}</h1>
         <p className="text-ink-muted">{t('auth.login.subtitle')}</p>

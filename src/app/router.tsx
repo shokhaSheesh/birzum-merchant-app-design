@@ -4,6 +4,8 @@ import { ChangePasswordPage } from '@/features/auth/pages/ChangePasswordPage'
 import { LoginPage } from '@/features/auth/pages/LoginPage'
 import { ConfirmLoginPage } from '@/features/auth/pages/ConfirmLoginPage'
 import { CalculatorPage } from '@/features/calculator/pages/CalculatorPage'
+import { AddCardPage } from '@/features/clients/pages/AddCardPage'
+import { ClientDetailPage } from '@/features/clients/pages/ClientDetailPage'
 import { ClientsPage } from '@/features/clients/pages/ClientsPage'
 import { NewClientPage } from '@/features/clients/pages/NewClientPage'
 import { KitPage } from '@/features/kit/pages/KitPage'
@@ -21,6 +23,8 @@ export const router = createBrowserRouter([
       { path: ROUTES.confirmLogin, element: <ConfirmLoginPage /> },
       { path: ROUTES.kit, element: <KitPage /> },
       { path: ROUTES.newClient, element: <NewClientPage /> },
+      { path: ROUTES.clientDetail, element: <ClientDetailPage /> },
+      { path: ROUTES.clientAddCard, element: <AddCardPage /> },
       {
         element: <TabLayout />,
         children: [

@@ -1,32 +1,29 @@
+import { ChevronRight } from 'lucide-react'
+import { Link } from 'react-router-dom'
+import { clientPath } from '@/shared/config/routes'
 import { useI18n } from '@/shared/i18n/useI18n'
+import { formatPassport } from '@/shared/lib/passport'
 import { formatPhone } from '@/shared/lib/phone'
+import { Avatar } from '@/shared/ui/Avatar'
 import type { Client } from '../data/clients'
-
-const initials = (fullName: string) =>
-  fullName
-    .split(' ')
-    .slice(0, 2)
-    .map((part) => part[0])
-    .join('')
-
-/** "AB1234567" -> "AB 1234567" */
-const formatPassport = (passport: string) => `${passport.slice(0, 2)} ${passport.slice(2)}`
+import { initials, shortName } from '../lib/clientName'
 
 export function ClientRow({ client }: { client: Client }) {
   const { t } = useI18n()
 
   return (
-    <li className="flex items-center gap-3 border-b border-line py-3 last:border-b-0">
-      <span className="grid size-11 shrink-0 place-items-center rounded-full bg-navy-200 text-sm font-bold text-navy-900">
-        {initials(client.fullName)}
-      </span>
-      <div className="flex min-w-0 flex-col gap-0.5">
-        <p className="truncate font-semibold">{client.fullName}</p>
-        <p className="text-sm text-ink-muted">{formatPhone(client.phone)}</p>
-        <p className="truncate text-sm text-ink-muted">
-          {formatPassport(client.passport)} · {t('clients.pinfl')} {client.pinfl}
-        </p>
-      </div>
+    <li className="border-b border-line last:border-b-0">
+      <Link to={clientPath(client.id)} className="flex items-center gap-3 py-3">
+        <Avatar initials={initials(client)} photoUrl={client.photoUrl} />
+        <div className="flex min-w-0 flex-1 flex-col gap-0.5">
+          <p className="truncate font-semibold">{shortName(client)}</p>
+          <p className="text-sm text-ink-muted">{formatPhone(client.phone)}</p>
+          <p className="truncate text-sm text-ink-muted">
+            {formatPassport(client.passport)} · {t('clients.pinfl')} {client.pinfl}
+          </p>
+        </div>
+        <ChevronRight size={20} className="shrink-0 text-ink-subtle" />
+      </Link>
     </li>
   )
 }

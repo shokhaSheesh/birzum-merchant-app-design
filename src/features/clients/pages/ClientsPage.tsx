@@ -7,15 +7,14 @@ import { Button } from '@/shared/ui/Button'
 import { EmptyState } from '@/shared/ui/EmptyState'
 import { SearchField } from '@/shared/ui/SearchField'
 import { ClientRow } from '../components/ClientRow'
-import { getClients } from '../data/clients'
+import { useClients } from '../data/useClients'
 import { searchClients } from '../lib/searchClients'
 
 export function ClientsPage() {
   const { t } = useI18n()
   const navigate = useNavigate()
   const [query, setQuery] = useState('')
-  const [allClients] = useState(getClients)
-  const clients = searchClients(allClients, query)
+  const clients = searchClients(useClients(), query)
 
   return (
     <div className="flex h-full flex-col">

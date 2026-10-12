@@ -218,6 +218,26 @@ Always has the show/hide eye button on the right. Never build a password field w
 - Above the list, a small count line ("8 ta klient") in `text-sm text-ink-muted`.
 - When a list or search has no results, show `EmptyState`: an icon badge, a short title and one line on what to do next. Never leave a blank screen.
 
+## Detail screens
+
+A detail screen (a client, later an application) is read top to bottom, so it is built from stacked sections instead of a form.
+
+- Top bar: back arrow and a short screen name ("Klient"). No tab bar.
+- Hero: `Avatar` (photo, or initials when there is none), the full name, and one key line under it.
+- Each block is a `Section` with a `text-lg font-bold` title. 28px between sections.
+- Read-only facts go in an `InfoList`: label on the left in `text-sm text-ink-muted`, value on the right in `font-semibold`. Group related facts into one list; do not mix unrelated ones.
+- Statuses use `StatusBadge`: red for rejected, amber for pending, green for approved, grey for closed or cancelled. The badge text is the status name, never just a color.
+- Bank cards are navy tiles in a sideways-scrolling row showing the first and last four digits. The row ends with a dashed "Yangi karta" tile.
+- **The screen's one primary button sits inside the section it belongs to**, in a green-tint card so it stands out (the limit card on the client screen). It is not pinned to the bottom, because the screen scrolls and the other sections have their own actions.
+- Other section actions ("Kontakt kiritish") are `secondary` buttons, full width, under their list.
+- Short add forms with two or three fields open in a `Sheet`, with their own primary button inside it. Longer ones are a `FormScreen`.
+- An empty section says so in one muted line ("Hali kontakt kiritilmagan."). It is never hidden.
+
+## Logo
+
+- Use `src/shared/assets/logo.svg` (mark and wordmark) or `logo-mark.svg` (mark only). Never a PNG or a screenshot.
+- Do not recolor, stretch or add effects to it. Place it on white.
+
 ## Sheets
 
 `Sheet` is the only overlay. Dropdowns, the calendar, the language picker and confirmations all use it.
