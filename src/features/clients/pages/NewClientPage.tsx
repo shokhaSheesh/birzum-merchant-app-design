@@ -1,32 +1,41 @@
-import { IdCard, MessageSquareText, Smartphone } from 'lucide-react'
-import { useState } from 'react'
+import { CreditCard, IdCard, Smartphone } from 'lucide-react'
+import { useCallback, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { CODE_LENGTH, RESEND_AFTER_SECONDS } from '@/shared/config/otp'
 import { ROUTES } from '@/shared/config/routes'
 import { useI18n } from '@/shared/i18n/useI18n'
+import { isCardExpiry, isCardNumber } from '@/shared/lib/card'
 import { isPassport } from '@/shared/lib/passport'
 import { formatPhone, PHONE_DIGITS } from '@/shared/lib/phone'
-import { useCountdown } from '@/shared/lib/useCountdown'
 import { Button } from '@/shared/ui/Button'
+import { CardExpiryField, CardNumberField } from '@/shared/ui/CardFields'
 import { DatePicker } from '@/shared/ui/DatePicker'
 import { FormScreen } from '@/shared/ui/FormScreen'
 import { IconBadge } from '@/shared/ui/IconBadge'
 import { NumberField } from '@/shared/ui/NumberField'
-import { OtpField } from '@/shared/ui/OtpField'
+import { OtpScreen } from '@/shared/ui/OtpScreen'
 import { PassportField } from '@/shared/ui/PassportField'
 import { PhoneField } from '@/shared/ui/PhoneField'
-import { ResendCode } from '@/shared/ui/ResendCode'
 import { ScreenIntro } from '@/shared/ui/ScreenIntro'
 import { Select } from '@/shared/ui/Select'
-import { createClient, sendClientCode, verifyClientCode } from '../api/mockClients'
+import {
+  createClient,
+  sendCardCode,
+  sendClientCode,
+  verifyCardCode,
+  verifyClientCode,
+} from '../api/mockClients'
+import { MyIdStep } from '../components/MyIdStep'
 import { MARITAL_STATUSES, type MaritalStatus } from '../data/clients'
 
-const STEPS = ['phone', 'code', 'details'] as const
+const STEPS = ['phone', 'phoneCode', 'details', 'myid', 'card', 'cardCode'] as const
 type Step = (typeof STEPS)[number]
 
 const MIN_AGE = 18
 
-/** Create a client: card-linked phone number, SMS code, then passport details. */
+/**
+ * Create a client: card-linked phone and SMS code, passport details, MyID check,
+ * then the bank card and its SMS code. The client is saved only after the last step.
+ */
 export function NewClientPage() {
   const { t } = useI18n()
   const navigate = useNavigate()
@@ -35,14 +44,12 @@ export function NewClientPage() {
   const [loading, setLoading] = useState(false)
 
   const [phone, setPhone] = useState('')
-  const [code, setCode] = useState('')
-  const [codeRejected, setCodeRejected] = useState(false)
-  const [secondsLeft, setSecondsLeft] = useCountdown()
-
   const [passport, setPassport] = useState('')
   const [birthDate, setBirthDate] = useState<Date | null>(null)
   const [maritalStatus, setMaritalStatus] = useState<MaritalStatus | null>(null)
   const [monthlyIncome, setMonthlyIncome] = useState<number | null>(null)
+  const [cardNumber, setCardNumber] = useState('')
+  const [cardExpiry, setCardExpiry] = useState('')
   const [latestBirthDate] = useState(() => {
     const now = new Date()
     return new Date(now.getFullYear() - MIN_AGE, now.getMonth(), now.getDate())
@@ -50,52 +57,52 @@ export function NewClientPage() {
 
   const progress = { step: STEPS.indexOf(step) + 1, total: STEPS.length }
   const backToList = () => navigate(ROUTES.clients)
-  const goTo = (next: Step) => {
+  const goTo = useCallback((next: Step) => {
     setSubmitted(false)
+    setLoading(false)
     setStep(next)
-  }
+  }, [])
+  const goToCard = useCallback(() => goTo('card'), [goTo])
 
-  const requestCode = async () => {
+  const submitPhone = async () => {
+    setSubmitted(true)
+    if (phone.length < PHONE_DIGITS) return
     setLoading(true)
     await sendClientCode(phone)
-    setLoading(false)
-    setCode('')
-    setCodeRejected(false)
-    setSecondsLeft(RESEND_AFTER_SECONDS)
-    goTo('code')
+    goTo('phoneCode')
   }
 
-  const submitPhone = () => {
+  const submitDetails = () => {
     setSubmitted(true)
-    if (phone.length === PHONE_DIGITS) void requestCode()
+    if (isPassport(passport) && birthDate && maritalStatus && monthlyIncome) goTo('myid')
   }
 
-  const verify = async (value: string) => {
-    if (value.length < CODE_LENGTH || loading) return
-    setLoading(true)
-    try {
-      await verifyClientCode(phone, value)
-      goTo('details')
-    } catch {
-      setCodeRejected(true)
-      setCode('')
-    }
-    setLoading(false)
-  }
-
-  const submitDetails = async () => {
+  const submitCard = async () => {
     setSubmitted(true)
-    if (!isPassport(passport) || !birthDate || !maritalStatus || !monthlyIncome) return
-
+    if (!isCardNumber(cardNumber) || !isCardExpiry(cardExpiry)) return
     setLoading(true)
-    await createClient({ phone, passport, birthDate, maritalStatus, monthlyIncome })
+    await sendCardCode(cardNumber, cardExpiry)
+    goTo('cardCode')
+  }
+
+  const saveClient = async () => {
+    if (!birthDate || !maritalStatus || !monthlyIncome) return
+    await createClient({
+      phone,
+      passport,
+      birthDate,
+      maritalStatus,
+      monthlyIncome,
+      cardNumber,
+      cardExpiry,
+    })
     navigate(ROUTES.clients, { replace: true })
   }
 
   if (step === 'phone') {
     return (
       <FormScreen
-        onSubmit={submitPhone}
+        onSubmit={() => void submitPhone()}
         onBack={backToList}
         progress={progress}
         footer={
@@ -120,42 +127,65 @@ export function NewClientPage() {
     )
   }
 
-  if (step === 'code') {
+  if (step === 'phoneCode') {
     return (
-      <FormScreen
-        onSubmit={() => void verify(code)}
+      <OtpScreen
+        subtitle={t('clients.new.code.subtitle', { phone: formatPhone(phone) })}
         onBack={() => goTo('phone')}
         progress={progress}
+        resend={() => sendClientCode(phone)}
+        verify={(code) => verifyClientCode(phone, code)}
+        onVerified={() => goTo('details')}
+      />
+    )
+  }
+
+  if (step === 'myid') {
+    return <MyIdStep progress={progress} onBack={() => goTo('details')} onDone={goToCard} />
+  }
+
+  if (step === 'card') {
+    return (
+      <FormScreen
+        onSubmit={() => void submitCard()}
+        onBack={() => goTo('details')}
+        progress={progress}
         footer={
-          <Button type="submit" block loading={loading} disabled={code.length < CODE_LENGTH}>
-            {t('code.submit')}
+          <Button type="submit" block loading={loading}>
+            {t('auth.confirm.send')}
           </Button>
         }
       >
-        <IconBadge icon={MessageSquareText} />
-        <ScreenIntro
-          title={t('code.title')}
-          subtitle={t('clients.new.code.subtitle', { phone: formatPhone(phone) })}
-        />
-        <OtpField
-          label={t('field.code')}
-          length={CODE_LENGTH}
-          value={code}
-          autoFocus
-          disabled={loading}
-          error={codeRejected ? t('code.error') : undefined}
-          onChange={(value) => {
-            setCode(value)
-            setCodeRejected(false)
-            void verify(value)
-          }}
-        />
-        <ResendCode
-          secondsLeft={secondsLeft}
-          disabled={loading}
-          onResend={() => void requestCode()}
-        />
+        <IconBadge icon={CreditCard} />
+        <ScreenIntro title={t('card.title')} subtitle={t('card.subtitle')} />
+        <div className="flex flex-col gap-4">
+          <CardNumberField
+            label={t('field.cardNumber')}
+            value={cardNumber}
+            onChange={setCardNumber}
+            error={submitted && !isCardNumber(cardNumber) ? t('error.cardNumber') : undefined}
+          />
+          <CardExpiryField
+            label={t('field.cardExpiry')}
+            value={cardExpiry}
+            onChange={setCardExpiry}
+            error={submitted && !isCardExpiry(cardExpiry) ? t('error.cardExpiry') : undefined}
+          />
+        </div>
       </FormScreen>
+    )
+  }
+
+  if (step === 'cardCode') {
+    return (
+      <OtpScreen
+        subtitle={t('card.code.subtitle', { phone: formatPhone(phone) })}
+        onBack={() => goTo('card')}
+        progress={progress}
+        resend={() => sendCardCode(cardNumber, cardExpiry)}
+        verify={(code) => verifyCardCode(cardNumber, code)}
+        onVerified={saveClient}
+      />
     )
   }
 
@@ -163,12 +193,12 @@ export function NewClientPage() {
 
   return (
     <FormScreen
-      onSubmit={() => void submitDetails()}
+      onSubmit={submitDetails}
       onBack={backToList}
       progress={progress}
       footer={
-        <Button type="submit" block loading={loading}>
-          {t('clients.new.submit')}
+        <Button type="submit" block>
+          {t('common.continue')}
         </Button>
       }
     >

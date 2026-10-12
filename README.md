@@ -7,7 +7,7 @@ Mobile merchant app for Birzum nasiya (BNPL), built as a React front end. It mir
 - React 19, TypeScript, Vite
 - Tailwind CSS v4 (design tokens live in `src/shared/styles/index.css`)
 - React Router
-- lucide-react icons
+- lucide-react icons, qrcode.react
 - oxlint, Prettier
 
 ## Commands

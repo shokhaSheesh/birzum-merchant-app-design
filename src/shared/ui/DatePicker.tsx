@@ -4,14 +4,15 @@ import { calendarNames } from '@/shared/i18n/dictionaries'
 import { useI18n } from '@/shared/i18n/useI18n'
 import { cn } from '@/shared/lib/cn'
 import { formatDate } from '@/shared/lib/format'
-import { controlClass } from './control'
+import { controlClass, inputClass } from './control'
 import { Field } from './Field'
 import { Sheet } from './Sheet'
 
 type Props = {
   label: string
   value: Date | null
-  onChange: (value: Date) => void
+  /** `null` while the typed date is incomplete or not allowed. */
+  onChange: (value: Date | null) => void
   min?: Date
   max?: Date
   error?: string
@@ -28,9 +29,26 @@ const navButton =
 const cell = 'grid place-items-center rounded-control text-base disabled:text-navy-200'
 const cellSelected = 'bg-navy-900 font-semibold text-white'
 
+/** "12101995" -> "12.10.1995" (works on partial input too) */
+const maskDate = (digits: string) =>
+  [digits.slice(0, 2), digits.slice(2, 4), digits.slice(4, 8)].filter(Boolean).join('.')
+
+/** Eight digits DDMMYYYY -> Date, or null when that day does not exist. */
+function parseDate(digits: string) {
+  const day = Number(digits.slice(0, 2))
+  const month = Number(digits.slice(2, 4)) - 1
+  const year = Number(digits.slice(4, 8))
+  const date = new Date(year, month, day)
+  const real = date.getFullYear() === year && date.getMonth() === month && date.getDate() === day
+  return real ? date : null
+}
+
+/** A date can be typed as DD.MM.YYYY or picked from the calendar behind the icon. */
 export function DatePicker({ label, value, onChange, min, max, error, hint }: Props) {
   const { t, lang } = useI18n()
   const id = useId()
+  const [text, setText] = useState(() => (value ? formatDate(value) : ''))
+  const [typedInvalid, setTypedInvalid] = useState(false)
   const [open, setOpen] = useState(false)
   const [mode, setMode] = useState<Mode>('days')
   const [today] = useState(() => new Date())
@@ -53,6 +71,15 @@ export function DatePicker({ label, value, onChange, min, max, error, hint }: Pr
     (minDay !== undefined && new Date(y, m + 1, 0) < minDay) ||
     (maxDay !== undefined && new Date(y, m, 1) > maxDay)
 
+  const handleTyping = (raw: string) => {
+    const digits = raw.replace(/\D/g, '').slice(0, 8)
+    setText(maskDate(digits))
+    const date = digits.length === 8 ? parseDate(digits) : null
+    const allowed = date !== null && !dayDisabled(date)
+    setTypedInvalid(digits.length === 8 && !allowed)
+    onChange(allowed ? date : null)
+  }
+
   const openSheet = () => {
     // Start on the chosen date, or the nearest allowed month to today
     const start =
@@ -62,21 +89,32 @@ export function DatePicker({ label, value, onChange, min, max, error, hint }: Pr
     setOpen(true)
   }
 
+  const shownError = error ?? (typedInvalid ? t('error.date') : undefined)
+
   return (
-    <Field label={label} htmlFor={id} error={error} hint={hint}>
-      <button
-        id={id}
-        type="button"
-        aria-haspopup="dialog"
-        aria-expanded={open}
-        onClick={openSheet}
-        className={controlClass(!!error)}
-      >
-        <span className={cn('min-w-0 flex-1', !value && 'text-ink-subtle')}>
-          {value ? formatDate(value) : 'KK.OO.YYYY'}
-        </span>
-        <CalendarDays size={20} className="text-ink-subtle" />
-      </button>
+    <Field label={label} htmlFor={id} error={shownError} hint={hint}>
+      <div className={controlClass(!!shownError)}>
+        <input
+          id={id}
+          inputMode="numeric"
+          autoComplete="off"
+          placeholder="KK.OO.YYYY"
+          aria-invalid={!!shownError || undefined}
+          className={inputClass}
+          value={text}
+          onChange={(e) => handleTyping(e.target.value)}
+        />
+        <button
+          type="button"
+          aria-label={t('calendar.open')}
+          aria-haspopup="dialog"
+          aria-expanded={open}
+          onClick={openSheet}
+          className="-mr-2 grid size-10 shrink-0 place-items-center rounded-full text-navy-900 active:bg-surface"
+        >
+          <CalendarDays size={20} />
+        </button>
+      </div>
 
       <Sheet open={open} onClose={() => setOpen(false)} title={label}>
         <div className="flex items-center justify-between pb-2">
@@ -177,6 +215,8 @@ export function DatePicker({ label, value, onChange, min, max, error, hint }: Pr
                   disabled={dayDisabled(day)}
                   aria-pressed={selected}
                   onClick={() => {
+                    setText(formatDate(day))
+                    setTypedInvalid(false)
                     onChange(day)
                     setOpen(false)
                   }}

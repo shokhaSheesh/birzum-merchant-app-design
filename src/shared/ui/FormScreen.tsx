@@ -11,8 +11,8 @@ type Props = {
   headerEnd?: ReactNode
   /** Step indicator for multi-step flows. `step` starts at 1. */
   progress?: { step: number; total: number }
-  /** The primary button, pinned to the bottom of the screen. */
-  footer: ReactNode
+  /** The primary button, pinned to the bottom of the screen. Omit when the body holds the choices. */
+  footer?: ReactNode
   children: ReactNode
 }
 
@@ -64,9 +64,11 @@ export function FormScreen({ onSubmit, onBack, headerEnd, progress, footer, chil
       <div className="flex min-h-0 flex-1 flex-col gap-6 overflow-y-auto px-5 pt-6 pb-4">
         {children}
       </div>
-      <footer className="shrink-0 px-5 pt-3 pb-[max(1.25rem,env(safe-area-inset-bottom))]">
-        {footer}
-      </footer>
+      {footer && (
+        <footer className="shrink-0 px-5 pt-3 pb-[max(1.25rem,env(safe-area-inset-bottom))]">
+          {footer}
+        </footer>
+      )}
     </form>
   )
 }

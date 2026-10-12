@@ -1,5 +1,8 @@
+import { ScanFace } from 'lucide-react'
 import { useState, type ReactNode } from 'react'
+import { ActionCard } from '@/shared/ui/ActionCard'
 import { Button } from '@/shared/ui/Button'
+import { CardExpiryField, CardNumberField } from '@/shared/ui/CardFields'
 import { Checkbox } from '@/shared/ui/Checkbox'
 import { DatePicker } from '@/shared/ui/DatePicker'
 import { LanguageSwitcher } from '@/shared/ui/LanguageSwitcher'
@@ -39,6 +42,8 @@ export function KitPage() {
   const [checked, setChecked] = useState(true)
   const [query, setQuery] = useState('')
   const [passport, setPassport] = useState('AB1234567')
+  const [card, setCard] = useState('8600123456789012')
+  const [expiry, setExpiry] = useState('')
 
   return (
     <div className="flex h-full flex-col gap-8 overflow-y-auto px-5 pt-6 pb-10">
@@ -83,13 +88,27 @@ export function KitPage() {
       </Section>
 
       <Section title="Number input">
-        <NumberField label="Xarid summasi" value={amount} onChange={setAmount} suffix="soʻm" />
+        <NumberField label="Xarid summasi" value={amount} onChange={setAmount} suffix="UZS" />
       </Section>
 
       <Section title="Phone and code">
         <PhoneField label="Telefon raqam" value={phone} onChange={setPhone} />
         <OtpField label="Tasdiqlash kodi" value={code} onChange={setCode} />
         <PassportField label="Pasport seriyasi va raqami" value={passport} onChange={setPassport} />
+      </Section>
+
+      <Section title="Bank card">
+        <CardNumberField label="Karta raqami" value={card} onChange={setCard} />
+        <CardExpiryField label="Amal qilish muddati" value={expiry} onChange={setExpiry} />
+      </Section>
+
+      <Section title="Choice card">
+        <ActionCard
+          icon={ScanFace}
+          title="Shu qurilmada"
+          description="Kamera shu telefonda ochiladi, klient yuzini koʻrsatadi."
+          onClick={() => {}}
+        />
       </Section>
 
       <Section title="Checkbox">

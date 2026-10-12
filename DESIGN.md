@@ -90,6 +90,8 @@ Every form uses `FormScreen`: back arrow at the top left, scrolling body, primar
 - One question group per step. The button label says what happens next ("Kodni olish", "Tasdiqlash", "Klientni saqlash").
 - Back goes to the previous step. From the first step it leaves the flow.
 - Validation runs when the button is tapped, not while typing. Errors appear under the field.
+- When a step offers different ways to continue instead of a form, show them as `ActionCard`s (icon, title, one-line description, chevron) and leave out the bottom button. The MyID step does this for "on this device" and "by QR code".
+- Camera views sit in a rounded dark frame with a green oval guide. QR codes are navy on white inside a bordered card, with a "waiting" line and spinner below.
 
 ### Tab bar
 
@@ -120,6 +122,10 @@ Four tabs, always in this order, on every main screen: **Klientlar**, **Arizalar
 | Profile tab | `UserRound` |
 | Phone number | `Smartphone` |
 | Passport / client details | `IdCard` |
+| Face check (MyID) | `ScanFace` |
+| QR code | `QrCode` |
+| Bank card | `CreditCard` |
+| Step completed | `CircleCheck` |
 | Log out | `LogOut` |
 | SMS code | `MessageSquareText` |
 | Search | `Search` |
@@ -151,7 +157,8 @@ Always has the show/hide eye button on the right. Never build a password field w
 - For amounts and counts. Whole numbers only.
 - Groups digits in thousands with spaces as the user types: `12 480 000`.
 - Opens the numeric keypad (`inputMode="numeric"`). Do not use `type="number"`, which adds browser spinners and breaks grouping.
-- The unit goes in `suffix` at the right edge (`soʻm`, `oy`), not inside the value or the label.
+- The unit goes in `suffix` at the right edge (`UZS`, `oy`), not inside the value or the label.
+- Money is always labelled `UZS`, in both languages. Never "soʻm" or "сум".
 - Display amounts elsewhere with `formatSum` from `@/shared/lib/format`.
 
 ### Search: `SearchField`
@@ -169,11 +176,17 @@ Always has the show/hide eye button on the right. Never build a password field w
 - Two letters, then seven digits, shown as `AB 1234567`. Letters are uppercased automatically and anything else is ignored.
 - Used wherever a passport or ID card series and number is asked for.
 
+### Bank card: `CardNumberField` and `CardExpiryField`
+- Card number: 16 digits shown in groups of four, `8600 1234 5678 9012`.
+- Expiry: `OO/YY`, with the slash added automatically. A month outside 01 to 12 or a past date is an error.
+- Both open the numeric keypad and support the browser's saved-card autofill.
+
 ### Code input: `OtpField`
 - Six boxes, one digit each, 56px tall. Used for every SMS or confirmation code.
 - Supports paste and SMS autofill. The code is checked as soon as the last digit is entered; the bottom button stays as a fallback.
 - A wrong code clears the boxes, turns them red and shows the error below.
 - Under it: a countdown ("Qayta yuborish: 0:59"), replaced by a ghost "Kodni qayta yuborish" button when it reaches zero.
+- Do not assemble this by hand. Every code step is the `OtpScreen` component, so login, client phone and card confirmation look and behave the same.
 
 ### Checkbox: `Checkbox`
 - 24px box. Checked is a navy fill with a white check mark.
@@ -188,8 +201,10 @@ Always has the show/hide eye button on the right. Never build a password field w
 - For more than about eight options, add search at the top of the sheet (not built yet).
 
 ### Calendar: `DatePicker`
-- Looks like an input with a `CalendarDays` icon on the right. Empty value shows `KK.OO.YYYY`.
-- Opens the same bottom sheet. This is the only calendar in the app; never use the native date input.
+- A date can be typed or picked. Typing fills the `KK.OO.YYYY` mask and adds the dots automatically.
+- The navy `CalendarDays` icon on the right opens the calendar in the same bottom sheet. Tapping the field itself only focuses it for typing.
+- A typed date that does not exist or is outside the allowed range shows "Sanani toʻgʻri kiriting" under the field.
+- This is the only calendar in the app; never use the native date input.
 - Weeks start on Monday. Month and weekday names follow the selected language.
 - Selected day: navy circle with white text. Today: green outline. Unavailable days: greyed out and not tappable (use `min` / `max`).
 - Picking a day closes the sheet.

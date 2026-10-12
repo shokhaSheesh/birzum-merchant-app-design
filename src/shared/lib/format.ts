@@ -5,10 +5,10 @@ export function groupDigits(value: number | string) {
   return String(value).replace(/\B(?=(\d{3})+(?!\d))/g, NBSP)
 }
 
-/** 12480000 -> "12 480 000 soʻm" */
+/** 12480000 -> "12 480 000 UZS" */
 export function formatSum(amount: number, withCurrency = true) {
   const grouped = groupDigits(Math.round(amount))
-  return withCurrency ? `${grouped}${NBSP}soʻm` : grouped
+  return withCurrency ? `${grouped}${NBSP}UZS` : grouped
 }
 
 /** -> "12.10.2026" */

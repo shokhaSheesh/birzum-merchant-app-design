@@ -7,7 +7,7 @@ type Props = {
   label: string
   value: number | null
   onChange: (value: number | null) => void
-  /** Unit shown at the right edge, e.g. "soʻm" or "oy". */
+  /** Unit shown at the right edge, e.g. "UZS" or "oy". */
   suffix?: string
   placeholder?: string
   error?: string

@@ -12,7 +12,7 @@ export type Client = {
   passport: string
   birthDate?: Date
   maritalStatus?: MaritalStatus
-  /** In soʻm. */
+  /** In UZS. */
   monthlyIncome?: number
 }
 
