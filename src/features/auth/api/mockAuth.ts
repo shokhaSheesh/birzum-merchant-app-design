@@ -11,8 +11,6 @@ const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms))
 
 export const INVALID_CREDENTIALS = 'invalid_credentials'
 export const INVALID_CODE = 'invalid_code'
-export const CODE_LENGTH = 6
-export const RESEND_AFTER_SECONDS = 60
 
 function read(key: string) {
   try {

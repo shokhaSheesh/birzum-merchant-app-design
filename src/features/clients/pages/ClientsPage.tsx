@@ -7,19 +7,26 @@ import { Button } from '@/shared/ui/Button'
 import { EmptyState } from '@/shared/ui/EmptyState'
 import { SearchField } from '@/shared/ui/SearchField'
 import { ClientRow } from '../components/ClientRow'
-import { mockClients } from '../data/clients'
+import { getClients } from '../data/clients'
 import { searchClients } from '../lib/searchClients'
 
 export function ClientsPage() {
   const { t } = useI18n()
   const navigate = useNavigate()
   const [query, setQuery] = useState('')
-  const clients = searchClients(mockClients, query)
+  const [allClients] = useState(getClients)
+  const clients = searchClients(allClients, query)
 
   return (
     <div className="flex h-full flex-col">
       <header className="flex shrink-0 flex-col gap-4 px-5 pt-[max(1.5rem,env(safe-area-inset-top))] pb-3">
-        <h1 className="text-2xl font-bold">{t('nav.clients')}</h1>
+        <div className="flex items-center justify-between gap-3">
+          <h1 className="text-2xl font-bold">{t('nav.clients')}</h1>
+          <Button size="sm" onClick={() => navigate(ROUTES.newClient)}>
+            <Plus size={18} />
+            {t('clients.create')}
+          </Button>
+        </div>
         <SearchField
           label={t('clients.search')}
           placeholder={t('clients.search')}
@@ -48,13 +55,6 @@ export function ClientsPage() {
           </div>
         )}
       </div>
-
-      <footer className="shrink-0 px-5 pt-2 pb-3">
-        <Button block onClick={() => navigate(ROUTES.newClient)}>
-          <Plus size={20} />
-          {t('clients.create')}
-        </Button>
-      </footer>
     </div>
   )
 }

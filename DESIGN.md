@@ -75,10 +75,21 @@ Use `Button` from `@/shared/ui/Button`. Four variants, each with one job:
 
 - **The primary button is pinned to the bottom of the screen**, full width, 20px from the edges. It does not move between screens.
 - When a secondary button sits with it, the secondary goes above the primary, both full width.
-- **On list screens the create action is that same pinned primary button**, sitting just above the tab bar, with a `Plus` icon before the label ("Klient qoʻshish"). No floating round buttons and no create buttons in the header.
+- **On list screens the create action sits at the top right, on the same line as the screen title.** It is a small navy pill (`<Button size="sm">`) with a `Plus` icon and the label "Qoʻshish". Same place, same look on every list. No floating round buttons and no full-width create bars over the list.
+- The small button size exists only for this. Everything else uses the full-size button.
 - Back is a left arrow at the top left. Close is an X at the top right of a sheet.
 - The screen title is left aligned under the top bar.
 - The language switcher sits at the top right of the auth screens and in Profile after login.
+
+### Forms and step-by-step flows
+
+Every form uses `FormScreen`: back arrow at the top left, scrolling body, primary button pinned to the bottom.
+
+- A flow with more than one step shows a segmented progress bar in the top bar: green for the current and completed steps, grey for the rest.
+- Each step opens with an icon badge (`IconBadge`), a title and one supporting line (`ScreenIntro`).
+- One question group per step. The button label says what happens next ("Kodni olish", "Tasdiqlash", "Klientni saqlash").
+- Back goes to the previous step. From the first step it leaves the flow.
+- Validation runs when the button is tapped, not while typing. Errors appear under the field.
 
 ### Tab bar
 
@@ -108,6 +119,7 @@ Four tabs, always in this order, on every main screen: **Klientlar**, **Arizalar
 | Calculator tab | `Calculator` |
 | Profile tab | `UserRound` |
 | Phone number | `Smartphone` |
+| Passport / client details | `IdCard` |
 | Log out | `LogOut` |
 | SMS code | `MessageSquareText` |
 | Search | `Search` |
@@ -153,6 +165,10 @@ Always has the show/hide eye button on the right. Never build a password field w
 - Digits are grouped as `90 123 45 67` while typing. Show a full number elsewhere with `formatPhone`.
 - Opens the numeric keypad.
 
+### Passport input: `PassportField`
+- Two letters, then seven digits, shown as `AB 1234567`. Letters are uppercased automatically and anything else is ignored.
+- Used wherever a passport or ID card series and number is asked for.
+
 ### Code input: `OtpField`
 - Six boxes, one digit each, 56px tall. Used for every SMS or confirmation code.
 - Supports paste and SMS autofill. The code is checked as soon as the last digit is entered; the bottom button stays as a fallback.
@@ -177,6 +193,7 @@ Always has the show/hide eye button on the right. Never build a password field w
 - Weeks start on Monday. Month and weekday names follow the selected language.
 - Selected day: navy circle with white text. Today: green outline. Unavailable days: greyed out and not tappable (use `min` / `max`).
 - Picking a day closes the sheet.
+- Tapping the month and year at the top switches to a year grid, then a month grid, then back to days. This is how distant dates such as a birth date are reached; nobody should tap the arrow hundreds of times.
 - Dates are shown as `DD.MM.YYYY` everywhere, through `formatDate`.
 
 ## Lists and empty states

@@ -20,7 +20,7 @@ export function LoginPage() {
   const [failed, setFailed] = useState(false)
 
   const required = (value: string) =>
-    submitted && value.trim() === '' ? t('auth.error.required') : undefined
+    submitted && value.trim() === '' ? t('error.required') : undefined
 
   const submit = async () => {
     setSubmitted(true)

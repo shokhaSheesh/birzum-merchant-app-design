@@ -7,10 +7,10 @@ import { useI18n } from '@/shared/i18n/useI18n'
 import { cn } from '@/shared/lib/cn'
 import { Button } from '@/shared/ui/Button'
 import { Checkbox } from '@/shared/ui/Checkbox'
+import { IconBadge } from '@/shared/ui/IconBadge'
 import { PasswordField } from '@/shared/ui/PasswordField'
 import { changePassword, needsLoginConfirmation } from '../api/mockAuth'
 import { AuthLayout } from '../components/AuthLayout'
-import { IconBadge } from '../components/IconBadge'
 
 const rules: { label: TranslationKey; test: (password: string) => boolean }[] = [
   { label: 'auth.rule.length', test: (p) => p.length >= 8 },

@@ -1,18 +1,19 @@
 import { MessageSquareText, Smartphone } from 'lucide-react'
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { CODE_LENGTH, RESEND_AFTER_SECONDS } from '@/shared/config/otp'
 import { ROUTES } from '@/shared/config/routes'
 import { useI18n } from '@/shared/i18n/useI18n'
 import { formatPhone, PHONE_DIGITS } from '@/shared/lib/phone'
+import { useCountdown } from '@/shared/lib/useCountdown'
 import { Button } from '@/shared/ui/Button'
+import { IconBadge } from '@/shared/ui/IconBadge'
 import { OtpField } from '@/shared/ui/OtpField'
 import { PhoneField } from '@/shared/ui/PhoneField'
-import { CODE_LENGTH, RESEND_AFTER_SECONDS, sendLoginCode, verifyLoginCode } from '../api/mockAuth'
+import { ResendCode } from '@/shared/ui/ResendCode'
+import { ScreenIntro } from '@/shared/ui/ScreenIntro'
+import { sendLoginCode, verifyLoginCode } from '../api/mockAuth'
 import { AuthLayout } from '../components/AuthLayout'
-import { IconBadge } from '../components/IconBadge'
-
-const formatTimer = (seconds: number) =>
-  `${Math.floor(seconds / 60)}:${String(seconds % 60).padStart(2, '0')}`
 
 /** Daily login confirmation: phone number first, then the SMS code. */
 export function ConfirmLoginPage() {
@@ -24,13 +25,7 @@ export function ConfirmLoginPage() {
   const [submitted, setSubmitted] = useState(false)
   const [loading, setLoading] = useState(false)
   const [codeRejected, setCodeRejected] = useState(false)
-  const [secondsLeft, setSecondsLeft] = useState(0)
-
-  useEffect(() => {
-    if (secondsLeft <= 0) return
-    const timer = setTimeout(() => setSecondsLeft((s) => s - 1), 1000)
-    return () => clearTimeout(timer)
-  }, [secondsLeft])
+  const [secondsLeft, setSecondsLeft] = useCountdown()
 
   const requestCode = async () => {
     setLoading(true)
@@ -71,10 +66,7 @@ export function ConfirmLoginPage() {
         }
       >
         <IconBadge icon={Smartphone} />
-        <div className="flex flex-col gap-1.5">
-          <h1 className="text-2xl font-bold">{t('auth.confirm.title')}</h1>
-          <p className="text-ink-muted">{t('auth.confirm.subtitle')}</p>
-        </div>
+        <ScreenIntro title={t('auth.confirm.title')} subtitle={t('auth.confirm.subtitle')} />
         <PhoneField
           label={t('field.phone')}
           value={phone}
@@ -92,37 +84,33 @@ export function ConfirmLoginPage() {
       onBack={() => setStep('phone')}
       footer={
         <Button type="submit" block loading={loading} disabled={code.length < CODE_LENGTH}>
-          {t('auth.code.submit')}
+          {t('code.submit')}
         </Button>
       }
     >
       <IconBadge icon={MessageSquareText} />
-      <div className="flex flex-col gap-1.5">
-        <h1 className="text-2xl font-bold">{t('auth.code.title')}</h1>
-        <p className="text-ink-muted">{t('auth.code.subtitle', { phone: formatPhone(phone) })}</p>
-      </div>
+      <ScreenIntro
+        title={t('code.title')}
+        subtitle={t('code.subtitle', { phone: formatPhone(phone) })}
+      />
       <OtpField
         label={t('field.code')}
         length={CODE_LENGTH}
         value={code}
         autoFocus
         disabled={loading}
-        error={codeRejected ? t('auth.error.code') : undefined}
+        error={codeRejected ? t('code.error') : undefined}
         onChange={(value) => {
           setCode(value)
           setCodeRejected(false)
           void verify(value)
         }}
       />
-      {secondsLeft > 0 ? (
-        <p className="text-center text-sm text-ink-muted">
-          {t('auth.code.resendIn', { time: formatTimer(secondsLeft) })}
-        </p>
-      ) : (
-        <Button variant="ghost" block disabled={loading} onClick={() => void requestCode()}>
-          {t('auth.code.resend')}
-        </Button>
-      )}
+      <ResendCode
+        secondsLeft={secondsLeft}
+        disabled={loading}
+        onResend={() => void requestCode()}
+      />
     </AuthLayout>
   )
 }

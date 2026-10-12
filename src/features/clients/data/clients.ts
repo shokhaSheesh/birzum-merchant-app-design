@@ -1,3 +1,6 @@
+export const MARITAL_STATUSES = ['single', 'married', 'divorced', 'widowed'] as const
+export type MaritalStatus = (typeof MARITAL_STATUSES)[number]
+
 export type Client = {
   id: string
   fullName: string
@@ -7,10 +10,14 @@ export type Client = {
   pinfl: string
   /** Series and number without a space, e.g. "AB1234567". */
   passport: string
+  birthDate?: Date
+  maritalStatus?: MaritalStatus
+  /** In soʻm. */
+  monthlyIncome?: number
 }
 
 // Invented sample people. Replace with the API once the client fields are agreed.
-export const mockClients: Client[] = [
+let clients: Client[] = [
   {
     id: '1',
     fullName: 'Dilnoza Karimova',
@@ -68,3 +75,9 @@ export const mockClients: Client[] = [
     passport: 'AE6642051',
   },
 ]
+
+export const getClients = () => clients
+
+export function addClient(client: Client) {
+  clients = [client, ...clients]
+}

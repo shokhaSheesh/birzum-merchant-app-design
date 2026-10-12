@@ -5,6 +5,7 @@ import { DatePicker } from '@/shared/ui/DatePicker'
 import { LanguageSwitcher } from '@/shared/ui/LanguageSwitcher'
 import { NumberField } from '@/shared/ui/NumberField'
 import { OtpField } from '@/shared/ui/OtpField'
+import { PassportField } from '@/shared/ui/PassportField'
 import { PasswordField } from '@/shared/ui/PasswordField'
 import { PhoneField } from '@/shared/ui/PhoneField'
 import { SearchField } from '@/shared/ui/SearchField'
@@ -37,6 +38,7 @@ export function KitPage() {
   const [code, setCode] = useState('482')
   const [checked, setChecked] = useState(true)
   const [query, setQuery] = useState('')
+  const [passport, setPassport] = useState('AB1234567')
 
   return (
     <div className="flex h-full flex-col gap-8 overflow-y-auto px-5 pt-6 pb-10">
@@ -62,6 +64,7 @@ export function KitPage() {
         <Button block disabled>
           Disabled
         </Button>
+        <Button size="sm">Small (list header)</Button>
       </Section>
 
       <Section title="Text inputs">
@@ -86,6 +89,7 @@ export function KitPage() {
       <Section title="Phone and code">
         <PhoneField label="Telefon raqam" value={phone} onChange={setPhone} />
         <OtpField label="Tasdiqlash kodi" value={code} onChange={setCode} />
+        <PassportField label="Pasport seriyasi va raqami" value={passport} onChange={setPassport} />
       </Section>
 
       <Section title="Checkbox">
