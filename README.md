@@ -35,12 +35,17 @@ src/
       components/      Feature-only components (add when needed)
       data/            Mock data and types (add when needed)
   shared/              Used by more than one feature
-    ui/                Button, TabBar, other primitives
+    ui/                Button, fields, Select, DatePicker, Sheet, TabBar
+    i18n/              Uzbek and Russian strings, useI18n
     lib/               cn, formatSum
     config/            Route paths
     styles/            Tailwind entry and design tokens
     assets/            Logo and images
 ```
+
+## Design rules
+
+Read [DESIGN.md](DESIGN.md) before building a screen. It defines colors, buttons, icons, form controls, the calendar and where things go. Open `/kit` in the running app to see every shared control.
 
 ## Rules
 
