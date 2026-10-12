@@ -1,11 +1,10 @@
-import { Bell, ShoppingBag } from 'lucide-react'
+import { Bell, FileClock } from 'lucide-react'
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { applicationStatusTone } from '@/entities/clients/applicationStatus'
 import { APPLICATION_STATUSES } from '@/entities/clients/clients'
 import { useApplications, type ApplicationWithClient } from '@/entities/clients/useApplications'
 import { unreadCount } from '@/entities/notifications/notifications'
-import { useOrders } from '@/entities/orders/orders'
 import { currentUser } from '@/entities/session/user'
 import { ROUTES } from '@/shared/config/routes'
 import { calendarNames } from '@/shared/i18n/dictionaries'
@@ -66,10 +65,11 @@ export function HomePage() {
   const { t, lang } = useI18n()
   const user = currentUser
   const navigate = useNavigate()
-  const pendingOrders = useOrders().filter((order) => order.status === 'pending').length
   const [period, setPeriod] = useState<Period>(() => ({ unit: 'week', anchor: new Date() }))
 
-  const items = useApplications().filter(({ application }) => inPeriod(application.date, period))
+  const all = useApplications()
+  const pendingOrders = all.filter(({ application }) => application.status === 'pending').length
+  const items = all.filter(({ application }) => inPeriod(application.date, period))
   const total = items.reduce((sum, { application }) => sum + application.installmentTotal, 0)
   const clientCount = new Set(items.map(({ client }) => client.id)).size
   const formatCount = (count: number) => t('home.chart.tip', { count: String(count) })
@@ -100,10 +100,10 @@ export function HomePage() {
 
       {pendingOrders > 0 && (
         <ActionCard
-          icon={ShoppingBag}
-          title={t('orders.new')}
-          description={t('orders.new.count', { count: String(pendingOrders) })}
-          onClick={() => navigate(ROUTES.orders)}
+          icon={FileClock}
+          title={t('home.pending.title')}
+          description={t('home.pending.count', { count: String(pendingOrders) })}
+          onClick={() => navigate(`${ROUTES.applications}?status=pending`)}
         />
       )}
 

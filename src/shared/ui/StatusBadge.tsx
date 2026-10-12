@@ -1,11 +1,12 @@
 import { cn } from '@/shared/lib/cn'
 
-export type StatusTone = 'success' | 'warning' | 'danger' | 'neutral'
+export type StatusTone = 'success' | 'warning' | 'danger' | 'info' | 'neutral'
 
 const tones: Record<StatusTone, string> = {
   success: 'bg-success-soft text-success',
   warning: 'bg-warning-soft text-warning',
   danger: 'bg-danger-soft text-danger',
+  info: 'bg-navy-200 text-brand',
   neutral: 'bg-navy-100 text-ink-muted',
 }
 

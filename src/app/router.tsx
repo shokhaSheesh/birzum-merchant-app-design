@@ -12,16 +12,17 @@ import { NewClientPage } from '@/features/clients/pages/NewClientPage'
 import { NewContractPage } from '@/features/clients/pages/NewContractPage'
 import { CustomerProfilePage } from '@/features/customer-app/pages/CustomerProfilePage'
 import { CartPage } from '@/features/customer-app/pages/CartPage'
-import { CatalogPage } from '@/features/customer-app/pages/CatalogPage'
+import { CustomerNotificationsPage } from '@/features/customer-app/pages/CustomerNotificationsPage'
 import { CustomerHomePage } from '@/features/customer-app/pages/CustomerHomePage'
 import { ProductPage } from '@/features/customer-app/pages/ProductPage'
 import { PurchasesPage } from '@/features/customer-app/pages/PurchasesPage'
+import { SearchPage } from '@/features/customer-app/pages/SearchPage'
+import { StorePage } from '@/features/customer-app/pages/StorePage'
+import { StoresPage } from '@/features/customer-app/pages/StoresPage'
 import { CustomerAuthPage } from '@/features/customer-auth/pages/CustomerAuthPage'
 import { HomePage } from '@/features/home/pages/HomePage'
 import { KitPage } from '@/features/kit/pages/KitPage'
 import { NotificationsPage } from '@/features/notifications/pages/NotificationsPage'
-import { OrderDetailPage } from '@/features/orders/pages/OrderDetailPage'
-import { OrdersPage } from '@/features/orders/pages/OrdersPage'
 import { ProfilePage } from '@/features/profile/pages/ProfilePage'
 import { ROUTES } from '@/shared/config/routes'
 import { DeviceLayout } from './layouts/DeviceLayout'
@@ -48,15 +49,16 @@ export const router = createBrowserRouter([
         element: <CustomerTabLayout />,
         children: [
           { path: ROUTES.customerHome, element: <CustomerHomePage /> },
-          { path: ROUTES.customerCatalog, element: <CatalogPage /> },
+          { path: ROUTES.customerStores, element: <StoresPage /> },
           { path: ROUTES.customerCart, element: <CartPage /> },
           { path: ROUTES.customerPurchases, element: <PurchasesPage /> },
           { path: ROUTES.customerProfile, element: <CustomerProfilePage /> },
         ],
       },
       { path: ROUTES.customerProduct, element: <ProductPage /> },
-      { path: ROUTES.orders, element: <OrdersPage /> },
-      { path: ROUTES.orderDetail, element: <OrderDetailPage /> },
+      { path: ROUTES.customerStore, element: <StorePage /> },
+      { path: ROUTES.customerSearch, element: <SearchPage /> },
+      { path: ROUTES.customerNotifications, element: <CustomerNotificationsPage /> },
       {
         element: <TabLayout tabs={merchantTabs} />,
         children: [

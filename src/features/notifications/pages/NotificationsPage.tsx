@@ -1,16 +1,15 @@
 import { ArrowLeft, Ban, CircleCheck, CircleX, FileSignature, type LucideIcon } from 'lucide-react'
 import { useState } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 import {
   applicationNotifications,
   newsNotifications,
-  type AppNotification,
   type NotificationType,
 } from '@/entities/notifications/notifications'
+import { NotificationRow } from '@/entities/notifications/ui/NotificationRow'
 import { applicationPath } from '@/shared/config/routes'
 import { useI18n } from '@/shared/i18n/useI18n'
-import { cn } from '@/shared/lib/cn'
-import { formatDateTime, groupDigits } from '@/shared/lib/format'
+import { groupDigits } from '@/shared/lib/format'
 import { EmptyState } from '@/shared/ui/EmptyState'
 import { SegmentedTabs } from '@/shared/ui/SegmentedTabs'
 
@@ -21,36 +20,6 @@ const looks: Record<NotificationType, { icon: LucideIcon; tone: string }> = {
   closed: { icon: CircleCheck, tone: 'bg-success-soft text-success' },
   rejected: { icon: CircleX, tone: 'bg-danger-soft text-danger' },
   cancelled: { icon: Ban, tone: 'bg-navy-100 text-ink-muted' },
-}
-
-function NotificationRow({ notification }: { notification: AppNotification }) {
-  const { t } = useI18n()
-  const { icon: Icon, tone } = looks[notification.type]
-
-  return (
-    <li className="border-b border-line last:border-b-0">
-      <Link
-        to={applicationPath(notification.applicationNumber)}
-        className="flex items-start gap-3 py-3"
-      >
-        <span className={cn('grid size-11 shrink-0 place-items-center rounded-full', tone)}>
-          <Icon size={22} />
-        </span>
-        <div className="flex min-w-0 flex-1 flex-col gap-0.5">
-          <p className="font-semibold">{t(`notification.${notification.type}.title`)}</p>
-          <p className="text-sm text-ink-muted">
-            {t(`notification.${notification.type}.body`, {
-              number: groupDigits(notification.applicationNumber),
-            })}
-          </p>
-          <p className="text-xs text-ink-subtle">{formatDateTime(notification.date)}</p>
-        </div>
-        {!notification.read && (
-          <span className="mt-2 size-2.5 shrink-0 rounded-full bg-green-500" aria-hidden />
-        )}
-      </Link>
-    </li>
-  )
 }
 
 export function NotificationsPage() {
@@ -93,7 +62,17 @@ export function NotificationsPage() {
         ) : (
           <ul className="rounded-card bg-surface px-4">
             {items.map((notification) => (
-              <NotificationRow key={notification.id} notification={notification} />
+              <NotificationRow
+                key={notification.id}
+                {...looks[notification.type]}
+                title={t(`notification.${notification.type}.title`)}
+                body={t(`notification.${notification.type}.body`, {
+                  number: groupDigits(notification.applicationNumber),
+                })}
+                date={notification.date}
+                unread={!notification.read}
+                to={applicationPath(notification.applicationNumber)}
+              />
             ))}
           </ul>
         )}

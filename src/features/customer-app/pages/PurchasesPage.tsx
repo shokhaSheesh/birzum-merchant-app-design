@@ -1,15 +1,14 @@
-import { orderStatusTone } from '@/entities/orders/orderStatus'
-import { useOrders } from '@/entities/orders/orders'
-import { getCustomerId } from '@/entities/session/customer'
+import { applicationStatusTone } from '@/entities/clients/applicationStatus'
+import { useCustomer } from '@/entities/session/customer'
 import { useI18n } from '@/shared/i18n/useI18n'
 import { formatDateTime, formatSum, groupDigits } from '@/shared/lib/format'
 import { EmptyState } from '@/shared/ui/EmptyState'
 import { StatusBadge } from '@/shared/ui/StatusBadge'
 
-/** The shopper's orders and what the merchant decided. */
+/** The shopper's own arizalar and where each one stands. */
 export function PurchasesPage() {
   const { t } = useI18n()
-  const orders = useOrders().filter((order) => order.clientId === getCustomerId())
+  const applications = useCustomer()?.applications ?? []
 
   return (
     <div className="flex min-h-full flex-col gap-4 px-5 pt-[max(1.5rem,env(safe-area-inset-top))] pb-tabbar">
@@ -17,35 +16,41 @@ export function PurchasesPage() {
         {t('customer.nav.purchases')}
       </h1>
 
-      {orders.length === 0 ? (
+      {applications.length === 0 ? (
         <div className="flex flex-1 flex-col justify-center">
           <EmptyState title={t('purchases.empty.title')} hint={t('purchases.empty.hint')} />
         </div>
       ) : (
         <ul className="flex flex-col gap-3">
-          {orders.map((order) => (
-            <li key={order.id} className="flex flex-col gap-2 rounded-card bg-surface p-4">
+          {applications.map((application) => (
+            <li key={application.id} className="flex flex-col gap-2 rounded-card bg-surface p-4">
               <div className="flex items-start justify-between gap-3">
                 <div className="flex flex-col gap-0.5">
                   <p className="font-semibold">
-                    {t('order.number', { number: groupDigits(order.id) })}
+                    {t('review.number', { number: groupDigits(application.id) })}
                   </p>
-                  <p className="text-sm text-ink-muted">{formatDateTime(order.date)}</p>
+                  <p className="text-sm text-ink-muted">{formatDateTime(application.date)}</p>
                 </div>
-                <StatusBadge tone={orderStatusTone[order.status]}>
-                  {t(`order.status.${order.status}`)}
+                <StatusBadge tone={applicationStatusTone[application.status]}>
+                  {t(`application.status.${application.status}`)}
                 </StatusBadge>
               </div>
-              <p className="text-sm text-ink-muted">
-                {order.items.map((item) => `${item.name} × ${item.quantity}`).join(', ')}
-              </p>
-              <div className="flex items-baseline justify-between border-t border-line pt-2">
-                <p className="text-sm text-ink-muted">
-                  {t('term.months', { count: String(order.terms.term) })} ·{' '}
-                  {formatSum(order.terms.monthlyPayment)}
-                </p>
-                <p className="font-bold">{formatSum(order.terms.installmentTotal)}</p>
-              </div>
+              {application.details && (
+                <>
+                  <p className="text-sm text-ink-muted">
+                    {application.details.products
+                      .map((item) => `${item.name} × ${item.quantity}`)
+                      .join(', ')}
+                  </p>
+                  <div className="flex items-baseline justify-between border-t border-line pt-2">
+                    <p className="text-sm text-ink-muted">
+                      {t('term.months', { count: String(application.details.term) })} ·{' '}
+                      {formatSum(application.details.monthlyPayment)}
+                    </p>
+                    <p className="font-bold">{formatSum(application.installmentTotal)}</p>
+                  </div>
+                </>
+              )}
             </li>
           ))}
         </ul>

@@ -6,7 +6,8 @@ export const MARITAL_STATUSES = ['single', 'married', 'divorced', 'widowed'] as 
 export type MaritalStatus = (typeof MARITAL_STATUSES)[number]
 
 export type IncomeSource = 'salary' | 'business' | 'pension' | 'other'
-export type ApplicationStatus = 'processing' | 'rejected' | 'closed' | 'cancelled'
+/** `pending` is an application a shopper sent from the client app, waiting for the merchant. */
+export type ApplicationStatus = 'pending' | 'processing' | 'rejected' | 'closed' | 'cancelled'
 
 export const TERMS = [3, 6, 9, 12, 18, 24] as const
 /** Installment length in months. */
@@ -319,6 +320,7 @@ export const seedClients: Client[] = [
 ]
 
 export const APPLICATION_STATUSES: ApplicationStatus[] = [
+  'pending',
   'processing',
   'closed',
   'rejected',

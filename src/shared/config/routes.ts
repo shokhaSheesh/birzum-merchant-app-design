@@ -13,12 +13,13 @@ export const ROUTES = {
   calculator: '/calculator',
   profile: '/profile',
   notifications: '/notifications',
-  orders: '/orders',
-  orderDetail: '/orders/:id',
   /** The separate app for shoppers. Its screens will live under this path. */
   customerApp: '/customer',
   customerHome: '/customer/home',
-  customerCatalog: '/customer/catalog',
+  customerStores: '/customer/stores',
+  customerStore: '/customer/stores/:id',
+  customerSearch: '/customer/search',
+  customerNotifications: '/customer/notifications',
   customerCart: '/customer/cart',
   customerProduct: '/customer/product/:id',
   customerPurchases: '/customer/purchases',
@@ -32,4 +33,6 @@ export const clientContractPath = (id: string, term: number) =>
   `/clients/${id}/contract/new?term=${term}`
 export const applicationPath = (number: number) => `/applications/${number}`
 export const customerProductPath = (id: string) => `/customer/product/${id}`
-export const orderPath = (id: number) => `/orders/${id}`
+export const customerStorePath = (id: string) => `/customer/stores/${id}`
+export const customerSearchPath = (category?: string) =>
+  category ? `/customer/search?category=${category}` : '/customer/search'

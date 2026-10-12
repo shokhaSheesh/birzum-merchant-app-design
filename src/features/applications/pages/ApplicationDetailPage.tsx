@@ -3,6 +3,7 @@ import { useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import { applicationStatusTone } from '@/entities/clients/applicationStatus'
 import { APPLICATION_STATUSES } from '@/entities/clients/clients'
+import { approveApplication, rejectApplication } from '@/entities/clients/applicationsApi'
 import { clientsStore } from '@/entities/clients/clientsStore'
 import { fullName, initials } from '@/entities/clients/clientName'
 import { ProductsSummary } from '@/entities/clients/ui/ProductsSummary'
@@ -28,6 +29,14 @@ export function ApplicationDetailPage() {
   const { number } = useParams()
   const found = useApplication(Number(number))
   const [statusOpen, setStatusOpen] = useState(false)
+  const [busy, setBusy] = useState<'approve' | 'reject' | null>(null)
+
+  const decide = async (decision: 'approve' | 'reject') => {
+    if (!found) return
+    setBusy(decision)
+    await (decision === 'approve' ? approveApplication : rejectApplication)(found.application.id)
+    setBusy(null)
+  }
 
   return (
     <div className="flex h-full flex-col">
@@ -155,6 +164,28 @@ export function ApplicationDetailPage() {
             </Section>
           )}
         </div>
+      )}
+
+      {found?.application.status === 'pending' && (
+        <footer className="flex shrink-0 flex-col gap-1 px-5 pt-3 pb-[max(1.25rem,env(safe-area-inset-bottom))]">
+          <Button
+            variant="ghost"
+            block
+            loading={busy === 'reject'}
+            disabled={busy !== null}
+            onClick={() => void decide('reject')}
+          >
+            {t('application.reject')}
+          </Button>
+          <Button
+            block
+            loading={busy === 'approve'}
+            disabled={busy !== null}
+            onClick={() => void decide('approve')}
+          >
+            {t('code.submit')}
+          </Button>
+        </footer>
       )}
     </div>
   )

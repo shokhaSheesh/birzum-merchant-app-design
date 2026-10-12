@@ -144,7 +144,7 @@ export function NewContractPage() {
         }
       >
         <div className="flex flex-col items-start gap-2">
-          <StatusBadge tone="warning">{t('application.status.processing')}</StatusBadge>
+          <StatusBadge tone="info">{t('application.status.processing')}</StatusBadge>
           <h1 className="text-2xl font-bold">{t('review.title')}</h1>
           <p className="text-ink-muted">
             {t('review.number', { number: groupDigits(review.number) })}

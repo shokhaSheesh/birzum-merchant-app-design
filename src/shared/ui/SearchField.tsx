@@ -9,9 +9,10 @@ type Props = {
   placeholder: string
   value: string
   onChange: (value: string) => void
+  autoFocus?: boolean
 }
 
-export function SearchField({ label, placeholder, value, onChange }: Props) {
+export function SearchField({ label, placeholder, value, onChange, autoFocus }: Props) {
   const { t } = useI18n()
   const id = useId()
 
@@ -22,6 +23,7 @@ export function SearchField({ label, placeholder, value, onChange }: Props) {
         id={id}
         type="search"
         enterKeyHint="search"
+        autoFocus={autoFocus}
         autoComplete="off"
         autoCorrect="off"
         spellCheck={false}

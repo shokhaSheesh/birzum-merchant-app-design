@@ -3,9 +3,9 @@ import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { cartStore, useCart } from '@/entities/cart/cartStore'
 import { ProductPicture } from '@/entities/catalog/ProductPicture'
+import { submitApplication } from '@/entities/clients/applicationsApi'
 import { TERMS, type Term } from '@/entities/clients/clients'
 import { installmentTerms } from '@/entities/clients/installment'
-import { placeOrder } from '@/entities/orders/orders'
 import { useCustomer } from '@/entities/session/customer'
 import { ROUTES } from '@/shared/config/routes'
 import { useI18n } from '@/shared/i18n/useI18n'
@@ -15,9 +15,9 @@ import { Button } from '@/shared/ui/Button'
 import { ChoiceGrid } from '@/shared/ui/ChoiceGrid'
 import { EmptyState } from '@/shared/ui/EmptyState'
 import { InstallmentTermsCard } from '@/shared/ui/InstallmentTermsCard'
-import { QuantityField } from '@/shared/ui/QuantityField'
+import { QuantityStepper } from '@/shared/ui/QuantityField'
 
-/** The cart doubles as checkout: products, the term, what it will cost, and one button to order. */
+/** The cart doubles as checkout: products, the term, what it will cost, and one button to send. */
 export function CartPage() {
   const { t } = useI18n()
   const navigate = useNavigate()
@@ -58,7 +58,7 @@ export function CartPage() {
         {title}
         <div className="flex flex-1 flex-col justify-center gap-4">
           <EmptyState title={t('cart.empty.title')} hint={t('cart.empty.hint')} />
-          <Button variant="secondary" block onClick={() => navigate(ROUTES.customerCatalog)}>
+          <Button variant="secondary" block onClick={() => navigate(ROUTES.customerHome)}>
             {t('cart.toCatalog')}
           </Button>
         </div>
@@ -77,11 +77,11 @@ export function CartPage() {
   const checkout = async () => {
     if (!customer || error) return
     setLoading(true)
-    await placeOrder(
+    await submitApplication(
       customer.id,
-      lines.map(({ product, quantity }) => ({
-        name: product.name,
-        price: product.price,
+      lines.map(({ product, variant, unitPrice, quantity }) => ({
+        name: variant.length > 0 ? `${product.name} (${variant.join(', ')})` : product.name,
+        price: unitPrice,
         quantity,
       })),
       term,
@@ -95,26 +95,32 @@ export function CartPage() {
       {title}
 
       <ul className="flex flex-col gap-3">
-        {lines.map(({ product, quantity }) => (
-          <li key={product.id} className="flex gap-3 rounded-card bg-surface p-3">
+        {lines.map(({ key, product, variant, unitPrice, quantity }) => (
+          <li key={key} className="flex gap-3 rounded-card bg-surface p-3">
             <ProductPicture category={product.category} className="w-20 shrink-0 rounded-control" />
             <div className="flex min-w-0 flex-1 flex-col gap-2">
               <div className="flex items-start justify-between gap-2">
-                <p className="leading-tight font-semibold">{product.name}</p>
+                <div className="flex min-w-0 flex-col gap-0.5">
+                  <p className="leading-tight font-semibold">{product.name}</p>
+                  {variant.length > 0 && (
+                    <p className="text-sm text-ink-muted">{variant.join(' · ')}</p>
+                  )}
+                </div>
                 <button
                   type="button"
                   aria-label={t('cart.remove')}
-                  onClick={() => cartStore.remove(product.id)}
+                  onClick={() => cartStore.remove(key)}
                   className="-mt-1.5 -mr-1.5 grid size-10 shrink-0 place-items-center rounded-full text-danger active:bg-danger-soft"
                 >
                   <Trash2 size={20} />
                 </button>
               </div>
-              <p className="font-bold">{formatSum(product.price * quantity)}</p>
-              <QuantityField
+              <p className="font-bold">{formatSum(unitPrice * quantity)}</p>
+              <QuantityStepper
                 label={t('field.quantity')}
                 value={quantity}
-                onChange={(value) => cartStore.setQuantity(product.id, value)}
+                max={product.stock}
+                onChange={(value) => cartStore.setQuantity(key, value)}
               />
             </div>
           </li>

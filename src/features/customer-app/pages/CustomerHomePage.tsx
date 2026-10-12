@@ -1,21 +1,23 @@
-import { Search, Sparkles } from 'lucide-react'
+import { Bell, Search, Sparkles } from 'lucide-react'
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
-import { products } from '@/entities/catalog/products'
+import { CATEGORIES, products } from '@/entities/catalog/products'
 import { initials } from '@/entities/clients/clientName'
 import { calculateLimit } from '@/entities/clients/limitsApi'
 import { useCustomer } from '@/entities/session/customer'
-import { ROUTES } from '@/shared/config/routes'
+import { customerSearchPath, ROUTES } from '@/shared/config/routes'
 import { useI18n } from '@/shared/i18n/useI18n'
 import { formatSum } from '@/shared/lib/format'
 import { Avatar } from '@/shared/ui/Avatar'
 import { Button } from '@/shared/ui/Button'
 import { Section } from '@/shared/ui/Section'
+import { categoryIcons } from '../components/categoryIcons'
 import { ProductCard } from '../components/ProductCard'
 
-const POPULAR = 4
+const roundButton =
+  'relative grid size-11 shrink-0 place-items-center rounded-full bg-surface text-brand active:bg-navy-100'
 
-/** Shopper home: their limit first, since nothing can be bought without one, then products. */
+/** Shopper home, top to bottom: search and notifications, the limit, categories, products. */
 export function CustomerHomePage() {
   const { t } = useI18n()
   const customer = useCustomer()
@@ -23,6 +25,7 @@ export function CustomerHomePage() {
 
   if (!customer) return null
   const highestLimit = customer.limits && Math.max(...Object.values(customer.limits))
+  const hasNews = customer.applications.length > 0
 
   const getLimit = async () => {
     setLoading(true)
@@ -32,11 +35,24 @@ export function CustomerHomePage() {
 
   return (
     <div className="flex min-h-full flex-col gap-6 px-5 pt-[max(1rem,env(safe-area-inset-top))] pb-tabbar">
-      <header className="flex items-center gap-3">
+      <header className="flex items-center gap-2">
         <Avatar initials={initials(customer)} photoUrl={customer.photoUrl} />
-        <p className="truncate text-lg font-bold">
+        <p className="min-w-0 flex-1 truncate pl-1 text-lg font-bold">
           {t('home.greeting', { name: customer.firstName })}
         </p>
+        <Link to={customerSearchPath()} aria-label={t('search.title')} className={roundButton}>
+          <Search size={22} />
+        </Link>
+        <Link
+          to={ROUTES.customerNotifications}
+          aria-label={t('notifications.title')}
+          className={roundButton}
+        >
+          <Bell size={22} />
+          {hasNews && (
+            <span className="absolute top-2.5 right-2.5 size-2.5 rounded-full bg-green-500 ring-2 ring-surface" />
+          )}
+        </Link>
       </header>
 
       {highestLimit === null ? (
@@ -60,24 +76,36 @@ export function CustomerHomePage() {
         </section>
       )}
 
-      <Link
-        to={ROUTES.customerCatalog}
-        className="flex h-13 items-center gap-2 rounded-control bg-surface px-4 text-ink-subtle"
-      >
-        <Search size={20} />
-        {t('catalog.search')}
-      </Link>
+      <Section title={t('chome.categories')}>
+        <div className="grid grid-cols-4 gap-2">
+          {CATEGORIES.map((category) => {
+            const Icon = categoryIcons[category]
+            return (
+              <Link
+                key={category}
+                to={customerSearchPath(category)}
+                className="flex min-w-0 flex-col items-center gap-1.5 text-center text-xs leading-tight font-medium"
+              >
+                <span className="grid aspect-square w-full place-items-center rounded-card bg-surface text-brand active:bg-navy-100">
+                  <Icon size={28} />
+                </span>
+                {t(`catalog.category.${category}`)}
+              </Link>
+            )
+          })}
+        </div>
+      </Section>
 
       <Section
         title={t('catalog.popular')}
         action={
-          <Link to={ROUTES.customerCatalog} className="text-sm font-semibold text-brand">
+          <Link to={customerSearchPath()} className="text-sm font-semibold text-brand">
             {t('catalog.all')}
           </Link>
         }
       >
         <div className="grid grid-cols-2 gap-x-3 gap-y-5">
-          {products.slice(0, POPULAR).map((product) => (
+          {products.map((product) => (
             <ProductCard key={product.id} product={product} />
           ))}
         </div>

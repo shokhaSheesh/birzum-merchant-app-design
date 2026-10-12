@@ -1,81 +1,169 @@
-import { ArrowLeft, ShoppingCart } from 'lucide-react'
+import { ChevronRight, ShoppingCart, Store as StoreIcon } from 'lucide-react'
 import { useState } from 'react'
-import { Navigate, useNavigate, useParams } from 'react-router-dom'
-import { cartStore, useCart } from '@/entities/cart/cartStore'
+import { Link, Navigate, useNavigate, useParams } from 'react-router-dom'
+import { cartKey, cartStore, useCart } from '@/entities/cart/cartStore'
 import { ProductPicture } from '@/entities/catalog/ProductPicture'
-import { getProduct } from '@/entities/catalog/products'
+import { getProduct, getStore, products, type Product } from '@/entities/catalog/products'
 import { TERMS, type Term } from '@/entities/clients/clients'
 import { installmentTerms } from '@/entities/clients/installment'
 import { useCustomer } from '@/entities/session/customer'
-import { ROUTES } from '@/shared/config/routes'
+import { customerStorePath, ROUTES } from '@/shared/config/routes'
 import { useI18n } from '@/shared/i18n/useI18n'
 import { formatSum } from '@/shared/lib/format'
 import { Alert } from '@/shared/ui/Alert'
 import { Button } from '@/shared/ui/Button'
 import { ChoiceGrid } from '@/shared/ui/ChoiceGrid'
+import { InfoList, InfoRow } from '@/shared/ui/InfoList'
 import { InstallmentTermsCard } from '@/shared/ui/InstallmentTermsCard'
+import { QuantityStepper } from '@/shared/ui/QuantityField'
+import { Section } from '@/shared/ui/Section'
+import { StatusBadge } from '@/shared/ui/StatusBadge'
+import { PageHeader } from '../components/PageHeader'
+import { ProductCard } from '../components/ProductCard'
 
 export function ProductPage() {
-  const { t } = useI18n()
-  const navigate = useNavigate()
   const { id } = useParams()
   const product = getProduct(id)
+
+  if (!product) return <Navigate to={ROUTES.customerHome} replace />
+  // Keyed, so the chosen options start fresh when a similar product is opened
+  return <ProductDetails key={product.id} product={product} />
+}
+
+function ProductDetails({ product }: { product: Product }) {
+  const { t } = useI18n()
+  const navigate = useNavigate()
   const customer = useCustomer()
   const { lines } = useCart()
   const [term, setTerm] = useState<Term>(12)
+  /** The picked option of each variation, by position. */
+  const [picked, setPicked] = useState<number[]>(() => product.variations.map(() => 0))
 
-  if (!product) return <Navigate to={ROUTES.customerCatalog} replace />
-  const inCart = lines.some((line) => line.product.id === product.id)
+  const store = getStore(product.storeId)
+  const options = product.variations.map((variation, i) => variation.options[picked[i]])
+  const variant = options.map((option) => option.label)
+  const unitPrice = product.price + options.reduce((sum, o) => sum + (o.priceDelta ?? 0), 0)
+  const line = lines.find((l) => l.key === cartKey(product.id, variant))
   const hasLimit = !!customer?.limits
+  const inStock = product.stock > 0
+  const similar = products.filter((p) => p.category === product.category && p.id !== product.id)
 
   return (
     <div className="flex h-full flex-col">
-      <header className="flex shrink-0 items-center px-5 pt-[max(0.75rem,env(safe-area-inset-top))] pb-2">
-        <button
-          type="button"
-          onClick={() => navigate(-1)}
-          aria-label={t('common.back')}
-          className="-ml-2 grid size-10 place-items-center rounded-full text-brand active:bg-surface"
-        >
-          <ArrowLeft size={24} />
-        </button>
-      </header>
+      <PageHeader />
 
-      <div className="flex min-h-0 flex-1 flex-col gap-5 overflow-y-auto px-5 pb-4">
+      <div className="flex min-h-0 flex-1 flex-col gap-6 overflow-y-auto px-5 pb-4">
         <ProductPicture category={product.category} className="aspect-[1/0.8]! rounded-card" />
-        <div className="flex flex-col gap-1">
-          <p className="text-sm text-ink-muted">{product.store}</p>
+
+        <div className="flex flex-col items-start gap-2">
+          <StatusBadge tone={inStock ? 'success' : 'danger'}>
+            {inStock
+              ? t('product.stock.in', { count: String(product.stock) })
+              : t('product.stock.out')}
+          </StatusBadge>
           <h1 className="text-xl leading-tight font-bold">{product.name}</h1>
-          <p className="text-ink-muted">
-            {t('product.price')}:{' '}
-            <span className="font-bold text-ink">{formatSum(product.price)}</span>
-          </p>
+          <p className="text-2xl font-bold">{formatSum(unitPrice)}</p>
         </div>
-        <ChoiceGrid
-          label={t('cart.term')}
-          columns={6}
-          options={TERMS.map((value) => ({
-            value,
-            label: String(value),
-            description: t('common.months'),
-          }))}
-          value={term}
-          onChange={setTerm}
-        />
-        <InstallmentTermsCard terms={installmentTerms(product.price, term)} />
+
+        {product.variations.map((variation, i) => (
+          <ChoiceGrid
+            key={variation.name}
+            label={variation.name}
+            columns={3}
+            options={variation.options.map((option, index) => ({
+              value: index,
+              label: option.label,
+            }))}
+            value={picked[i]}
+            onChange={(index) => setPicked((list) => list.map((v, at) => (at === i ? index : v)))}
+          />
+        ))}
+
+        {store && (
+          <Section title={t('product.store')}>
+            <Link
+              to={customerStorePath(store.id)}
+              className="flex items-center gap-3 rounded-card bg-surface p-4 active:bg-navy-100"
+            >
+              <span className="grid size-11 shrink-0 place-items-center rounded-full bg-canvas text-brand">
+                <StoreIcon size={22} />
+              </span>
+              <div className="flex min-w-0 flex-1 flex-col gap-0.5">
+                <p className="truncate font-semibold">{store.name}</p>
+                <p className="truncate text-sm text-ink-muted">{store.address}</p>
+              </div>
+              <ChevronRight size={20} className="shrink-0 text-ink-subtle" />
+            </Link>
+          </Section>
+        )}
+
+        <Section title={t('contract.conditions')}>
+          <ChoiceGrid
+            label={t('cart.term')}
+            columns={6}
+            options={TERMS.map((value) => ({
+              value,
+              label: String(value),
+              description: t('common.months'),
+            }))}
+            value={term}
+            onChange={setTerm}
+          />
+          <InstallmentTermsCard terms={installmentTerms(unitPrice, term)} />
+        </Section>
+
+        <Section title={t('product.description')}>
+          <p className="text-ink-muted">{product.description}</p>
+        </Section>
+
+        <Section title={t('product.specs')}>
+          <InfoList>
+            {product.specs.map(([label, value]) => (
+              <InfoRow key={label} label={label} value={value} />
+            ))}
+          </InfoList>
+        </Section>
+
+        {similar.length > 0 && (
+          <Section title={t('product.similar')}>
+            <div className="-mx-5 flex snap-x scroll-px-5 gap-3 overflow-x-auto px-5 pb-1">
+              {similar.map((item) => (
+                <div key={item.id} className="w-40 shrink-0 snap-start">
+                  <ProductCard product={item} />
+                </div>
+              ))}
+            </div>
+          </Section>
+        )}
       </div>
 
-      <footer className="flex shrink-0 flex-col gap-3 px-5 pt-3 pb-[max(1.25rem,env(safe-area-inset-bottom))]">
-        {!hasLimit && <Alert message={t('product.needLimit')} />}
-        {inCart ? (
-          <Button variant="secondary" block onClick={() => navigate(ROUTES.customerCart)}>
-            <ShoppingCart size={20} />
-            {t('product.inCart')}
-          </Button>
+      <footer className="flex shrink-0 flex-col gap-3 border-t border-line px-5 pt-3 pb-[max(1.25rem,env(safe-area-inset-bottom))]">
+        {!hasLimit && inStock && <Alert message={t('product.needLimit')} />}
+        {line ? (
+          // Once it is in the cart: change the quantity here, or go to the cart
+          <div className="flex gap-3">
+            <div className="w-36 shrink-0">
+              <QuantityStepper
+                label={t('field.quantity')}
+                value={line.quantity}
+                min={0}
+                max={product.stock}
+                onChange={(quantity) => cartStore.setQuantity(line.key, quantity)}
+              />
+            </div>
+            <Button block className="min-w-0 flex-1" onClick={() => navigate(ROUTES.customerCart)}>
+              <ShoppingCart size={20} />
+              <span className="truncate">{t('product.inCart')}</span>
+            </Button>
+          </div>
         ) : (
-          <Button block disabled={!hasLimit} onClick={() => cartStore.add(product.id)}>
+          <Button
+            block
+            disabled={!hasLimit || !inStock}
+            onClick={() => cartStore.add(product, variant, unitPrice)}
+          >
             <ShoppingCart size={20} />
-            {t('product.addToCart')}
+            {inStock ? t('product.addToCart') : t('product.stock.out')}
           </Button>
         )}
       </footer>

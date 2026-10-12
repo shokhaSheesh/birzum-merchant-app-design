@@ -316,15 +316,16 @@ A detail screen (a client, later an application) is read top to bottom, so it is
 The repo holds the merchant app and the client (shopper) app. They share every token, control and rule in this file; nothing is restyled for one of them.
 
 - The client app lives under `/customer`. Each app has its own tab bar set in `src/app/tabs.ts`; the bar itself is the same component.
-- Client tabs: **Asosiy**, **Katalog**, **Savat** (the round middle button, with a green count badge when it holds items), **Xaridlar**, **Profil**.
-- The client has one entry screen for both sign-in and sign-up. Never show separate "Kirish" and "Roʻyxatdan oʻtish" buttons: the phone number decides.
-- An alternative way in (the merchant's QR code) is an `ActionCard` under the phone field, after an "yoki" divider. The primary button stays "Kodni olish".
-- **Buying flow.** The shopper gets a limit on Asosiy, adds products to the cart, picks a term and taps "Buyurtma berish". That sends an order to the merchant; nothing is created until the merchant approves it. Approval creates the ariza.
+- Client tabs: **Asosiy**, **Doʻkonlar**, **Savat** (the round middle button, with a green count badge when it holds items), **Xaridlar**, **Profil**.
+- **One record, two views.** What a shopper sends from the cart is an ariza, the same record the merchant works with. There is no separate "order". It arrives in the merchant's Arizalar with the amber status "Tasdiqlash kutilmoqda"; the merchant's ariza screen then ends with a ghost "Rad etish" above the primary "Tasdiqlash". The shopper sees the same ariza and status in Xaridlar.
+- The merchant's Asosiy shows a "Yangi arizalar" `ActionCard` only while some are waiting; it opens Arizalar already filtered to that status.
+- **Client Asosiy, top to bottom:** greeting with round search and bell buttons, the limit card, four category tiles, the product grid. Search is its own screen, opened by the search button or a category tile.
 - A product is always a `ProductCard` in a two-column grid: square picture on a tinted tile, name (two lines at most), price, and a green-tint pill with the lowest monthly payment ("oyiga … dan").
-- The cart is also the checkout: product rows with `QuantityField` and a red `Trash2`, the term `ChoiceGrid` showing the limit for each term, the `InstallmentTermsCard`, then the button. Going over the limit shows the `Alert` above the button and disables it.
+- **Product screen, top to bottom:** picture, stock badge, name and price; one `ChoiceGrid` per variation (the price follows the choice); the seller as a tappable card; the term and `InstallmentTermsCard`; description; characteristics in an `InfoList`; similar products in a sideways row.
+- **Its bottom bar changes once the product is in the cart:** "Savatga qoʻshish" becomes a `QuantityStepper` on the left and "Savatga oʻtish" on the right. Stepping down to zero removes it and brings the first button back. The same product with different options is a separate cart line.
+- An out-of-stock product has a red "Tugagan" badge and a disabled button. Quantity can never exceed the stock.
+- The cart is also the checkout: product rows with the chosen options, a `QuantityStepper` and a red `Trash2`; the term `ChoiceGrid` showing the limit for each term; the `InstallmentTermsCard`; then the button. Going over the limit shows the `Alert` above the button and disables it.
 - Without a limit the shopper can browse but not add to the cart; the product screen says so in an `Alert`.
-- Orders use three statuses on both sides: amber "Sotuvchi tasdiqlashi kutilmoqda", green "Tasdiqlangan", red "Rad etilgan".
-- The merchant sees waiting orders as an `ActionCard` at the top of Asosiy, shown only while there are some. The order screen ends with a ghost "Rad etish" above the primary "Tasdiqlash".
 - Every camera screen uses `CameraView`: an oval guide and the front camera for a face, a square guide and the back camera for a QR code.
 
 ## Home screen

@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { useSearchParams } from 'react-router-dom'
 import { shortName } from '@/entities/clients/clientName'
 import { APPLICATION_STATUSES, type ApplicationStatus } from '@/entities/clients/clients'
 import { ApplicationRow } from '@/entities/clients/ui/ApplicationRow'
@@ -15,7 +16,11 @@ type Filter = 'all' | ApplicationStatus
 export function ApplicationsPage() {
   const { t } = useI18n()
   const [query, setQuery] = useState('')
-  const [filter, setFilter] = useState<Filter>('all')
+  const [searchParams] = useSearchParams()
+  const requested = searchParams.get('status') as ApplicationStatus
+  const [filter, setFilter] = useState<Filter>(
+    APPLICATION_STATUSES.includes(requested) ? requested : 'all',
+  )
   const [range, setRange] = useState<DateRange>({ from: null, to: null })
 
   const all = useApplications()
