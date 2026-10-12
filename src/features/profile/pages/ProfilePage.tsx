@@ -1,4 +1,4 @@
-import { Bell, LogOut } from 'lucide-react'
+import { ArrowLeftRight, Bell, LogOut } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 import { unreadCount } from '@/entities/notifications/notifications'
 import { currentUser } from '@/entities/session/user'
@@ -60,6 +60,13 @@ export function ProfilePage() {
           unreadCount > 0 ? t('notifications.unread', { count: String(unreadCount) }) : undefined
         }
         onClick={() => navigate(ROUTES.notifications)}
+      />
+
+      <ActionCard
+        icon={ArrowLeftRight}
+        title={t('profile.switchToCustomer')}
+        description={t('profile.switchToCustomer.hint')}
+        onClick={() => navigate(ROUTES.customerApp)}
       />
 
       <Section title={t('profile.settings')}>

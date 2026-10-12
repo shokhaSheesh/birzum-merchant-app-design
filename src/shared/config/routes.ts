@@ -13,6 +13,8 @@ export const ROUTES = {
   calculator: '/calculator',
   profile: '/profile',
   notifications: '/notifications',
+  /** The separate app for shoppers. Its screens will live under this path. */
+  customerApp: '/customer',
   kit: '/kit',
 } as const
 

@@ -10,6 +10,7 @@ import { ClientDetailPage } from '@/features/clients/pages/ClientDetailPage'
 import { ClientsPage } from '@/features/clients/pages/ClientsPage'
 import { NewClientPage } from '@/features/clients/pages/NewClientPage'
 import { NewContractPage } from '@/features/clients/pages/NewContractPage'
+import { CustomerHomePage } from '@/features/customer-app/pages/CustomerHomePage'
 import { HomePage } from '@/features/home/pages/HomePage'
 import { KitPage } from '@/features/kit/pages/KitPage'
 import { NotificationsPage } from '@/features/notifications/pages/NotificationsPage'
@@ -32,6 +33,7 @@ export const router = createBrowserRouter([
       { path: ROUTES.clientContract, element: <NewContractPage /> },
       { path: ROUTES.applicationDetail, element: <ApplicationDetailPage /> },
       { path: ROUTES.notifications, element: <NotificationsPage /> },
+      { path: ROUTES.customerApp, element: <CustomerHomePage /> },
       {
         element: <TabLayout />,
         children: [
