@@ -35,7 +35,7 @@ export function LoginPage() {
         ? ROUTES.changePassword
         : needsLoginConfirmation()
           ? ROUTES.confirmLogin
-          : ROUTES.clients
+          : ROUTES.home
       navigate(next, { replace: true })
     } catch {
       setFailed(true)

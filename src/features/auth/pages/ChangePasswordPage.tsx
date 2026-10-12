@@ -36,7 +36,7 @@ export function ChangePasswordPage() {
 
     setLoading(true)
     await changePassword(password, logoutOthers)
-    navigate(needsLoginConfirmation() ? ROUTES.confirmLogin : ROUTES.clients, { replace: true })
+    navigate(needsLoginConfirmation() ? ROUTES.confirmLogin : ROUTES.home, { replace: true })
   }
 
   return (

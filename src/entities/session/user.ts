@@ -1,14 +1,8 @@
-import { mockPortrait } from '@/shared/lib/mockPortrait'
+import user4Photo from '@/shared/assets/people/user-4.jpg'
 
 // Invented sample merchant user. Replace with the signed-in user from the API.
 export const currentUser = {
-  photoUrl: mockPortrait({
-    hair: 'short',
-    hairColor: '#2b2118',
-    skin: '#e0ac82',
-    shirt: '#0b3d57',
-    background: '#e7f4cd',
-  }),
+  photoUrl: user4Photo,
   firstName: 'Aziz',
   lastName: 'Karimov',
   login: 'aziz.karimov',

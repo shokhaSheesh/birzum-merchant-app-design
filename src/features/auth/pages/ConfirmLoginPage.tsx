@@ -39,7 +39,7 @@ export function ConfirmLoginPage() {
         headerEnd={<LanguageSwitcher />}
         resend={() => sendLoginCode(phone)}
         verify={(code) => verifyLoginCode(phone, code)}
-        onVerified={() => navigate(ROUTES.clients, { replace: true })}
+        onVerified={() => navigate(ROUTES.home, { replace: true })}
       />
     )
   }

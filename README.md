@@ -30,9 +30,11 @@ src/
     clients/           Client and application types, mock store, hooks, shared rows
   features/            One folder per product area
     auth/
+    home/
     clients/
     applications/
     calculator/
+    notifications/
     profile/
       pages/           Routed screens
       components/      Feature-only components (add when needed)

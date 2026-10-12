@@ -1,3 +1,6 @@
+import user1Photo from '@/shared/assets/people/user-1.jpg'
+import user2Photo from '@/shared/assets/people/user-2.jpg'
+import user3Photo from '@/shared/assets/people/user-3.jpg'
 import { mockPortrait } from '@/shared/lib/mockPortrait'
 
 export const MARITAL_STATUSES = ['single', 'married', 'divorced', 'widowed'] as const
@@ -116,13 +119,7 @@ function fromSeed({ born, issued, cards = [], applications = [], ...rest }: Seed
 export const seedClients: Client[] = [
   fromSeed({
     id: '1',
-    photoUrl: mockPortrait({
-      hair: 'long',
-      hairColor: '#2b2118',
-      skin: '#f1c9a5',
-      shirt: '#85c905',
-      background: '#e7f4cd',
-    }),
+    photoUrl: user1Photo,
     lastName: 'Karimova',
     firstName: 'Dilnoza',
     middleName: 'Rustam qizi',
@@ -190,14 +187,7 @@ export const seedClients: Client[] = [
   }),
   fromSeed({
     id: '2',
-    photoUrl: mockPortrait({
-      hair: 'short',
-      hairColor: '#1e1e1e',
-      skin: '#e0ac82',
-      shirt: '#0b3d57',
-      background: '#ced8dd',
-      moustache: true,
-    }),
+    photoUrl: user2Photo,
     lastName: 'Toshpoʻlatov',
     firstName: 'Jasur',
     middleName: 'Anvar oʻgʻli',
@@ -253,13 +243,7 @@ export const seedClients: Client[] = [
   }),
   fromSeed({
     id: '4',
-    photoUrl: mockPortrait({
-      hair: 'side',
-      hairColor: '#2b2118',
-      skin: '#c98e63',
-      shirt: '#e7ecee',
-      background: '#9db1bc',
-    }),
+    photoUrl: user3Photo,
     lastName: 'Rahimov',
     firstName: 'Bobur',
     middleName: 'Shavkat oʻgʻli',

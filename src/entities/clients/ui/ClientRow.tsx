@@ -5,8 +5,8 @@ import { useI18n } from '@/shared/i18n/useI18n'
 import { formatPassport } from '@/shared/lib/passport'
 import { formatPhone } from '@/shared/lib/phone'
 import { Avatar } from '@/shared/ui/Avatar'
-import type { Client } from '@/entities/clients/clients'
-import { initials, shortName } from '@/entities/clients/clientName'
+import type { Client } from '../clients'
+import { initials, shortName } from '../clientName'
 
 export function ClientRow({ client }: { client: Client }) {
   const { t } = useI18n()

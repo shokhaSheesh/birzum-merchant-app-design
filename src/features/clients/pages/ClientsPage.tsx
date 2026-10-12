@@ -6,7 +6,7 @@ import { useI18n } from '@/shared/i18n/useI18n'
 import { Button } from '@/shared/ui/Button'
 import { EmptyState } from '@/shared/ui/EmptyState'
 import { SearchField } from '@/shared/ui/SearchField'
-import { ClientRow } from '../components/ClientRow'
+import { ClientRow } from '@/entities/clients/ui/ClientRow'
 import { useClients } from '@/entities/clients/useClients'
 import { searchClients } from '../lib/searchClients'
 

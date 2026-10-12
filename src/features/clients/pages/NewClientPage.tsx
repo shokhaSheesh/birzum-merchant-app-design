@@ -1,7 +1,7 @@
 import { IdCard, Smartphone } from 'lucide-react'
 import { useCallback, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { clientPath, ROUTES } from '@/shared/config/routes'
+import { clientPath } from '@/shared/config/routes'
 import { useI18n } from '@/shared/i18n/useI18n'
 import { isPassport } from '@/shared/lib/passport'
 import { formatPhone, PHONE_DIGITS } from '@/shared/lib/phone'
@@ -55,7 +55,8 @@ export function NewClientPage() {
   })
 
   const progress = { step: STEPS.indexOf(step) + 1, total: STEPS.length }
-  const backToList = () => navigate(ROUTES.clients)
+  // Opened from the clients list or the home shortcut, so go back to wherever that was
+  const backToList = () => navigate(-1)
   const goTo = useCallback((next: Step) => {
     setSubmitted(false)
     setLoading(false)

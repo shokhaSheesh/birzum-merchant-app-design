@@ -126,7 +126,7 @@ Every form uses `FormScreen`: back arrow at the top left, scrolling body, primar
 
 ### Tab bar
 
-Four tabs, always in this order, on every main screen: **Klientlar**, **Arizalar**, **Kalkulyator**, **Profil**. The active tab is navy, the others are `ink-subtle`. Auth screens and step-by-step flows have no tab bar.
+Five tabs, always in this order, on every main screen: **Asosiy**, **Klientlar**, **Arizalar**, **Kalkulyator**, **Profil**. Five is the maximum; anything else is reached from inside a tab. The active tab is navy, the others are `ink-subtle`. Auth screens and step-by-step flows have no tab bar.
 - Destructive actions are never the bottom primary button without a confirmation sheet first.
 
 ## Icons
@@ -147,6 +147,7 @@ Four tabs, always in this order, on every main screen: **Klientlar**, **Arizalar
 | Selected, passed | `Check` |
 | Error | `CircleAlert` |
 | Language | `Globe` |
+| Home tab | `House` |
 | Clients tab | `Users` |
 | Applications tab | `FileText` |
 | Calculator tab | `Calculator` |
@@ -293,7 +294,7 @@ A detail screen (a client, later an application) is read top to bottom, so it is
 
 - Top bar: back arrow and a short screen name ("Klient"). No tab bar.
 - Hero: `Avatar` (photo, or initials when there is none), the full name, and one key line under it.
-- People are always shown with `Avatar`, a circle, in lists and on detail screens. Sample data uses drawn portraits from `mockPortrait`, never photos of real people; the real app puts the MyID photo in the same circle.
+- People are always shown with `Avatar`, a circle, in lists and on detail screens. A person without a photo gets their initials. Sample photos live in `src/shared/assets/people`, cropped square around the face.
 - Each block is a `Section` with a `text-lg font-bold` title. 28px between sections.
 - Read-only facts go in an `InfoList`: label on the left in `text-sm text-ink-muted`, value on the right in `font-semibold`. Group related facts into one list; do not mix unrelated ones.
 - Statuses use `StatusBadge`: red for rejected, amber for pending, green for approved, grey for closed or cancelled. The badge text is the status name, never just a color.
@@ -304,6 +305,15 @@ A detail screen (a client, later an application) is read top to bottom, so it is
 - An empty section says so in one muted line ("Hali kontakt kiritilmagan."). It is never hidden.
 - A link to another screen from a settings-like page (Profile to notifications) is an `ActionCard`, with the count or state as its description.
 - Notification rows: a tinted round icon for the kind of event, a bold title, one line of detail, the date and time in small text, and a green dot on the right while unread.
+
+## Home screen
+
+Asosiy is a summary, so it only links to things that exist elsewhere and never holds a form.
+
+- Top row: the user's `Avatar`, a greeting with the store and branch, and a round bell button on the right with a green dot while there are unread notifications.
+- One headline number on a navy tile (`bg-tile`), with a row of three `StatTile`s under it. A stat that has a list behind it is a link to that list.
+- Shortcuts are `ShortcutTile`s in a three-column grid: icon in a white circle over a short label. They are links, not buttons, so the screen has no primary button.
+- "Recent" sections show at most three rows, using the same row components as the full lists, with a "Hammasi" link at the right of the section title.
 
 ## Logo
 
