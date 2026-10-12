@@ -1,6 +1,6 @@
 # Birzum Merchant App
 
-Mobile merchant app for Birzum nasiya (BNPL), built as a React front end. It mirrors the existing web merchant cabinet, redesigned for phones.
+Mobile apps for Birzum nasiya (BNPL), built as a React front end: the merchant app, which mirrors the existing web merchant cabinet, and the client app for shoppers under `/customer`. Profile switches between them.
 
 ## Stack
 
@@ -28,7 +28,7 @@ The app is a single-page app, so the host must serve `index.html` for every path
 
 ```
 src/
-  app/                 App shell: router and layouts
+  app/                 App shell: router, layouts and the two tab bar sets
     layouts/           DeviceLayout (phone-width frame), TabLayout (bottom tabs)
   entities/            Business data shared by several features
     clients/           Client and application types, mock store, hooks, shared rows
@@ -40,6 +40,8 @@ src/
     calculator/
     notifications/
     profile/
+    customer-auth/     Client app: sign-in and sign-up
+    customer-app/      Client app: tab screens
       pages/           Routed screens
       components/      Feature-only components (add when needed)
       data/            Mock data and types (add when needed)

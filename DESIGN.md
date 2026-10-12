@@ -122,7 +122,7 @@ Every form uses `FormScreen`: back arrow at the top left, scrolling body, primar
 - Long forms are split into `Section`s with a title and a one-line hint. Repeating groups such as products are each a `surface` card with a numbered heading, a red `Trash2` button at its top right when more than one exists, and a `secondary` "add" button under the last card.
 - A form that works with totals ends with a summary `InfoList` (limit, total, financed amount) just above the bottom button.
 - When a step offers different ways to continue instead of a form, show them as `ActionCard`s (icon, title, one-line description, chevron) and leave out the bottom button. The MyID step does this for "on this device" and "by QR code".
-- Camera views sit in a rounded dark frame with a green oval guide. QR codes are navy on white inside a bordered card, with a "waiting" line and spinner below.
+- Camera views (`CameraView`) sit in a rounded dark frame with a green guide: an oval for a face, a square for a code. QR codes are navy on white inside a bordered card, with a "waiting" line and spinner below.
 
 ### Tab bar
 
@@ -310,6 +310,16 @@ A detail screen (a client, later an application) is read top to bottom, so it is
 - An empty section says so in one muted line ("Hali kontakt kiritilmagan."). It is never hidden.
 - A link to another screen from a settings-like page (Profile to notifications) is an `ActionCard`, with the count or state as its description.
 - Notification rows: a tinted round icon for the kind of event, a bold title, one line of detail, the date and time in small text, and a green dot on the right while unread.
+
+## Two apps, one system
+
+The repo holds the merchant app and the client (shopper) app. They share every token, control and rule in this file; nothing is restyled for one of them.
+
+- The client app lives under `/customer`. Each app has its own tab bar set in `src/app/tabs.ts`; the bar itself is the same component.
+- Client tabs: **Asosiy**, **Katalog**, **Toʻlovlar** (the round middle button), **Xaridlar**, **Profil**.
+- The client has one entry screen for both sign-in and sign-up. Never show separate "Kirish" and "Roʻyxatdan oʻtish" buttons: the phone number decides.
+- An alternative way in (the merchant's QR code) is an `ActionCard` under the phone field, after an "yoki" divider. The primary button stays "Kodni olish".
+- Every camera screen uses `CameraView`: an oval guide and the front camera for a face, a square guide and the back camera for a QR code.
 
 ## Home screen
 

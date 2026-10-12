@@ -1,22 +1,13 @@
-import { Calculator, FileText, House, UserRound, Users, type LucideIcon } from 'lucide-react'
+import type { LucideIcon } from 'lucide-react'
 import { NavLink } from 'react-router-dom'
-import { ROUTES } from '@/shared/config/routes'
 import type { TranslationKey } from '@/shared/i18n/dictionaries'
 import { useI18n } from '@/shared/i18n/useI18n'
 import { cn } from '@/shared/lib/cn'
 
-type Tab = { to: string; label: TranslationKey; icon: LucideIcon; center?: boolean }
+export type Tab = { to: string; label: TranslationKey; icon: LucideIcon; center?: boolean }
 
-const tabs: Tab[] = [
-  { to: ROUTES.home, label: 'nav.home', icon: House },
-  { to: ROUTES.clients, label: 'nav.clients', icon: Users },
-  { to: ROUTES.calculator, label: 'nav.calculator', icon: Calculator, center: true },
-  { to: ROUTES.applications, label: 'nav.applications', icon: FileText },
-  { to: ROUTES.profile, label: 'nav.profile', icon: UserRound },
-]
-
-/** Floating glass tab bar. The calculator sits in the middle as a raised round button. */
-export function TabBar() {
+/** Floating glass tab bar. A tab marked `center` is drawn as a raised round button. */
+export function TabBar({ tabs }: { tabs: Tab[] }) {
   const { t } = useI18n()
 
   return (

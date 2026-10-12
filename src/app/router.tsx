@@ -10,7 +10,9 @@ import { ClientDetailPage } from '@/features/clients/pages/ClientDetailPage'
 import { ClientsPage } from '@/features/clients/pages/ClientsPage'
 import { NewClientPage } from '@/features/clients/pages/NewClientPage'
 import { NewContractPage } from '@/features/clients/pages/NewContractPage'
-import { CustomerHomePage } from '@/features/customer-app/pages/CustomerHomePage'
+import { CustomerProfilePage } from '@/features/customer-app/pages/CustomerProfilePage'
+import { CustomerStubPage } from '@/features/customer-app/pages/CustomerStubPage'
+import { CustomerAuthPage } from '@/features/customer-auth/pages/CustomerAuthPage'
 import { HomePage } from '@/features/home/pages/HomePage'
 import { KitPage } from '@/features/kit/pages/KitPage'
 import { NotificationsPage } from '@/features/notifications/pages/NotificationsPage'
@@ -18,6 +20,7 @@ import { ProfilePage } from '@/features/profile/pages/ProfilePage'
 import { ROUTES } from '@/shared/config/routes'
 import { DeviceLayout } from './layouts/DeviceLayout'
 import { TabLayout } from './layouts/TabLayout'
+import { customerTabs, merchantTabs } from './tabs'
 
 export const router = createBrowserRouter([
   {
@@ -33,9 +36,28 @@ export const router = createBrowserRouter([
       { path: ROUTES.clientContract, element: <NewContractPage /> },
       { path: ROUTES.applicationDetail, element: <ApplicationDetailPage /> },
       { path: ROUTES.notifications, element: <NotificationsPage /> },
-      { path: ROUTES.customerApp, element: <CustomerHomePage /> },
+      { path: ROUTES.customerApp, element: <CustomerAuthPage /> },
       {
-        element: <TabLayout />,
+        element: <TabLayout tabs={customerTabs} />,
+        children: [
+          { path: ROUTES.customerHome, element: <CustomerStubPage title="nav.home" /> },
+          {
+            path: ROUTES.customerCatalog,
+            element: <CustomerStubPage title="customer.nav.catalog" />,
+          },
+          {
+            path: ROUTES.customerPayments,
+            element: <CustomerStubPage title="customer.nav.payments" />,
+          },
+          {
+            path: ROUTES.customerPurchases,
+            element: <CustomerStubPage title="customer.nav.purchases" />,
+          },
+          { path: ROUTES.customerProfile, element: <CustomerProfilePage /> },
+        ],
+      },
+      {
+        element: <TabLayout tabs={merchantTabs} />,
         children: [
           { path: ROUTES.home, element: <HomePage /> },
           { path: ROUTES.clients, element: <ClientsPage /> },
