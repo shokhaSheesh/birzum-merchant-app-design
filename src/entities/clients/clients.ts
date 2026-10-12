@@ -1,3 +1,5 @@
+import { mockPortrait } from '@/shared/lib/mockPortrait'
+
 export const MARITAL_STATUSES = ['single', 'married', 'divorced', 'widowed'] as const
 export type MaritalStatus = (typeof MARITAL_STATUSES)[number]
 
@@ -79,7 +81,7 @@ export type Client = {
 
 type Seed = Pick<
   Client,
-  'id' | 'lastName' | 'firstName' | 'middleName' | 'phone' | 'pinfl' | 'passport'
+  'id' | 'photoUrl' | 'lastName' | 'firstName' | 'middleName' | 'phone' | 'pinfl' | 'passport'
 > & {
   born: [number, number, number]
   issued: [number, number, number]
@@ -114,6 +116,13 @@ function fromSeed({ born, issued, cards = [], applications = [], ...rest }: Seed
 export const seedClients: Client[] = [
   fromSeed({
     id: '1',
+    photoUrl: mockPortrait({
+      hair: 'long',
+      hairColor: '#2b2118',
+      skin: '#f1c9a5',
+      shirt: '#85c905',
+      background: '#e7f4cd',
+    }),
     lastName: 'Karimova',
     firstName: 'Dilnoza',
     middleName: 'Rustam qizi',
@@ -181,6 +190,14 @@ export const seedClients: Client[] = [
   }),
   fromSeed({
     id: '2',
+    photoUrl: mockPortrait({
+      hair: 'short',
+      hairColor: '#1e1e1e',
+      skin: '#e0ac82',
+      shirt: '#0b3d57',
+      background: '#ced8dd',
+      moustache: true,
+    }),
     lastName: 'Toshpoʻlatov',
     firstName: 'Jasur',
     middleName: 'Anvar oʻgʻli',
@@ -214,6 +231,13 @@ export const seedClients: Client[] = [
   }),
   fromSeed({
     id: '3',
+    photoUrl: mockPortrait({
+      hair: 'bun',
+      hairColor: '#3d2b1f',
+      skin: '#f1c9a5',
+      shirt: '#3c6479',
+      background: '#f3e7d3',
+    }),
     lastName: 'Yusupova',
     firstName: 'Malika',
     middleName: 'Baxtiyor qizi',
@@ -229,6 +253,13 @@ export const seedClients: Client[] = [
   }),
   fromSeed({
     id: '4',
+    photoUrl: mockPortrait({
+      hair: 'side',
+      hairColor: '#2b2118',
+      skin: '#c98e63',
+      shirt: '#e7ecee',
+      background: '#9db1bc',
+    }),
     lastName: 'Rahimov',
     firstName: 'Bobur',
     middleName: 'Shavkat oʻgʻli',
@@ -253,6 +284,13 @@ export const seedClients: Client[] = [
   }),
   fromSeed({
     id: '5',
+    photoUrl: mockPortrait({
+      hair: 'scarf',
+      hairColor: '#3c6479',
+      skin: '#e0ac82',
+      shirt: '#0b3d57',
+      background: '#dde9f0',
+    }),
     lastName: 'Nazarova',
     firstName: 'Sevara',
     middleName: 'Ilhom qizi',
@@ -267,6 +305,13 @@ export const seedClients: Client[] = [
   }),
   fromSeed({
     id: '6',
+    photoUrl: mockPortrait({
+      hair: 'short',
+      hairColor: '#3d2b1f',
+      skin: '#f1c9a5',
+      shirt: '#b6df69',
+      background: '#ced8dd',
+    }),
     lastName: 'Ergashev',
     firstName: 'Otabek',
     middleName: 'Murod oʻgʻli',
@@ -282,6 +327,13 @@ export const seedClients: Client[] = [
   }),
   fromSeed({
     id: '7',
+    photoUrl: mockPortrait({
+      hair: 'scarf',
+      hairColor: '#b6537a',
+      skin: '#e0ac82',
+      shirt: '#6d8b9a',
+      background: '#f3e7d3',
+    }),
     lastName: 'Abdullayeva',
     firstName: 'Gulnora',
     middleName: 'Hamid qizi',
@@ -297,6 +349,13 @@ export const seedClients: Client[] = [
   }),
   fromSeed({
     id: '8',
+    photoUrl: mockPortrait({
+      hair: 'side',
+      hairColor: '#1e1e1e',
+      skin: '#e0ac82',
+      shirt: '#85c905',
+      background: '#e7f4cd',
+    }),
     lastName: 'Qodirov',
     firstName: 'Sardor',
     middleName: 'Olim oʻgʻli',

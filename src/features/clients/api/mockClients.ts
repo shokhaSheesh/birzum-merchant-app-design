@@ -15,6 +15,7 @@ import {
   type Term,
 } from '@/entities/clients/clients'
 import { clientsStore } from '@/entities/clients/clientsStore'
+import { mockPortrait } from '@/shared/lib/mockPortrait'
 import { installmentTerms, type InstallmentTerms } from '@/entities/clients/installment'
 
 const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms))
@@ -68,6 +69,13 @@ export async function createClient({ cardNumber, cardExpiry: _expiry, ...data }:
     ...data,
     id: newId(),
     lastName: 'Tursunova',
+    photoUrl: mockPortrait({
+      hair: 'long',
+      hairColor: '#1e1e1e',
+      skin: '#e0ac82',
+      shirt: '#3c6479',
+      background: '#e7f4cd',
+    }),
     firstName: 'Aziza',
     middleName: 'Farhod qizi',
     pinfl: '41503960120092',

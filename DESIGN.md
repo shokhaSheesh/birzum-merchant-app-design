@@ -293,6 +293,7 @@ A detail screen (a client, later an application) is read top to bottom, so it is
 
 - Top bar: back arrow and a short screen name ("Klient"). No tab bar.
 - Hero: `Avatar` (photo, or initials when there is none), the full name, and one key line under it.
+- People are always shown with `Avatar`, a circle, in lists and on detail screens. Sample data uses drawn portraits from `mockPortrait`, never photos of real people; the real app puts the MyID photo in the same circle.
 - Each block is a `Section` with a `text-lg font-bold` title. 28px between sections.
 - Read-only facts go in an `InfoList`: label on the left in `text-sm text-ink-muted`, value on the right in `font-semibold`. Group related facts into one list; do not mix unrelated ones.
 - Statuses use `StatusBadge`: red for rejected, amber for pending, green for approved, grey for closed or cancelled. The badge text is the status name, never just a color.

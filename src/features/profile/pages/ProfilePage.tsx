@@ -33,7 +33,11 @@ export function ProfilePage() {
       <h1 className="flex min-h-10 items-center text-2xl font-bold">{t('nav.profile')}</h1>
 
       <div className="flex items-center gap-4">
-        <Avatar initials={`${user.firstName[0]}${user.lastName[0]}`} size="lg" />
+        <Avatar
+          initials={`${user.firstName[0]}${user.lastName[0]}`}
+          photoUrl={user.photoUrl}
+          size="lg"
+        />
         <div className="flex min-w-0 flex-col gap-1">
           <p className="text-xl leading-tight font-bold">
             {user.firstName} {user.lastName}
