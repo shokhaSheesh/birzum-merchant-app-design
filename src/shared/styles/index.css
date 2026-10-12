@@ -5,24 +5,29 @@
  * on the mockup — change values here only, never hardcode them in components.
  */
 @theme {
-  --font-sans: 'Onest', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
+  /* Stand-in for the brandbook's Myriad until licensed font files are supplied */
+  --font-sans: 'Source Sans 3', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
 
-  /* Brand, sampled from the Birzum nasiya logo */
-  --color-navy-950: #12242e;
-  --color-navy-900: #203c4b;
-  --color-navy-700: #35566a;
-  --color-navy-100: #dde6eb;
-  --color-lime-500: #a2e84e;
-  --color-lime-600: #86cf2f;
-  --color-lime-100: #e9f9d3;
+  /* Brand: Color 001 and 002 from the brandbook, with its tint scale */
+  --color-navy-950: #072a3c;
+  --color-navy-900: #0b3d57;
+  --color-navy-700: #3c6479;
+  --color-navy-400: #9db1bc;
+  --color-navy-200: #ced8dd;
+  --color-navy-100: #e7ecee;
+  --color-green-600: #74af04;
+  --color-green-500: #85c905;
+  --color-green-300: #cee99b;
+  --color-green-200: #e7f4cd;
+  --color-green-100: #f3fae6;
 
   /* Surfaces and text */
-  --color-canvas: #f3f6f4;
+  --color-canvas: #f2f5f6;
   --color-surface: #ffffff;
-  --color-line: #e2e8e5;
-  --color-ink: #14252e;
-  --color-ink-muted: #5d6f78;
-  --color-ink-subtle: #8a9aa2;
+  --color-line: #dfe6e9;
+  --color-ink: #072a3c;
+  --color-ink-muted: #56707f;
+  --color-ink-subtle: #8499a4;
 
   /* Status */
   --color-success: #1e8e4a;
