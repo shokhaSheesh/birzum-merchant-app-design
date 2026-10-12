@@ -75,6 +75,7 @@ Use `Button` from `@/shared/ui/Button`. Four variants, each with one job:
 
 - **The primary button is pinned to the bottom of the screen**, full width, 20px from the edges. It does not move between screens.
 - When a secondary button sits with it, the secondary goes above the primary, both full width.
+- **On list screens the create action is that same pinned primary button**, sitting just above the tab bar, with a `Plus` icon before the label ("Klient qoʻshish"). No floating round buttons and no create buttons in the header.
 - Back is a left arrow at the top left. Close is an X at the top right of a sheet.
 - The screen title is left aligned under the top bar.
 - The language switcher sits at the top right of the auth screens and in Profile after login.
@@ -111,6 +112,7 @@ Four tabs, always in this order, on every main screen: **Klientlar**, **Arizalar
 | SMS code | `MessageSquareText` |
 | Search | `Search` |
 | Add / create | `Plus` |
+| No results | `SearchX` |
 
 ## Form controls
 
@@ -139,6 +141,12 @@ Always has the show/hide eye button on the right. Never build a password field w
 - Opens the numeric keypad (`inputMode="numeric"`). Do not use `type="number"`, which adds browser spinners and breaks grouping.
 - The unit goes in `suffix` at the right edge (`soʻm`, `oy`), not inside the value or the label.
 - Display amounts elsewhere with `formatSum` from `@/shared/lib/format`.
+
+### Search: `SearchField`
+- The same control box with a `Search` icon on the left and a clear `X` on the right once there is text.
+- Sits directly under the screen title and stays in place while the list scrolls.
+- The placeholder lists what can be searched ("Telefon, JSHSHIR yoki pasport"). It filters as the user types; there is no search button.
+- Spaces, `+` and letter case in the query are ignored, so `90 123` and `90123` find the same thing.
 
 ### Phone input: `PhoneField`
 - `+998` is fixed at the left and cannot be edited. The user types the nine remaining digits.
@@ -170,6 +178,13 @@ Always has the show/hide eye button on the right. Never build a password field w
 - Selected day: navy circle with white text. Today: green outline. Unavailable days: greyed out and not tappable (use `min` / `max`).
 - Picking a day closes the sheet.
 - Dates are shown as `DD.MM.YYYY` everywhere, through `formatDate`.
+
+## Lists and empty states
+
+- A list is a group of rows inside one `surface` card, separated by `line` dividers. Rows are at least 64px tall.
+- Row layout: initials avatar on the left, name in `font-semibold`, details under it in `text-sm text-ink-muted`.
+- Above the list, a small count line ("8 ta klient") in `text-sm text-ink-muted`.
+- When a list or search has no results, show `EmptyState`: an icon badge, a short title and one line on what to do next. Never leave a blank screen.
 
 ## Sheets
 

@@ -7,6 +7,7 @@ import { NumberField } from '@/shared/ui/NumberField'
 import { OtpField } from '@/shared/ui/OtpField'
 import { PasswordField } from '@/shared/ui/PasswordField'
 import { PhoneField } from '@/shared/ui/PhoneField'
+import { SearchField } from '@/shared/ui/SearchField'
 import { Select } from '@/shared/ui/Select'
 import { TextField } from '@/shared/ui/TextField'
 
@@ -35,6 +36,7 @@ export function KitPage() {
   const [phone, setPhone] = useState('901234567')
   const [code, setCode] = useState('482')
   const [checked, setChecked] = useState(true)
+  const [query, setQuery] = useState('')
 
   return (
     <div className="flex h-full flex-col gap-8 overflow-y-auto px-5 pt-6 pb-10">
@@ -66,6 +68,15 @@ export function KitPage() {
         <TextField label="Login" defaultValue="mega.texno" />
         <PasswordField label="Parol" defaultValue="secret123" />
         <TextField label="Login" error="Maydonni toʻldiring" />
+      </Section>
+
+      <Section title="Search">
+        <SearchField
+          label="Qidiruv"
+          placeholder="Telefon, JSHSHIR yoki pasport"
+          value={query}
+          onChange={setQuery}
+        />
       </Section>
 
       <Section title="Number input">

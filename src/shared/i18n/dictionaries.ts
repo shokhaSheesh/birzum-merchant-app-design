@@ -10,6 +10,7 @@ const uz = {
   'common.close': 'Yopish',
   'common.select': 'Tanlang',
   'common.back': 'Orqaga',
+  'common.clear': 'Tozalash',
   'lang.title': 'Tilni tanlang',
   'nav.clients': 'Klientlar',
   'nav.applications': 'Arizalar',
@@ -52,6 +53,14 @@ const uz = {
   'auth.code.resendIn': 'Qayta yuborish: {time}',
   'auth.error.code': 'Kod notoʻgʻri. Qayta urinib koʻring.',
   'profile.logout': 'Hisobdan chiqish',
+  'clients.count': '{count} ta klient',
+  'clients.search': 'Telefon, JSHSHIR yoki pasport',
+  'clients.pinfl': 'JSHSHIR',
+  'clients.create': 'Klient qoʻshish',
+  'clients.empty.title': 'Klient topilmadi',
+  'clients.empty.hint':
+    'Telefon raqam, JSHSHIR yoki pasport seriya raqamini tekshirib, qayta urinib koʻring.',
+  'clients.new.title': 'Yangi klient',
 } as const
 
 export type TranslationKey = keyof typeof uz
@@ -60,6 +69,7 @@ const ru: Record<TranslationKey, string> = {
   'common.close': 'Закрыть',
   'common.select': 'Выберите',
   'common.back': 'Назад',
+  'common.clear': 'Очистить',
   'lang.title': 'Выберите язык',
   'nav.clients': 'Клиенты',
   'nav.applications': 'Заявки',
@@ -102,6 +112,14 @@ const ru: Record<TranslationKey, string> = {
   'auth.code.resendIn': 'Повторная отправка: {time}',
   'auth.error.code': 'Неверный код. Попробуйте ещё раз.',
   'profile.logout': 'Выйти из аккаунта',
+  'clients.count': 'Клиентов: {count}',
+  'clients.search': 'Телефон, ПИНФЛ или паспорт',
+  'clients.pinfl': 'ПИНФЛ',
+  'clients.create': 'Добавить клиента',
+  'clients.empty.title': 'Клиент не найден',
+  'clients.empty.hint':
+    'Проверьте номер телефона, ПИНФЛ или серию и номер паспорта и попробуйте снова.',
+  'clients.new.title': 'Новый клиент',
 }
 
 export const dictionaries: Record<Lang, Record<TranslationKey, string>> = { uz, ru }

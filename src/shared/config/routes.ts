@@ -3,6 +3,7 @@ export const ROUTES = {
   changePassword: '/change-password',
   confirmLogin: '/confirm-login',
   clients: '/',
+  newClient: '/clients/new',
   applications: '/applications',
   calculator: '/calculator',
   profile: '/profile',

@@ -36,7 +36,7 @@ src/
       components/      Feature-only components (add when needed)
       data/            Mock data and types (add when needed)
   shared/              Used by more than one feature
-    ui/                Button, fields, Select, DatePicker, OtpField, Checkbox, Sheet, TabBar
+    ui/                Button, fields, SearchField, Select, DatePicker, OtpField, Checkbox, Sheet, EmptyState, TabBar
     i18n/              Uzbek and Russian strings, useI18n
     lib/               cn, formatSum
     config/            Route paths
