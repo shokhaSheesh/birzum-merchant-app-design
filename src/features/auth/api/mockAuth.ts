@@ -3,6 +3,7 @@
 // - The first successful login requires a new password.
 // - Login must be confirmed by SMS code once per calendar day. Any 6-digit code works
 //   except "000000", which is rejected.
+// - Logging out resets both of the above, so the whole flow can be replayed.
 
 const PASSWORD_CHANGED_KEY = 'birzum.passwordChanged'
 const CONFIRMED_ON_KEY = 'birzum.loginConfirmedOn'
@@ -26,6 +27,14 @@ function write(key: string, value: string) {
     localStorage.setItem(key, value)
   } catch {
     // storage unavailable, the step will be asked for again next time
+  }
+}
+
+function remove(key: string) {
+  try {
+    localStorage.removeItem(key)
+  } catch {
+    // storage unavailable, nothing to clear
   }
 }
 
@@ -54,4 +63,9 @@ export async function verifyLoginCode(_phone: string, code: string) {
   await delay(700)
   if (code === '000000') throw new Error(INVALID_CODE)
   write(CONFIRMED_ON_KEY, today())
+}
+
+export function logout() {
+  remove(PASSWORD_CHANGED_KEY)
+  remove(CONFIRMED_ON_KEY)
 }

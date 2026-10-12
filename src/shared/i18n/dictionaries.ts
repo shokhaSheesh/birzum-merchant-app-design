@@ -51,6 +51,7 @@ const uz = {
   'auth.code.resend': 'Kodni qayta yuborish',
   'auth.code.resendIn': 'Qayta yuborish: {time}',
   'auth.error.code': 'Kod notoʻgʻri. Qayta urinib koʻring.',
+  'profile.logout': 'Hisobdan chiqish',
 } as const
 
 export type TranslationKey = keyof typeof uz
@@ -100,6 +101,7 @@ const ru: Record<TranslationKey, string> = {
   'auth.code.resend': 'Отправить код повторно',
   'auth.code.resendIn': 'Повторная отправка: {time}',
   'auth.error.code': 'Неверный код. Попробуйте ещё раз.',
+  'profile.logout': 'Выйти из аккаунта',
 }
 
 export const dictionaries: Record<Lang, Record<TranslationKey, string>> = { uz, ru }

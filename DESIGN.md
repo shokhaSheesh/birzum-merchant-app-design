@@ -107,6 +107,7 @@ Four tabs, always in this order, on every main screen: **Klientlar**, **Arizalar
 | Calculator tab | `Calculator` |
 | Profile tab | `UserRound` |
 | Phone number | `Smartphone` |
+| Log out | `LogOut` |
 | SMS code | `MessageSquareText` |
 | Search | `Search` |
 | Add / create | `Plus` |
