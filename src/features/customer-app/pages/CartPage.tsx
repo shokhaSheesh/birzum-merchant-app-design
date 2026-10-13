@@ -101,7 +101,7 @@ export function CartPage() {
                       <div className="flex items-center justify-between gap-2">
                         <div className="flex min-w-0 flex-col">
                           <p className="font-bold">{formatSum(unitPrice * quantity)}</p>
-                          <p className="text-xs text-ink-muted">
+                          <p className="mt-0.5 self-start rounded-full bg-green-200 px-2 py-0.5 text-xs font-semibold whitespace-nowrap">
                             {t('cart.monthly', {
                               amount: groupDigits(lowestMonthly(unitPrice * quantity)),
                             })}

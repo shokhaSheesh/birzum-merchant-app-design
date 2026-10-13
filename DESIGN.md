@@ -410,11 +410,12 @@ The repo holds the merchant app and the client (shopper) app. They share every t
 - **Toʻlov kartalari** (shopper): one navy row per card with a trash button, and the small navy "+ Qoʻshish" at the top right, as on every list screen.
 - **Toʻlovlar tarixi** opens from Profil: a chip row with the date range and "Barcha doʻkonlar" (`SelectChip`), the total paid, then one row per payment (date, shop and ariza number, card, amount), newest first. A row opens its purchase.
 - **Savat only reviews the products:** grouped by shop, each with its picture, variant, quantity stepper, remove button and a small "oyiga 301 000 dan" (the lowest monthly payment, at 24 months). Under them, "Oʻxshash mahsulotlar" as a sideways row.
+- **On a tab screen the main action is a bar fixed above the tab bar** (Savat, Kalkulyator): `sticky bottom-0` with a top border and `pb-tabbar`, so content scrolls under it.
 - **The cart's total and "Rasmiylashtirishga oʻtish" are a bar fixed above the tab bar,** with a top border; the list scrolls under it. A screen's main action never scrolls away.
 - **Rasmiylashtirish** (`CheckoutPage`, a pushed screen without the tab bar). Per shop, in this order: "Qabul qilish usuli" first (`FulfilmentFields`: pickup with an "Olib ketish filiali" select when the shop has several filials, or delivery with an address), then each product as a card with its picture, monthly payment and its own `TermPicker`. If the chosen filial does not have enough of a product, a red `Alert` names it and "Buyurtma berish" is disabled.
 - Below the shops: the paying card (`CardSelect`), then "Nasiya shartlari" as an `InfoList` (goods total, installment total, first monthly payment) and how much of the limit is used. "Buyurtma berish" sits in the footer.
 - **Terms are per product.** An ariza has one term, so sending files one ariza per shop and term. Mixed terms are checked against the limit as shares: each product's sum divided by the limit of its term, added up, must not pass 100%.
-- **Xaridlar** lists the shopper's arizalar as cards with the shop name; each opens the purchase screen. A rejected card shows only the red badge; the reason is on the purchase screen.
+- **Xaridlar** has the same chip row as the merchant's Arizalar (date range, then statuses) and lists the shopper's arizalar as cards with the shop name; each opens the purchase screen. A rejected card shows only the red badge; the reason is on the purchase screen.
 - **Purchase screen** (`PurchasePage`): status badge and number, the reject reason if any, an `InfoList` with date, shop, receiving method, card and pickup filial, then products and Nasiya shartlari (no Ustama).
 - Its bottom button depends on the status: a red ghost "Buyurtmani bekor qilish" while the merchant has not answered (confirmation with "Yoʻq, qoldirish"); "Toʻlash: 483 000 UZS" from Topshirilgan on, which opens a sheet with the due date, amount and card. Paying the last installment closes the nasiya.
 - From Topshirilgan on the screen also has secondary "Shartnomani yuklab olish" and "Sharh qoldirish" (five tappable stars and a text). A sent review shows in the merchant's Sharhlar; the button then becomes "Sharhingiz uchun rahmat!".
@@ -464,6 +465,9 @@ Asosiy reports on one period: a day, a week or a month. It only shows numbers an
 - Uzbek uses the proper `ʻ` character (oʻ, gʻ), not an apostrophe.
 - Sentence case everywhere. No all-caps buttons.
 - Errors say what is wrong and how to fix it.
+
+## One primary button per screen
+A screen has at most one solid navy button: its main action, in the footer. Everything else on the page (download a contract, leave a review, change status, add a row) is `secondary`.
 
 ## Before opening a merge request
 

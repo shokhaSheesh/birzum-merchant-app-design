@@ -1,17 +1,32 @@
+import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { getStore, OWN_STORE_ID } from '@/entities/catalog/products'
 import { applicationStatusTone } from '@/entities/clients/applicationStatus'
+import { APPLICATION_STATUSES, type ApplicationStatus } from '@/entities/clients/clients'
 import { useCustomer } from '@/entities/session/customer'
 import { customerPurchasePath } from '@/shared/config/routes'
 import { useI18n } from '@/shared/i18n/useI18n'
 import { formatDateTime, formatSum, groupDigits } from '@/shared/lib/format'
+import { DateRangeChip, type DateRange } from '@/shared/ui/DateRangeChip'
 import { EmptyState } from '@/shared/ui/EmptyState'
+import { FilterChips } from '@/shared/ui/FilterChips'
 import { StatusBadge } from '@/shared/ui/StatusBadge'
 
 /** The shopper's own arizalar and where each one stands. */
 export function PurchasesPage() {
   const { t } = useI18n()
-  const applications = useCustomer()?.applications ?? []
+  const all = useCustomer()?.applications ?? []
+  const [status, setStatus] = useState<'all' | ApplicationStatus>('all')
+  const [range, setRange] = useState<DateRange>({ from: null, to: null })
+
+  const dayStart = range.from ? new Date(range.from).setHours(0, 0, 0, 0) : -Infinity
+  const dayEnd = range.to ? new Date(range.to).setHours(23, 59, 59, 999) : Infinity
+  const applications = all.filter(
+    (application) =>
+      (status === 'all' || application.status === status) &&
+      application.date.getTime() >= dayStart &&
+      application.date.getTime() <= dayEnd,
+  )
 
   return (
     <div className="flex min-h-full flex-col gap-4 px-5 pt-[max(1.5rem,env(safe-area-inset-top))] pb-tabbar">
@@ -19,9 +34,35 @@ export function PurchasesPage() {
         {t('customer.nav.purchases')}
       </h1>
 
+      {all.length > 0 && (
+        <FilterChips
+          label={t('applications.filter.label')}
+          leading={
+            <DateRangeChip
+              label={t('applications.filter.date')}
+              value={range}
+              onChange={setRange}
+            />
+          }
+          options={[
+            { value: 'all', label: t('applications.filter.all') },
+            ...APPLICATION_STATUSES.map((value) => ({
+              value,
+              label: t(`application.status.${value}`),
+            })),
+          ]}
+          value={status}
+          onChange={setStatus}
+        />
+      )}
+
       {applications.length === 0 ? (
         <div className="flex flex-1 flex-col justify-center">
-          <EmptyState title={t('purchases.empty.title')} hint={t('purchases.empty.hint')} />
+          {all.length === 0 ? (
+            <EmptyState title={t('purchases.empty.title')} hint={t('purchases.empty.hint')} />
+          ) : (
+            <EmptyState title={t('applications.empty.title')} hint={t('applications.empty.hint')} />
+          )}
         </div>
       ) : (
         <ul className="flex flex-col gap-3">

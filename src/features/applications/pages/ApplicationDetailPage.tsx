@@ -155,6 +155,7 @@ export function ApplicationDetailPage() {
                   />
                 </InfoList>
                 <Button
+                  variant="secondary"
                   block
                   onClick={() => downloadContract(found, location && tl(location.name))}
                 >

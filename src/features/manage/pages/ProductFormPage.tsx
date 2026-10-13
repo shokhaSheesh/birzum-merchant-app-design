@@ -1,4 +1,4 @@
-import { Plus, Trash2, X } from 'lucide-react'
+import { Package, Plus, Trash2, X } from 'lucide-react'
 import { useState, type FormEvent } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { attributesStore, SWATCH_PRESETS, type Attribute } from '@/entities/catalog/attributes'
@@ -20,9 +20,11 @@ import { Alert } from '@/shared/ui/Alert'
 import { Button } from '@/shared/ui/Button'
 import { Checkbox } from '@/shared/ui/Checkbox'
 import { FormScreen } from '@/shared/ui/FormScreen'
+import { IconBadge } from '@/shared/ui/IconBadge'
 import { LangToggle } from '@/shared/ui/LangToggle'
 import { LocalizedTextField } from '@/shared/ui/LocalizedTextField'
 import { NumberField } from '@/shared/ui/NumberField'
+import { ScreenIntro } from '@/shared/ui/ScreenIntro'
 import { Section } from '@/shared/ui/Section'
 import { Select } from '@/shared/ui/Select'
 import { Sheet } from '@/shared/ui/Sheet'
@@ -184,7 +186,8 @@ export function ProductFormPage() {
         </div>
       }
     >
-      <h1 className="text-2xl font-bold">{t(existing ? 'product.edit' : 'product.new')}</h1>
+      <IconBadge icon={Package} />
+      <ScreenIntro title={t(existing ? 'product.edit' : 'product.new')} />
 
       <Section
         title={t('product.photos')}

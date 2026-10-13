@@ -44,8 +44,13 @@ export function CalculatorPage() {
   }
 
   return (
-    <div className="flex min-h-full flex-col gap-7 px-5 pt-[max(1.5rem,env(safe-area-inset-top))] pb-tabbar">
-      <form onSubmit={(e) => void calculate(e)} noValidate className="flex flex-col gap-4">
+    <div className="flex min-h-full flex-col gap-7 px-5 pt-[max(1.5rem,env(safe-area-inset-top))]">
+      <form
+        id="calculator"
+        onSubmit={(e) => void calculate(e)}
+        noValidate
+        className="flex flex-col gap-4"
+      >
         <div className="flex flex-col gap-1">
           <h1 className="flex min-h-10 items-center text-2xl font-bold">{t('nav.calculator')}</h1>
           <p className="text-ink-muted">{t('calculator.hint')}</p>
@@ -66,9 +71,6 @@ export function CalculatorPage() {
           maxDigits={10}
           error={submitted ? downPaymentError : undefined}
         />
-        <Button type="submit" block loading={loading}>
-          {t('calculator.submit')}
-        </Button>
       </form>
 
       {terms && (
@@ -78,6 +80,13 @@ export function CalculatorPage() {
           ))}
         </Section>
       )}
+
+      {/* Stays in view above the tab bar while the results scroll under it */}
+      <div className="sticky bottom-0 -mx-5 mt-auto border-t border-line bg-canvas px-5 pt-3 pb-tabbar">
+        <Button type="submit" form="calculator" block loading={loading}>
+          {t('calculator.submit')}
+        </Button>
+      </div>
     </div>
   )
 }

@@ -82,8 +82,8 @@ export const seedAttributes: Attribute[] = [
     name: { uz: 'Quvvati', ru: 'Мощность' },
     color: false,
     values: [
-      { id: 'btu12', name: same('12') },
-      { id: 'btu18', name: same('18') },
+      { id: 'btu12', name: same('12 000 BTU') },
+      { id: 'btu18', name: same('18 000 BTU') },
     ],
   },
 ]

@@ -219,7 +219,10 @@ const seedProducts: SeedProduct[] = [
     stock: 9,
     description: 'Invertorli konditsioner. Xonani tez sovitadi va qishda isitadi.',
     variations: [
-      { name: 'Quvvati', options: [{ label: '12' }, { label: '18', priceDelta: 1_800_000 }] },
+      {
+        name: 'Quvvati',
+        options: [{ label: '12 000 BTU' }, { label: '18 000 BTU', priceDelta: 1_800_000 }],
+      },
     ],
     specs: [
       ['Maydon', '35 m² gacha'],
