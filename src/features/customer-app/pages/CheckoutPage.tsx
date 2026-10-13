@@ -202,6 +202,7 @@ export function CheckoutPage() {
                       </div>
                     </div>
                     <TermPicker
+                      inset
                       terms={TERMS}
                       value={termOf(line.key)}
                       onChange={(term) => setTerms((all) => ({ ...all, [line.key]: term }))}

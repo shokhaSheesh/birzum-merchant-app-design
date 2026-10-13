@@ -11,7 +11,7 @@ import { ChoiceGrid } from '@/shared/ui/ChoiceGrid'
 import { FormScreen } from '@/shared/ui/FormScreen'
 import { InfoList, InfoRow } from '@/shared/ui/InfoList'
 import { NumberField } from '@/shared/ui/NumberField'
-import { QuantityField } from '@/shared/ui/QuantityField'
+import { QuantityStepper } from '@/shared/ui/QuantityField'
 import { Section } from '@/shared/ui/Section'
 import { StatusBadge } from '@/shared/ui/StatusBadge'
 import { TermPicker } from '@/shared/ui/TermPicker'
@@ -326,6 +326,12 @@ export function NewContractPage() {
     >
       <h1 className="text-2xl font-bold">{t('contract.title')}</h1>
 
+      <FulfilmentFields
+        fulfilment={fulfilment}
+        onFulfilment={setFulfilment}
+        showErrors={submitted}
+      />
+
       {locations.length > 1 && (
         <Select
           label={t('profile.branch')}
@@ -377,25 +383,31 @@ export function NewContractPage() {
             )}
             {product && valueIds && (
               <>
-                <QuantityField
-                  label={t('field.quantity')}
-                  value={line.quantity}
-                  max={Math.max(1, stock)}
-                  onChange={(quantity) => updateProduct(line.id, { quantity })}
-                />
-                <p
-                  className={cn(
-                    'text-sm',
-                    stock < line.quantity ? 'text-danger' : 'text-ink-muted',
-                  )}
-                >
-                  {stock < line.quantity
-                    ? t('error.outOfStock')
-                    : t('contract.inStock', { count: String(stock) })}
-                </p>
+                <div className="flex items-center justify-between gap-3">
+                  <div className="flex min-w-0 flex-col">
+                    <p className="font-semibold">{formatSum(price * line.quantity)}</p>
+                    <p
+                      className={cn(
+                        'text-sm',
+                        stock < line.quantity ? 'text-danger' : 'text-ink-muted',
+                      )}
+                    >
+                      {stock < line.quantity
+                        ? t('error.outOfStock')
+                        : t('contract.inStock', { count: String(stock) })}
+                    </p>
+                  </div>
+                  <QuantityStepper
+                    size="sm"
+                    label={t('field.quantity')}
+                    value={line.quantity}
+                    max={Math.max(1, stock)}
+                    onChange={(quantity) => updateProduct(line.id, { quantity })}
+                  />
+                </div>
                 <div className="flex flex-col gap-1.5">
-                  <p className="text-sm font-medium text-ink-muted">{t('client.limit.term')}</p>
                   <TermPicker
+                    inset
                     terms={TERMS}
                     value={line.term}
                     onChange={(term) => updateProduct(line.id, { term })}
@@ -403,12 +415,6 @@ export function NewContractPage() {
                   <p className="text-sm text-ink-muted">
                     {t('cart.limit', { amount: formatSum(limits[line.term]) })}
                   </p>
-                </div>
-                <div className="flex items-baseline justify-between border-t border-line pt-3">
-                  <p className="text-sm text-ink-muted">
-                    {formatSum(price)} × {line.quantity}
-                  </p>
-                  <p className="font-semibold">{formatSum(price * line.quantity)}</p>
                 </div>
               </>
             )}
@@ -420,21 +426,13 @@ export function NewContractPage() {
         </Button>
       </Section>
 
-      <Section title={t('delivery.title')}>
-        <FulfilmentFields
-          fulfilment={fulfilment}
-          onFulfilment={setFulfilment}
-          showErrors={submitted}
-        />
+      <Section title={t('contract.payment')} hint={t('contract.payment.hint')}>
         <CardSelect
           cards={client.cards}
           cardId={cardId}
           onCard={setPickedCard}
           showErrors={submitted}
         />
-      </Section>
-
-      <Section title={t('contract.payment')} hint={t('contract.payment.hint')}>
         <NumberField
           label={t('field.downPayment')}
           value={downPayment}
