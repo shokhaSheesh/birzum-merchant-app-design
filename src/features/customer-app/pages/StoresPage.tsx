@@ -1,8 +1,9 @@
-import { ChevronRight, Store as StoreIcon } from 'lucide-react'
+import { ChevronRight } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import { useCatalog, stores } from '@/entities/catalog/products'
 import { customerStorePath } from '@/shared/config/routes'
 import { useI18n } from '@/shared/i18n/useI18n'
+import { StoreLogo } from '../components/StoreLogo'
 import { StoreRating } from '../components/StoreRating'
 
 /** The shops whose products can be bought on nasiya. */
@@ -17,9 +18,7 @@ export function StoresPage() {
         {stores.map((store) => (
           <li key={store.id} className="border-b border-line last:border-b-0">
             <Link to={customerStorePath(store.id)} className="flex items-center gap-3 py-3">
-              <span className="grid size-11 shrink-0 place-items-center rounded-full bg-canvas text-brand">
-                <StoreIcon size={22} />
-              </span>
+              <StoreLogo />
               <div className="flex min-w-0 flex-1 flex-col gap-0.5">
                 <p className="truncate font-semibold">{store.name}</p>
                 <p className="truncate text-sm text-ink-muted">{store.address}</p>

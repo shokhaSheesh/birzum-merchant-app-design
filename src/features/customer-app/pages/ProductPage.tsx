@@ -1,4 +1,4 @@
-import { Check, ChevronRight, Share2, ShoppingCart, Store as StoreIcon } from 'lucide-react'
+import { Check, ChevronRight, Share2, ShoppingCart } from 'lucide-react'
 import { useState } from 'react'
 import { Link, Navigate, useNavigate, useParams } from 'react-router-dom'
 import { cartKey, cartStore, useCart } from '@/entities/cart/cartStore'
@@ -33,6 +33,7 @@ import { LikeButton } from '../components/LikeButton'
 import { ProductCard } from '../components/ProductCard'
 import { ProductGallery } from '../components/ProductGallery'
 import { usePickupPoints } from '@/entities/merchant/usePickupPoints'
+import { StoreLogo } from '../components/StoreLogo'
 import { StoreRating } from '../components/StoreRating'
 import { VariationPicker } from '../components/VariationPicker'
 
@@ -160,9 +161,7 @@ function ProductDetails({ product }: { product: Product }) {
               to={customerStorePath(store.id)}
               className="flex items-center gap-3 rounded-card bg-surface p-4 active:bg-navy-100"
             >
-              <span className="grid size-11 shrink-0 place-items-center rounded-full bg-canvas text-brand">
-                <StoreIcon size={22} />
-              </span>
+              <StoreLogo />
               <div className="flex min-w-0 flex-1 flex-col gap-0.5">
                 <p className="truncate font-semibold">{store.name}</p>
                 <StoreRating store={store} />

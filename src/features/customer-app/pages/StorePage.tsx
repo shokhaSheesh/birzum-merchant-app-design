@@ -1,4 +1,4 @@
-import { Clock, Map, MapPin, Phone, Store as StoreIcon } from 'lucide-react'
+import { Clock, Map, MapPin, Phone } from 'lucide-react'
 import { Link, Navigate, useParams } from 'react-router-dom'
 import { getStore, useCatalog } from '@/entities/catalog/products'
 import { usePickupPoints } from '@/entities/merchant/usePickupPoints'
@@ -8,6 +8,7 @@ import { formatPhone } from '@/shared/lib/phone'
 import { PageHeader } from '@/shared/ui/PageHeader'
 import { Section } from '@/shared/ui/Section'
 import { ProductCard } from '../components/ProductCard'
+import { StoreLogo } from '../components/StoreLogo'
 import { StoreRating } from '../components/StoreRating'
 
 const pill =
@@ -33,9 +34,7 @@ export function StorePage() {
       <PageHeader />
       <div className="flex min-h-0 flex-1 flex-col gap-7 overflow-y-auto px-5 pb-6">
         <div className="flex items-center gap-4">
-          <span className="grid size-16 shrink-0 place-items-center rounded-card bg-tile text-on-tile">
-            <StoreIcon size={30} />
-          </span>
+          <StoreLogo size="lg" />
           <div className="flex min-w-0 flex-col gap-1">
             <h1 className="text-2xl leading-tight font-bold">{store.name}</h1>
             <StoreRating store={store} />

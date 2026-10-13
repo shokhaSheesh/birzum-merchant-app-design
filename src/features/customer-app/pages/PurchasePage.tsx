@@ -25,6 +25,7 @@ import { InfoList, InfoRow } from '@/shared/ui/InfoList'
 import { InstallmentTermsCard } from '@/shared/ui/InstallmentTermsCard'
 import { PageHeader } from '@/shared/ui/PageHeader'
 import { Section } from '@/shared/ui/Section'
+import { SegmentedTabs } from '@/shared/ui/SegmentedTabs'
 import { StatusBadge } from '@/shared/ui/StatusBadge'
 import { PaySheet } from '../components/PaySheet'
 import { ReviewSheet } from '../components/ReviewSheet'
@@ -52,6 +53,7 @@ export function PurchasePage() {
   const { number } = useParams()
   const customer = useCustomer()
   const pickupPoints = usePickupPoints()
+  const [tab, setTab] = useState<'info' | 'products' | 'payments'>('info')
   const [paying, setPaying] = useState(false)
   const [reviewing, setReviewing] = useState(false)
   const [cancelling, setCancelling] = useState(false)
@@ -101,49 +103,58 @@ export function PurchasePage() {
           </div>
         )}
 
-        <InfoList>
-          <InfoRow label={t('application.date')} value={formatDateTime(application.date)} />
-          {store && <InfoRow label={t('profile.store')} value={store.name} />}
-          {details && <FulfilmentRows details={details} cards={customer.cards} />}
-          {point && details?.fulfilment?.method !== 'delivery' && (
-            <InfoRow label={t('delivery.point')} value={`${point.name}, ${point.address}`} />
-          )}
-        </InfoList>
+        <SegmentedTabs
+          label={t('purchase.title')}
+          options={[
+            { value: 'info', label: t('tab.info') },
+            { value: 'products', label: t('contract.products') },
+            ...(hasSchedule(application)
+              ? [{ value: 'payments' as const, label: t('tab.payments') }]
+              : []),
+          ]}
+          value={tab}
+          onChange={setTab}
+        />
 
-        {received && (
-          <div className="-mt-4 flex flex-col gap-2">
-            {application.contractNumber && (
-              <Button
-                variant="secondary"
-                block
-                onClick={() => downloadContract({ application, client: customer }, point?.name)}
-              >
-                <Download size={20} />
-                {t('application.contract.download')}
-              </Button>
-            )}
-            {application.reviewed ? (
-              <p className="py-2 text-center text-sm text-ink-muted">{t('feedback.done')}</p>
-            ) : (
-              <Button variant="secondary" block onClick={() => setReviewing(true)}>
-                <Star size={20} />
-                {t('feedback.leave')}
-              </Button>
-            )}
-          </div>
-        )}
-
-        {hasSchedule(application) && (
-          <Section title={t('payments.title')}>
-            <PaymentSchedule application={application} />
-          </Section>
-        )}
-
-        {details && (
+        {tab === 'info' && (
           <>
-            <Section title={t('contract.products')}>
-              <ProductsSummary products={details.products} />
-            </Section>
+            <InfoList>
+              <InfoRow label={t('application.date')} value={formatDateTime(application.date)} />
+              {store && <InfoRow label={t('profile.store')} value={store.name} />}
+              {details && <FulfilmentRows details={details} cards={customer.cards} />}
+              {point && details?.fulfilment?.method !== 'delivery' && (
+                <InfoRow label={t('delivery.point')} value={`${point.name}, ${point.address}`} />
+              )}
+            </InfoList>
+
+            {received && (
+              <div className="-mt-4 flex flex-col gap-2">
+                {application.contractNumber && (
+                  <Button
+                    variant="secondary"
+                    block
+                    onClick={() => downloadContract({ application, client: customer }, point?.name)}
+                  >
+                    <Download size={20} />
+                    {t('application.contract.download')}
+                  </Button>
+                )}
+                {application.reviewed ? (
+                  <p className="py-2 text-center text-sm text-ink-muted">{t('feedback.done')}</p>
+                ) : (
+                  <Button variant="secondary" block onClick={() => setReviewing(true)}>
+                    <Star size={20} />
+                    {t('feedback.leave')}
+                  </Button>
+                )}
+              </div>
+            )}
+          </>
+        )}
+
+        {tab === 'products' && details && (
+          <>
+            <ProductsSummary products={details.products} />
             <Section title={t('contract.conditions')}>
               <InstallmentTermsCard
                 terms={{ ...details, installmentTotal: application.installmentTotal }}
@@ -151,6 +162,10 @@ export function PurchasePage() {
               />
             </Section>
           </>
+        )}
+
+        {tab === 'payments' && hasSchedule(application) && (
+          <PaymentSchedule application={application} />
         )}
       </div>
 

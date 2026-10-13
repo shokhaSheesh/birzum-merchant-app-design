@@ -10,9 +10,6 @@ export type Store = {
   id: string
   name: string
   address: string
-  /** Average of shopper ratings, 1 to 5. */
-  rating: number
-  reviews: number
 }
 
 /** One option group on a product: an attribute from the directory and which of its values apply. */
@@ -49,15 +46,9 @@ export type Product = {
 
 // Invented sample shops and catalogue. Replace with the API.
 export const stores: Store[] = [
-  { id: 's1', name: 'Mega Texno', address: 'Toshkent, Chilonzor', rating: 4.9, reviews: 318 },
-  { id: 's2', name: 'Texno Dunyo', address: 'Toshkent, Yunusobod', rating: 4.7, reviews: 142 },
-  {
-    id: 's3',
-    name: 'Elektro Market',
-    address: 'Samarqand, Registon koʻchasi',
-    rating: 4.5,
-    reviews: 86,
-  },
+  { id: 's1', name: 'Mega Texno', address: 'Toshkent, Chilonzor' },
+  { id: 's2', name: 'Texno Dunyo', address: 'Toshkent, Yunusobod' },
+  { id: 's3', name: 'Elektro Market', address: 'Samarqand, Registon koʻchasi' },
 ]
 
 // The samples are written in a short form (Uzbek names, a price difference per option) and

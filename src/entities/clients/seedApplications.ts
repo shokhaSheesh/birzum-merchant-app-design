@@ -8,15 +8,13 @@ import { installmentTerms } from './installment'
 const DAYS_BACK = 45
 const FIRST_NUMBER = 260_000
 
+// What the merchant's own shop sells
 const CATALOG = [
-  { name: 'Samsung Galaxy A55, 256 GB', price: 5_500_000, productId: 'p1' },
-  { name: 'Artel konditsioner 12', price: 6_000_000, productId: 'p7' },
-  { name: 'LG kir yuvish mashinasi', price: 6_900_000, productId: 'p3' },
+  { name: 'Samsung Galaxy A55 (Qora, 128 GB)', price: 5_500_000, productId: 'p1' },
+  { name: 'Samsung Galaxy A55 (Koʻk, 256 GB)', price: 6_100_000, productId: 'p1' },
   { name: 'Televizor 43', price: 4_200_000, productId: 'p2' },
-  { name: 'Xiaomi Redmi Note 13', price: 3_400_000, productId: 'p5' },
-  { name: 'Lenovo IdeaPad noutbuk', price: 8_400_000, productId: 'p4' },
-  { name: 'Televizor 55 Smart', price: 7_800_000, productId: 'p6' },
-  { name: 'HP 15 noutbuk', price: 7_200_000, productId: 'p8' },
+  { name: 'Artel konditsioner (12 000 BTU)', price: 6_000_000, productId: 'p7' },
+  { name: 'Artel konditsioner (18 000 BTU)', price: 7_800_000, productId: 'p7' },
 ]
 
 // Which shop and which reject reason a generated application gets, by its number

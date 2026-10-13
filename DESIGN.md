@@ -466,6 +466,21 @@ Asosiy reports on one period: a day, a week or a month. It only shows numbers an
 - Sentence case everywhere. No all-caps buttons.
 - Errors say what is wrong and how to fix it.
 
+## How "selected" looks
+Three kinds of control, three looks. Pick by what the control does, not by taste.
+- **A filter that is on** (status chips, a set date range, a chosen filial or shop, an active "Filtr"): solid navy. It changes what the list shows and often scrolls sideways, so it must be seen at a glance.
+- **A view switch** (`SegmentedTabs`, `TermPicker`, `LangToggle`): a white pill on a grey strip. Nothing is filtered away; the same thing is shown another way.
+- **A form choice** (`ChoiceGrid`, the option sheet): a navy border on pale green.
+
+## Long detail screens use tabs
+A detail screen with more than about four sections is split with `SegmentedTabs` right under its header, so nothing important sits three screens down.
+- Merchant ariza and shopper purchase: Maʼlumot · Mahsulotlar · Toʻlovlar (the last only once payments run).
+- Merchant client: Maʼlumot · Karta va kontakt · Arizalar.
+The status, title and reject reason stay above the tabs, and the footer button stays on every tab.
+
+## Shops
+A shop is always shown with `StoreLogo`, a navy rounded square with the shop icon, at 44px in rows and 64px on the shop page. Its rating (`StoreRating`) is the average of its reviews with their count; a shop without reviews says "Hali sharh yoʻq".
+
 ## One primary button per screen
 A screen has at most one solid navy button: its main action, in the footer. Everything else on the page (download a contract, leave a review, change status, add a row) is `secondary`.
 

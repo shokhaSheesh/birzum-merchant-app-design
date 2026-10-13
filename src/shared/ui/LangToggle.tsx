@@ -11,7 +11,8 @@ type Props = {
 
 /**
  * The small UZ / RU switch at the top right of a field or section that holds one text
- * (or one set of photos) per language. Everything without it is entered once.
+ * (or one set of photos) per language. Everything without it is entered once. It switches
+ * what is shown, so it looks like the other view switches: a white pill on grey.
  */
 export function LangToggle({ value, onChange, missing = [] }: Props) {
   const { t } = useI18n()
@@ -34,7 +35,7 @@ export function LangToggle({ value, onChange, missing = [] }: Props) {
             onClick={() => onChange(lang)}
             className={cn(
               'relative h-6 rounded-md px-2 text-xs font-bold uppercase transition-colors',
-              selected ? 'bg-primary text-on-primary' : 'text-ink-muted',
+              selected ? 'bg-canvas text-ink shadow-sm' : 'text-ink-muted',
             )}
           >
             {lang}

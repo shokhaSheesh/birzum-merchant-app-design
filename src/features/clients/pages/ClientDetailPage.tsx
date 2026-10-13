@@ -1,4 +1,5 @@
 import { ArrowLeft } from 'lucide-react'
+import { useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { clientAddCardPath } from '@/shared/config/routes'
 import { useI18n } from '@/shared/i18n/useI18n'
@@ -9,6 +10,7 @@ import { Avatar } from '@/shared/ui/Avatar'
 import { EmptyState } from '@/shared/ui/EmptyState'
 import { InfoList, InfoRow } from '@/shared/ui/InfoList'
 import { Section } from '@/shared/ui/Section'
+import { SegmentedTabs } from '@/shared/ui/SegmentedTabs'
 import { ContactsSection } from '../components/ContactsSection'
 import { LimitCard } from '../components/LimitCard'
 import { PaymentCards } from '@/entities/clients/ui/PaymentCards'
@@ -22,6 +24,8 @@ export function ClientDetailPage() {
   const navigate = useNavigate()
   const { id } = useParams()
   const client = useClient(id)
+  const [tab, setTab] = useState<'info' | 'cards' | 'applications'>('info')
+  const ownApplications = client?.applications.filter(isOwn) ?? []
 
   return (
     <div className="flex h-full flex-col">
@@ -49,55 +53,79 @@ export function ClientDetailPage() {
             </div>
           </div>
 
-          <LimitCard client={client} />
+          <SegmentedTabs
+            label={t('client.title')}
+            options={[
+              { value: 'info', label: t('tab.info') },
+              { value: 'cards', label: t('tab.cardsContacts') },
+              { value: 'applications', label: t('client.applications') },
+            ]}
+            value={tab}
+            onChange={setTab}
+          />
 
-          <Section title={t('client.personal')}>
-            <InfoList>
-              <InfoRow label={t('client.passport')} value={formatPassport(client.passport)} />
-              <InfoRow
-                label={t('client.passportIssued')}
-                value={formatDate(client.passportIssuedOn)}
-              />
-              <InfoRow
-                label={t('client.passportExpires')}
-                value={formatDate(client.passportExpiresOn)}
-              />
-              <InfoRow label={t('field.birthDate')} value={formatDate(client.birthDate)} />
-              <InfoRow label={t('clients.pinfl')} value={client.pinfl} />
-              <InfoRow label={t('field.phone')} value={formatPhone(client.phone)} />
-            </InfoList>
-          </Section>
+          {tab === 'info' && (
+            <>
+              <LimitCard client={client} />
 
-          <Section title={t('client.income')}>
-            <InfoList>
-              <InfoRow label={t('field.monthlyIncome')} value={formatSum(client.monthlyIncome)} />
-              <InfoRow
-                label={t('field.incomeSource')}
-                value={client.incomeSource ? t(`income.${client.incomeSource}`) : t('common.none')}
-              />
-              <InfoRow
-                label={t('field.maritalStatus')}
-                value={t(`marital.${client.maritalStatus}`)}
-              />
-            </InfoList>
-          </Section>
+              <Section title={t('client.personal')}>
+                <InfoList>
+                  <InfoRow label={t('client.passport')} value={formatPassport(client.passport)} />
+                  <InfoRow
+                    label={t('client.passportIssued')}
+                    value={formatDate(client.passportIssuedOn)}
+                  />
+                  <InfoRow
+                    label={t('client.passportExpires')}
+                    value={formatDate(client.passportExpiresOn)}
+                  />
+                  <InfoRow label={t('field.birthDate')} value={formatDate(client.birthDate)} />
+                  <InfoRow label={t('clients.pinfl')} value={client.pinfl} />
+                  <InfoRow label={t('field.phone')} value={formatPhone(client.phone)} />
+                </InfoList>
+              </Section>
 
-          <Section title={t('client.cards')}>
-            <PaymentCards client={client} addTo={clientAddCardPath(client.id)} />
-          </Section>
+              <Section title={t('client.income')}>
+                <InfoList>
+                  <InfoRow
+                    label={t('field.monthlyIncome')}
+                    value={formatSum(client.monthlyIncome)}
+                  />
+                  <InfoRow
+                    label={t('field.incomeSource')}
+                    value={
+                      client.incomeSource ? t(`income.${client.incomeSource}`) : t('common.none')
+                    }
+                  />
+                  <InfoRow
+                    label={t('field.maritalStatus')}
+                    value={t(`marital.${client.maritalStatus}`)}
+                  />
+                </InfoList>
+              </Section>
+            </>
+          )}
 
-          <ContactsSection client={client} />
-          <Section title={t('client.applications')}>
-            {client.applications.filter(isOwn).length === 0 ? (
+          {tab === 'cards' && (
+            <>
+              <Section title={t('client.cards')}>
+                <PaymentCards client={client} addTo={clientAddCardPath(client.id)} />
+              </Section>
+
+              <ContactsSection client={client} />
+            </>
+          )}
+
+          {tab === 'applications' &&
+            (ownApplications.length === 0 ? (
               <p className="text-sm text-ink-muted">{t('client.applications.empty')}</p>
             ) : (
               <ul className="rounded-card bg-surface px-4">
-                {client.applications.filter(isOwn).map((application) => (
+                {ownApplications.map((application) => (
                   <ApplicationRow key={application.id} application={application} />
                 ))}
               </ul>
-            )}
-          </Section>
+            ))}
         </div>
       )}
     </div>

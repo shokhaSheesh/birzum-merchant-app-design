@@ -29,6 +29,7 @@ import { InfoList, InfoRow } from '@/shared/ui/InfoList'
 import { InstallmentTermsCard } from '@/shared/ui/InstallmentTermsCard'
 import { OptionSheet } from '@/shared/ui/OptionSheet'
 import { Section } from '@/shared/ui/Section'
+import { SegmentedTabs } from '@/shared/ui/SegmentedTabs'
 import { StatusBadge } from '@/shared/ui/StatusBadge'
 import { RejectSheet } from '../components/RejectSheet'
 import { downloadContract } from '@/entities/clients/contractPdf'
@@ -38,6 +39,7 @@ export function ApplicationDetailPage() {
   const navigate = useNavigate()
   const { number } = useParams()
   const found = useApplication(Number(number))
+  const [tab, setTab] = useState<'info' | 'products' | 'payments'>('info')
   const [statusOpen, setStatusOpen] = useState(false)
   const [rejecting, setRejecting] = useState(false)
   const locations = locationsStore.useAll()
@@ -106,125 +108,147 @@ export function ApplicationDetailPage() {
             </div>
           )}
 
-          <InfoList>
-            <InfoRow label={t('application.date')} value={formatDate(found.application.date)} />
-            {location && <InfoRow label={t('profile.branch')} value={tl(location.name)} />}
-            <InfoRow
-              label={t('application.goodsTotal')}
-              value={formatSum(found.application.goodsTotal)}
-            />
-            <InfoRow
-              label={t('contract.installmentTotal')}
-              value={formatSum(found.application.installmentTotal)}
-            />
-          </InfoList>
+          <SegmentedTabs
+            label={t('application.title')}
+            options={[
+              { value: 'info', label: t('tab.info') },
+              { value: 'products', label: t('contract.products') },
+              ...(hasSchedule(found.application)
+                ? [{ value: 'payments' as const, label: t('tab.payments') }]
+                : []),
+            ]}
+            value={tab}
+            onChange={setTab}
+          />
 
-          {nextStatuses.length > 0 && (
+          {tab === 'info' && (
             <>
-              <Button
-                variant="secondary"
-                block
-                className="-mt-4"
-                disabled={busy !== null}
-                onClick={() => setStatusOpen(true)}
-              >
-                <PencilLine size={20} />
-                {t('application.changeStatus')}
-              </Button>
-              <OptionSheet
-                open={statusOpen}
-                onClose={() => setStatusOpen(false)}
-                title={t('application.changeStatus')}
-                options={nextStatuses.map((status) => ({
-                  value: status,
-                  label: t(`application.status.${status}`),
-                }))}
-                value={null}
-                onChange={changeStatus}
-              />
+              <InfoList>
+                <InfoRow label={t('application.date')} value={formatDate(found.application.date)} />
+                {location && <InfoRow label={t('profile.branch')} value={tl(location.name)} />}
+                <InfoRow
+                  label={t('application.goodsTotal')}
+                  value={formatSum(found.application.goodsTotal)}
+                />
+                <InfoRow
+                  label={t('contract.installmentTotal')}
+                  value={formatSum(found.application.installmentTotal)}
+                />
+              </InfoList>
+
+              {nextStatuses.length > 0 && (
+                <>
+                  <Button
+                    variant="secondary"
+                    block
+                    className="-mt-4"
+                    disabled={busy !== null}
+                    onClick={() => setStatusOpen(true)}
+                  >
+                    <PencilLine size={20} />
+                    {t('application.changeStatus')}
+                  </Button>
+                  <OptionSheet
+                    open={statusOpen}
+                    onClose={() => setStatusOpen(false)}
+                    title={t('application.changeStatus')}
+                    options={nextStatuses.map((status) => ({
+                      value: status,
+                      label: t(`application.status.${status}`),
+                    }))}
+                    value={null}
+                    onChange={changeStatus}
+                  />
+                </>
+              )}
+
+              <Section title={t('application.contract.section')}>
+                {found.application.contractNumber ? (
+                  <>
+                    <InfoList>
+                      <InfoRow
+                        label={t('application.contractNumber')}
+                        value={found.application.contractNumber}
+                      />
+                    </InfoList>
+                    <Button
+                      variant="secondary"
+                      block
+                      onClick={() => downloadContract(found, location && tl(location.name))}
+                    >
+                      <Download size={20} />
+                      {t('application.contract.download')}
+                    </Button>
+                  </>
+                ) : (
+                  <p className="text-sm text-ink-muted">{t('application.contract.none')}</p>
+                )}
+              </Section>
+
+              <Section title={t('client.title')}>
+                <Link
+                  to={clientPath(found.client.id)}
+                  className="flex items-center gap-3 rounded-card bg-surface p-4 active:bg-navy-100"
+                >
+                  <Avatar initials={initials(found.client)} photoUrl={found.client.photoUrl} />
+                  <div className="flex min-w-0 flex-1 flex-col gap-0.5">
+                    <p className="font-semibold">{fullName(found.client)}</p>
+                    <p className="text-sm text-ink-muted">{formatPhone(found.client.phone)}</p>
+                  </div>
+                  <ChevronRight size={20} className="shrink-0 text-ink-subtle" />
+                </Link>
+                <InfoList>
+                  <InfoRow
+                    label={t('client.passport')}
+                    value={formatPassport(found.client.passport)}
+                  />
+                  <InfoRow label={t('clients.pinfl')} value={found.client.pinfl} />
+                </InfoList>
+              </Section>
+
+              {found.application.details && (
+                <Section title={t('contract.payment')}>
+                  <InfoList>
+                    <FulfilmentRows
+                      details={found.application.details}
+                      cards={found.client.cards}
+                    />
+                    <InfoRow
+                      label={t('field.downPayment')}
+                      value={formatSum(found.application.details.downPayment)}
+                    />
+                    <InfoRow
+                      label={t('field.paymentDay')}
+                      value={String(found.application.details.paymentDay)}
+                    />
+                  </InfoList>
+                </Section>
+              )}
             </>
           )}
 
-          <Section title={t('application.contract.section')}>
-            {found.application.contractNumber ? (
+          {tab === 'products' &&
+            (found.application.details ? (
               <>
-                <InfoList>
-                  <InfoRow
-                    label={t('application.contractNumber')}
-                    value={found.application.contractNumber}
+                <Section title={t('contract.products')}>
+                  <ProductsSummary products={found.application.details.products} />
+                </Section>
+
+                <Section title={t('contract.conditions')}>
+                  <InstallmentTermsCard
+                    terms={{
+                      ...found.application.details,
+                      installmentTotal: found.application.installmentTotal,
+                    }}
                   />
-                </InfoList>
-                <Button
-                  variant="secondary"
-                  block
-                  onClick={() => downloadContract(found, location && tl(location.name))}
-                >
-                  <Download size={20} />
-                  {t('application.contract.download')}
-                </Button>
+                </Section>
               </>
             ) : (
-              <p className="text-sm text-ink-muted">{t('application.contract.none')}</p>
-            )}
-          </Section>
-
-          <Section title={t('client.title')}>
-            <Link
-              to={clientPath(found.client.id)}
-              className="flex items-center gap-3 rounded-card bg-surface p-4 active:bg-navy-100"
-            >
-              <Avatar initials={initials(found.client)} photoUrl={found.client.photoUrl} />
-              <div className="flex min-w-0 flex-1 flex-col gap-0.5">
-                <p className="font-semibold">{fullName(found.client)}</p>
-                <p className="text-sm text-ink-muted">{formatPhone(found.client.phone)}</p>
-              </div>
-              <ChevronRight size={20} className="shrink-0 text-ink-subtle" />
-            </Link>
-            <InfoList>
-              <InfoRow label={t('client.passport')} value={formatPassport(found.client.passport)} />
-              <InfoRow label={t('clients.pinfl')} value={found.client.pinfl} />
-            </InfoList>
-          </Section>
-
-          {hasSchedule(found.application) && (
-            <Section title={t('payments.title')}>
-              <PaymentSchedule application={found.application} />
-            </Section>
-          )}
-
-          {found.application.details ? (
-            <>
-              <Section title={t('contract.products')}>
-                <ProductsSummary products={found.application.details.products} />
-              </Section>
-
-              <Section title={t('contract.payment')}>
-                <InfoList>
-                  <FulfilmentRows details={found.application.details} cards={found.client.cards} />
-                  <InfoRow
-                    label={t('field.downPayment')}
-                    value={formatSum(found.application.details.downPayment)}
-                  />
-                  <InfoRow
-                    label={t('field.paymentDay')}
-                    value={String(found.application.details.paymentDay)}
-                  />
-                </InfoList>
-              </Section>
-
-              <Section title={t('contract.conditions')}>
-                <InstallmentTermsCard
-                  terms={{
-                    ...found.application.details,
-                    installmentTotal: found.application.installmentTotal,
-                  }}
-                />
-              </Section>
-            </>
-          ) : (
-            <Section title={t('contract.products')}>
               <p className="text-sm text-ink-muted">{t('application.noProducts')}</p>
-            </Section>
+            ))}
+
+          {tab === 'payments' && hasSchedule(found.application) && (
+            <PaymentSchedule application={found.application} />
           )}
         </div>
       )}

@@ -211,8 +211,18 @@ export const seedClients: Client[] = [
         contractNumber: 'B-37067/26',
         details: {
           products: [
-            { name: 'Samsung Galaxy A55, 256 GB', price: 5_500_000, quantity: 1, productId: 'p1' },
-            { name: 'Artel konditsioner 12', price: 6_000_000, quantity: 1, productId: 'p7' },
+            {
+              name: 'Samsung Galaxy A55 (Koʻk, 256 GB)',
+              price: 5_500_000,
+              quantity: 1,
+              productId: 'p1',
+            },
+            {
+              name: 'Artel konditsioner (12 000 BTU)',
+              price: 6_000_000,
+              quantity: 1,
+              productId: 'p7',
+            },
           ],
           downPayment: 0,
           paymentDay: 5,
@@ -269,7 +279,12 @@ export const seedClients: Client[] = [
         contractNumber: 'B-35502/26',
         details: {
           products: [
-            { name: 'LG kir yuvish mashinasi', price: 6_900_000, quantity: 1, productId: 'p3' },
+            {
+              name: 'Artel konditsioner (18 000 BTU)',
+              price: 6_900_000,
+              quantity: 1,
+              productId: 'p7',
+            },
           ],
           downPayment: 0,
           paymentDay: 10,
