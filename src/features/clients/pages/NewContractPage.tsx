@@ -32,6 +32,7 @@ import {
   variantKey,
 } from '@/entities/catalog/products'
 import { useVariantNames } from '@/entities/catalog/useVariantNames'
+import { useMyLocations } from '@/entities/merchant/useMyLocations'
 
 /** A row of the form: which catalogue product, which of its variants (by key), and how many. */
 type Line = { id: number; productId: string | null; variant: string | null; quantity: number }
@@ -58,6 +59,10 @@ export function NewContractPage() {
   const catalogue = productsStore
     .useAll()
     .filter((product) => product.storeId === OWN_STORE_ID && product.active)
+  // The sale happens in one of the seller's working shops; its stock is what can be sold
+  const locations = useMyLocations().filter((location) => location.active)
+  const [pickedLocation, setPickedLocation] = useState<string | null>(null)
+  const locationId = pickedLocation ?? (locations.length === 1 ? locations[0].id : null)
   const [nextProductId, setNextProductId] = useState(2)
   const [downPayment, setDownPayment] = useState<number | null>(null)
   const [paymentDay, setPaymentDay] = useState<number | null>(null)
@@ -94,7 +99,7 @@ export function NewContractPage() {
           : tl(product.name)
         : '',
       price: product && chosen ? priceOf(product, chosen) : 0,
-      stock: product && chosen ? stockOf(product, chosen) : 0,
+      stock: product && chosen ? stockOf(product, chosen, locationId ?? undefined) : 0,
     }
   })
   const summary = rows.map((row) => ({
@@ -145,7 +150,7 @@ export function NewContractPage() {
 
   const submitForm = async () => {
     setSubmitted(true)
-    if (!productsValid || liveError || submitError || paymentDay === null) return
+    if (!locationId || !productsValid || liveError || submitError || paymentDay === null) return
     if (terms) {
       setReview({ number: nextApplicationNumber() })
       return
@@ -162,6 +167,7 @@ export function NewContractPage() {
       id: review.number,
       goodsTotal: total,
       installmentTotal: terms.installmentTotal,
+      locationId: locationId ?? undefined,
       details: {
         products: summary,
         downPayment: downPayment ?? 0,
@@ -202,6 +208,20 @@ export function NewContractPage() {
           <ProductsSummary products={summary} />
         </Section>
 
+        {locations.length > 1 && (
+          <InfoList>
+            <InfoRow
+              label={t('profile.branch')}
+              value={tl(
+                locations.find((location) => location.id === locationId)?.name ?? {
+                  uz: '',
+                  ru: '',
+                },
+              )}
+            />
+          </InfoList>
+        )}
+
         <Section title={t('contract.payment')}>
           <InfoList>
             <InfoRow label={t('field.downPayment')} value={formatSum(downPayment ?? 0)} />
@@ -236,6 +256,20 @@ export function NewContractPage() {
         <TermPicker terms={TERMS} value={term} onChange={setTerm} />
         <p className="text-sm text-ink-muted">{t('cart.limit', { amount: formatSum(limit) })}</p>
       </Section>
+
+      {locations.length > 1 && (
+        <Select
+          label={t('profile.branch')}
+          options={locations.map((location) => ({
+            value: location.id,
+            label: tl(location.name),
+          }))}
+          value={locationId}
+          onChange={setPickedLocation}
+          hint={t('contract.location.hint')}
+          error={submitted && !locationId ? t('error.required') : undefined}
+        />
+      )}
 
       <Section title={t('contract.products')} hint={t('contract.products.hint')}>
         {rows.map(({ line, product, needsVariant, valueIds, price, stock }, index) => (

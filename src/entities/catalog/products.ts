@@ -321,9 +321,10 @@ export const priceOf = (product: Product, valueIds: string[]) =>
   product.variants[variantKey(valueIds)]?.price ?? product.price
 
 /** Pieces on hand across all locations: of one variant, or of every variant that is sold. */
-export function stockOf(product: Product, valueIds?: string[]) {
+export function stockOf(product: Product, valueIds?: string[], locationId?: string) {
   const keys = (valueIds ? [valueIds] : soldCombos(product)).map(variantKey)
-  return Object.values(product.stock).reduce(
+  const shops = locationId ? [product.stock[locationId] ?? {}] : Object.values(product.stock)
+  return shops.reduce(
     (sum, byVariant) => sum + keys.reduce((n, key) => n + (byVariant[key] ?? 0), 0),
     0,
   )
@@ -379,17 +380,25 @@ function fromSeed(seed: SeedProduct): Product {
 
 export const productsStore = createStore<Product>(seedProducts.map(fromSeed))
 
-/** Removes sold pieces from stock, emptying one location after another. */
-export function takeStock(productId: string, valueIds: string[], quantity: number) {
+/** Removes sold pieces from stock: from the given location first, then one after another. */
+export function takeStock(
+  productId: string,
+  valueIds: string[],
+  quantity: number,
+  locationId?: string,
+) {
   const product = productsStore.get(productId)
   if (!product) return
   const key = variantKey(valueIds)
   let left = quantity
   const stock = { ...product.stock }
-  for (const locationId of Object.keys(stock)) {
-    const take = Math.min(stock[locationId][key] ?? 0, left)
+  const order = Object.keys(stock).sort(
+    (a, b) => Number(b === locationId) - Number(a === locationId),
+  )
+  for (const id of order) {
+    const take = Math.min(stock[id][key] ?? 0, left)
     if (take > 0) {
-      stock[locationId] = { ...stock[locationId], [key]: stock[locationId][key] - take }
+      stock[id] = { ...stock[id], [key]: stock[id][key] - take }
       left -= take
     }
   }

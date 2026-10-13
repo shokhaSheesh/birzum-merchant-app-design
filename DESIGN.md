@@ -227,6 +227,9 @@ Always has the show/hide eye button on the right. Never build a password field w
 - Opens a sheet with two `DatePicker`s, "Dan" and "Gacha", a ghost "Tozalash" and a primary "Qoʻllash". Either date may be left empty.
 - Once a range is set the chip turns into the selected style and shows the dates, `01.08.2026 – 05.08.2026`.
 
+### Filial filter: `LocationChip`
+A chip with a pin icon and a small chevron, first in the chip row on Arizalar and above the period picker on Asosiy. It opens the option sheet with "Barcha filiallar" and the seller's filials, and turns navy while one is chosen. It is hidden for a seller with a single filial.
+
 ### Phone input: `PhoneField`
 - `+998` is fixed at the left and cannot be edited. The user types the nine remaining digits.
 - Digits are grouped as `90 123 45 67` while typing. Show a full number elsewhere with `formatPhone`.
@@ -359,6 +362,10 @@ Only what shoppers read and what really differs by language is stored once per l
 - Stock goes down when an ariza is confirmed, whether a shopper sent it or the merchant filed it.
 - **Toʻlov jadvali** appears from Topshirilgan on: a red `Alert` with the overdue amount if there is one, a progress bar with "4 / 12 toʻlangan" and the remaining sum, then every payment with its date, amount and a badge: green "Toʻlangan", grey "Kutilmoqda", red "Muddati oʻtgan".
 - **In "Yangi shartnoma" products are picked, never typed:** a `Select` of the merchant's products, a second `Select` of that product's sold combinations, then quantity. The price comes from the catalogue, and the row shows how many are in stock or, in red, that there are not enough.
+- **Filial.** Every ariza belongs to one filial. A seller with several picks it at the top of "Yangi shartnoma"; stock is checked and taken in that filial. The detail screen shows it as a "Filial" row.
+- **Status steps.** "Holatni oʻzgartirish" lists only the next steps (`NEXT_STATUSES`): pending → Rasmiylashtirilmoqda or Rad etilgan; Rasmiylashtirilmoqda → Topshirilgan, Rad etilgan or Bekor qilingan; Topshirilgan → Nasiya yopilgan. Final statuses have no button.
+- **Rejecting always asks why** (`RejectSheet`): a reason from the list and a comment, required for "Boshqa sabab". The reason is shown with `RejectionNote`, a red card under the status, in the merchant's ariza and in the shopper's Xaridlar.
+- **Product lines** (`ProductsSummary`) start with the product picture, 56px.
 
 ### Sharhlar
 - Each review has a small red trash button at its bottom right. It opens `ConfirmSheet`; a deleted review leaves the client app and the rating.

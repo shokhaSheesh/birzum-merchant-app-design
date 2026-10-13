@@ -1,29 +1,35 @@
-import { Plus } from 'lucide-react'
+import { ChevronRight, Plus, Trash2 } from 'lucide-react'
 import { useState, type FormEvent } from 'react'
 import { useI18n } from '@/shared/i18n/useI18n'
 import { formatPhone, PHONE_DIGITS } from '@/shared/lib/phone'
 import { Button } from '@/shared/ui/Button'
+import { ConfirmSheet } from '@/shared/ui/ConfirmSheet'
 import { PhoneField } from '@/shared/ui/PhoneField'
 import { Section } from '@/shared/ui/Section'
 import { Select } from '@/shared/ui/Select'
 import { Sheet } from '@/shared/ui/Sheet'
 import { TextField } from '@/shared/ui/TextField'
-import { addContact } from '../api/mockClients'
-import { RELATIONS, type Client, type Relation } from '@/entities/clients/clients'
+import { addContact, removeContact, updateContact } from '../api/mockClients'
+import { RELATIONS, type Client, type Contact, type Relation } from '@/entities/clients/clients'
 
+/** A client's extra contacts. Tapping one opens it for editing, where it can also be deleted. */
 export function ContactsSection({ client }: { client: Client }) {
   const { t } = useI18n()
   const [open, setOpen] = useState(false)
+  /** The contact being edited; null while a new one is being added. */
+  const [editing, setEditing] = useState<Contact | null>(null)
+  const [deleting, setDeleting] = useState<Contact | null>(null)
   const [phone, setPhone] = useState('')
   const [relation, setRelation] = useState<Relation | null>(null)
   const [comment, setComment] = useState('')
   const [submitted, setSubmitted] = useState(false)
   const [loading, setLoading] = useState(false)
 
-  const openSheet = () => {
-    setPhone('')
-    setRelation(null)
-    setComment('')
+  const openSheet = (contact: Contact | null) => {
+    setEditing(contact)
+    setPhone(contact?.phone ?? '')
+    setRelation(contact?.relation ?? null)
+    setComment(contact?.comment ?? '')
     setSubmitted(false)
     setOpen(true)
   }
@@ -33,7 +39,10 @@ export function ContactsSection({ client }: { client: Client }) {
     setSubmitted(true)
     if (phone.length < PHONE_DIGITS || !relation) return
     setLoading(true)
-    await addContact(client.id, { phone, relation, comment: comment.trim() })
+    const values = { phone, relation, comment: comment.trim() }
+    await (editing
+      ? updateContact(client.id, { ...values, id: editing.id })
+      : addContact(client.id, values))
     setLoading(false)
     setOpen(false)
   }
@@ -45,25 +54,36 @@ export function ContactsSection({ client }: { client: Client }) {
       ) : (
         <ul className="rounded-card bg-surface px-4">
           {client.contacts.map((contact) => (
-            <li
-              key={contact.id}
-              className="flex flex-col gap-0.5 border-b border-line py-3 last:border-b-0"
-            >
-              <div className="flex items-baseline justify-between gap-3">
-                <p className="font-semibold">{formatPhone(contact.phone)}</p>
-                <p className="text-sm text-ink-muted">{t(`relation.${contact.relation}`)}</p>
-              </div>
-              {contact.comment && <p className="text-sm text-ink-muted">{contact.comment}</p>}
+            <li key={contact.id} className="border-b border-line last:border-b-0">
+              <button
+                type="button"
+                aria-label={t('client.contacts.edit')}
+                onClick={() => openSheet(contact)}
+                className="flex w-full items-center gap-2 py-3 text-left"
+              >
+                <div className="flex min-w-0 flex-1 flex-col gap-0.5">
+                  <div className="flex items-baseline justify-between gap-3">
+                    <p className="font-semibold">{formatPhone(contact.phone)}</p>
+                    <p className="text-sm text-ink-muted">{t(`relation.${contact.relation}`)}</p>
+                  </div>
+                  {contact.comment && <p className="text-sm text-ink-muted">{contact.comment}</p>}
+                </div>
+                <ChevronRight size={20} className="shrink-0 text-ink-subtle" />
+              </button>
             </li>
           ))}
         </ul>
       )}
-      <Button variant="secondary" block onClick={openSheet}>
+      <Button variant="secondary" block onClick={() => openSheet(null)}>
         <Plus size={20} />
         {t('client.contacts.add')}
       </Button>
 
-      <Sheet open={open} onClose={() => setOpen(false)} title={t('client.contacts.add')}>
+      <Sheet
+        open={open}
+        onClose={() => setOpen(false)}
+        title={t(editing ? 'client.contacts.edit' : 'client.contacts.add')}
+      >
         <form onSubmit={(e) => void save(e)} noValidate className="flex flex-col gap-4 pt-1 pb-1">
           <PhoneField
             label={t('field.phone')}
@@ -84,11 +104,38 @@ export function ContactsSection({ client }: { client: Client }) {
             value={comment}
             onChange={(e) => setComment(e.target.value)}
           />
-          <Button type="submit" block loading={loading} className="mt-2">
-            {t('common.save')}
-          </Button>
+          <div className="mt-2 flex flex-col gap-1">
+            {editing && (
+              <Button
+                variant="ghost"
+                block
+                className="text-danger!"
+                disabled={loading}
+                onClick={() => {
+                  // One sheet at a time: the confirmation replaces the form
+                  setOpen(false)
+                  setDeleting(editing)
+                }}
+              >
+                <Trash2 size={20} />
+                {t('common.delete')}
+              </Button>
+            )}
+            <Button type="submit" block loading={loading}>
+              {t('common.save')}
+            </Button>
+          </div>
         </form>
       </Sheet>
+
+      <ConfirmSheet
+        open={deleting !== null}
+        onClose={() => setDeleting(null)}
+        title={t('confirm.delete.title')}
+        message={t('confirm.delete.message')}
+        confirmLabel={t('common.delete')}
+        onConfirm={() => deleting && removeContact(client.id, deleting.id)}
+      />
     </Section>
   )
 }

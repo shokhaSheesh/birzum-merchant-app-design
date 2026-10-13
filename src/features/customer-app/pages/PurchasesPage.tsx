@@ -1,4 +1,5 @@
 import { applicationStatusTone } from '@/entities/clients/applicationStatus'
+import { RejectionNote } from '@/entities/clients/ui/RejectionNote'
 import { useCustomer } from '@/entities/session/customer'
 import { useI18n } from '@/shared/i18n/useI18n'
 import { formatDateTime, formatSum, groupDigits } from '@/shared/lib/format'
@@ -35,6 +36,7 @@ export function PurchasesPage() {
                   {t(`application.status.${application.status}`)}
                 </StatusBadge>
               </div>
+              {application.rejection && <RejectionNote rejection={application.rejection} />}
               {application.details && (
                 <>
                   <p className="text-sm text-ink-muted">

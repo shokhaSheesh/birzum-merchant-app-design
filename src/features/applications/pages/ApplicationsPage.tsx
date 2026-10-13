@@ -4,6 +4,7 @@ import { shortName } from '@/entities/clients/clientName'
 import { APPLICATION_STATUSES, type ApplicationStatus } from '@/entities/clients/clients'
 import { ApplicationRow } from '@/entities/clients/ui/ApplicationRow'
 import { useApplications } from '@/entities/clients/useApplications'
+import { LocationChip } from '@/entities/merchant/ui/LocationChip'
 import { useI18n } from '@/shared/i18n/useI18n'
 import { DateRangeChip, type DateRange } from '@/shared/ui/DateRangeChip'
 import { EmptyState } from '@/shared/ui/EmptyState'
@@ -22,6 +23,7 @@ export function ApplicationsPage() {
     APPLICATION_STATUSES.includes(requested) ? requested : 'all',
   )
   const [range, setRange] = useState<DateRange>({ from: null, to: null })
+  const [locationId, setLocationId] = useState<string | null>(null)
 
   const all = useApplications()
   const dayStart = range.from ? new Date(range.from).setHours(0, 0, 0, 0) : undefined
@@ -30,6 +32,7 @@ export function ApplicationsPage() {
     const time = application.date.getTime()
     return (
       (filter === 'all' || application.status === filter) &&
+      (locationId === null || application.locationId === locationId) &&
       (dayStart === undefined || time >= dayStart) &&
       (dayEnd === undefined || time <= dayEnd)
     )
@@ -48,11 +51,14 @@ export function ApplicationsPage() {
         <FilterChips
           label={t('applications.filter.label')}
           leading={
-            <DateRangeChip
-              label={t('applications.filter.date')}
-              value={range}
-              onChange={setRange}
-            />
+            <>
+              <LocationChip value={locationId} onChange={setLocationId} />
+              <DateRangeChip
+                label={t('applications.filter.date')}
+                value={range}
+                onChange={setRange}
+              />
+            </>
           }
           options={[
             { value: 'all', label: t('applications.filter.all') },

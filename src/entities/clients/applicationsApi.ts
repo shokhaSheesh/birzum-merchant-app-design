@@ -1,5 +1,5 @@
 import { takeStock } from '@/entities/catalog/products'
-import type { ApplicationProduct, Term } from './clients'
+import type { ApplicationProduct, Rejection, Term } from './clients'
 import { clientsStore } from './clientsStore'
 import { installmentTerms } from './installment'
 
@@ -27,6 +27,8 @@ export async function submitApplication(
         id,
         date: new Date(),
         status: 'pending',
+        // Until the shopper picks a shop at checkout, orders go to the first one
+        locationId: 'l1',
         goodsTotal: total,
         installmentTotal: terms.installmentTotal,
         details: {
@@ -47,13 +49,14 @@ export async function submitApplication(
 /** Merchant side: accept a shopper's application. It moves on to being drawn up. */
 export async function approveApplication(number: number) {
   await delay(900)
-  takeStockFor(findProducts(number))
+  const application = find(number)
+  takeStockFor(application?.details?.products ?? [], application?.locationId)
   clientsStore.updateApplication(number, { status: 'processing' })
 }
 
-export async function rejectApplication(number: number) {
+export async function rejectApplication(number: number, rejection: Rejection) {
   await delay(600)
-  clientsStore.updateApplication(number, { status: 'rejected' })
+  clientsStore.updateApplication(number, { status: 'rejected', rejection })
 }
 
 /** Marks the goods as given to the client. Payments run from here. */
@@ -62,15 +65,15 @@ export async function handOverApplication(number: number) {
   clientsStore.updateApplication(number, { status: 'handed' })
 }
 
-const findProducts = (number: number) =>
+const find = (number: number) =>
   clientsStore
     .getAll()
     .flatMap((client) => client.applications)
-    .find((application) => application.id === number)?.details?.products ?? []
+    .find((application) => application.id === number)
 
 /** Takes every catalogue line of an application out of stock. */
-export function takeStockFor(products: ApplicationProduct[]) {
+export function takeStockFor(products: ApplicationProduct[], locationId?: string) {
   for (const line of products) {
-    if (line.productId) takeStock(line.productId, line.valueIds ?? [], line.quantity)
+    if (line.productId) takeStock(line.productId, line.valueIds ?? [], line.quantity, locationId)
   }
 }

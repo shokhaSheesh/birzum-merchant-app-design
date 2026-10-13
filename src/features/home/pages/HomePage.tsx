@@ -5,6 +5,7 @@ import { applicationStatusTone } from '@/entities/clients/applicationStatus'
 import { APPLICATION_STATUSES } from '@/entities/clients/clients'
 import { useApplications, type ApplicationWithClient } from '@/entities/clients/useApplications'
 import { unreadCount } from '@/entities/notifications/notifications'
+import { LocationChip } from '@/entities/merchant/ui/LocationChip'
 import { useMyLocations } from '@/entities/merchant/useMyLocations'
 import { currentUser } from '@/entities/session/user'
 import { ROUTES } from '@/shared/config/routes'
@@ -69,7 +70,11 @@ export function HomePage() {
   const navigate = useNavigate()
   const [period, setPeriod] = useState<Period>(() => ({ unit: 'week', anchor: new Date() }))
 
-  const all = useApplications()
+  const [locationId, setLocationId] = useState<string | null>(null)
+
+  const all = useApplications().filter(
+    ({ application }) => locationId === null || application.locationId === locationId,
+  )
   const pendingOrders = all.filter(({ application }) => application.status === 'pending').length
   const items = all.filter(({ application }) => inPeriod(application.date, period))
   const total = items.reduce((sum, { application }) => sum + application.installmentTotal, 0)
@@ -110,6 +115,12 @@ export function HomePage() {
           description={t('home.pending.count', { count: String(pendingOrders) })}
           onClick={() => navigate(`${ROUTES.applications}?status=pending`)}
         />
+      )}
+
+      {myLocations.length > 1 && (
+        <div className="-mb-2 flex">
+          <LocationChip value={locationId} onChange={setLocationId} />
+        </div>
       )}
 
       <PeriodPicker value={period} onChange={setPeriod} />

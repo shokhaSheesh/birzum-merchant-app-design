@@ -9,15 +9,19 @@ const DAYS_BACK = 45
 const FIRST_NUMBER = 260_000
 
 const CATALOG = [
-  { name: 'Samsung Galaxy A55, 256 GB', price: 5_500_000 },
-  { name: 'Artel konditsioner 12', price: 6_000_000 },
-  { name: 'LG kir yuvish mashinasi', price: 6_900_000 },
-  { name: 'Televizor 43', price: 4_200_000 },
-  { name: 'Muzlatkich', price: 4_000_000 },
-  { name: 'Lenovo IdeaPad noutbuk', price: 8_400_000 },
-  { name: 'Changyutgich', price: 1_900_000 },
-  { name: 'Gaz plita', price: 3_100_000 },
+  { name: 'Samsung Galaxy A55, 256 GB', price: 5_500_000, productId: 'p1' },
+  { name: 'Artel konditsioner 12', price: 6_000_000, productId: 'p7' },
+  { name: 'LG kir yuvish mashinasi', price: 6_900_000, productId: 'p3' },
+  { name: 'Televizor 43', price: 4_200_000, productId: 'p2' },
+  { name: 'Xiaomi Redmi Note 13', price: 3_400_000, productId: 'p5' },
+  { name: 'Lenovo IdeaPad noutbuk', price: 8_400_000, productId: 'p4' },
+  { name: 'Televizor 55 Smart', price: 7_800_000, productId: 'p6' },
+  { name: 'HP 15 noutbuk', price: 7_200_000, productId: 'p8' },
 ]
+
+// Which shop and which reject reason a generated application gets, by its number
+const LOCATIONS = ['l1', 'l2', 'l1', 'l3', 'l2']
+const REASONS = ['unverified', 'limit', 'noStock', 'clientDeclined'] as const
 
 /** Small deterministic random number generator (mulberry32). */
 function createRandom(seed: number) {
@@ -89,6 +93,10 @@ export function withGeneratedApplications(clients: Client[]): Client[] {
             },
           }
         : { id: number, date, status, goodsTotal: 0, installmentTotal: 0 }
+      application.locationId = LOCATIONS[number % LOCATIONS.length]
+      if (status === 'rejected') {
+        application.rejection = { reason: REASONS[number % REASONS.length], comment: '' }
+      }
 
       generated.set(client.id, [application, ...(generated.get(client.id) ?? [])])
     }
@@ -96,6 +104,15 @@ export function withGeneratedApplications(clients: Client[]): Client[] {
 
   return clients.map((client) => ({
     ...client,
-    applications: [...(generated.get(client.id) ?? []), ...client.applications],
+    applications: [
+      ...(generated.get(client.id) ?? []),
+      // The hand-written ones belong to the first shop
+      ...client.applications.map((application): Application => ({
+        locationId: 'l1',
+        rejection:
+          application.status === 'rejected' ? { reason: 'unverified', comment: '' } : undefined,
+        ...application,
+      })),
+    ],
   }))
 }

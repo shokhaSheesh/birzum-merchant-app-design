@@ -2,7 +2,7 @@ import { ArrowLeft, ChevronRight, Download, PencilLine, PackageCheck } from 'luc
 import { useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import { applicationStatusTone } from '@/entities/clients/applicationStatus'
-import { APPLICATION_STATUSES } from '@/entities/clients/clients'
+import { NEXT_STATUSES, type ApplicationStatus, type Rejection } from '@/entities/clients/clients'
 import {
   approveApplication,
   handOverApplication,
@@ -12,8 +12,10 @@ import { clientsStore } from '@/entities/clients/clientsStore'
 import { fullName, initials } from '@/entities/clients/clientName'
 import { hasSchedule } from '@/entities/clients/payments'
 import { PaymentSchedule } from '@/entities/clients/ui/PaymentSchedule'
+import { RejectionNote } from '@/entities/clients/ui/RejectionNote'
 import { ProductsSummary } from '@/entities/clients/ui/ProductsSummary'
 import { useApplication } from '@/entities/clients/useApplications'
+import { locationsStore } from '@/entities/merchant/locations'
 import { clientPath } from '@/shared/config/routes'
 import { useI18n } from '@/shared/i18n/useI18n'
 import { formatDate, formatSum, groupDigits } from '@/shared/lib/format'
@@ -27,15 +29,18 @@ import { InstallmentTermsCard } from '@/shared/ui/InstallmentTermsCard'
 import { OptionSheet } from '@/shared/ui/OptionSheet'
 import { Section } from '@/shared/ui/Section'
 import { StatusBadge } from '@/shared/ui/StatusBadge'
+import { RejectSheet } from '../components/RejectSheet'
 import { downloadContract } from '../lib/contractPdf'
 
 export function ApplicationDetailPage() {
-  const { t } = useI18n()
+  const { t, tl } = useI18n()
   const navigate = useNavigate()
   const { number } = useParams()
   const found = useApplication(Number(number))
   const [statusOpen, setStatusOpen] = useState(false)
-  const [busy, setBusy] = useState<'approve' | 'reject' | 'handOver' | null>(null)
+  const [rejecting, setRejecting] = useState(false)
+  const locations = locationsStore.useAll()
+  const [busy, setBusy] = useState<'approve' | 'handOver' | null>(null)
 
   const handOver = async () => {
     if (!found) return
@@ -44,12 +49,28 @@ export function ApplicationDetailPage() {
     setBusy(null)
   }
 
-  const decide = async (decision: 'approve' | 'reject') => {
+  const approve = async () => {
     if (!found) return
-    setBusy(decision)
-    await (decision === 'approve' ? approveApplication : rejectApplication)(found.application.id)
+    setBusy('approve')
+    await approveApplication(found.application.id)
     setBusy(null)
   }
+
+  const reject = async (rejection: Rejection) => {
+    if (found) await rejectApplication(found.application.id, rejection)
+  }
+
+  // Each move runs the same step as its own button, so stock and reasons are never skipped
+  const changeStatus = (status: ApplicationStatus) => {
+    if (!found) return
+    if (status === 'rejected') setRejecting(true)
+    else if (status === 'processing') void approve()
+    else if (status === 'handed') void handOver()
+    else clientsStore.updateApplication(found.application.id, { status })
+  }
+
+  const nextStatuses = found ? NEXT_STATUSES[found.application.status] : []
+  const location = locations.find((item) => item.id === found?.application.locationId)
 
   return (
     <div className="flex h-full flex-col">
@@ -78,8 +99,15 @@ export function ApplicationDetailPage() {
             </h1>
           </div>
 
+          {found.application.rejection && (
+            <div className="-mt-3">
+              <RejectionNote rejection={found.application.rejection} />
+            </div>
+          )}
+
           <InfoList>
             <InfoRow label={t('application.date')} value={formatDate(found.application.date)} />
+            {location && <InfoRow label={t('profile.branch')} value={tl(location.name)} />}
             <InfoRow
               label={t('application.goodsTotal')}
               value={formatSum(found.application.goodsTotal)}
@@ -90,21 +118,31 @@ export function ApplicationDetailPage() {
             />
           </InfoList>
 
-          <Button variant="secondary" block className="-mt-4" onClick={() => setStatusOpen(true)}>
-            <PencilLine size={20} />
-            {t('application.changeStatus')}
-          </Button>
-          <OptionSheet
-            open={statusOpen}
-            onClose={() => setStatusOpen(false)}
-            title={t('application.changeStatus')}
-            options={APPLICATION_STATUSES.map((status) => ({
-              value: status,
-              label: t(`application.status.${status}`),
-            }))}
-            value={found.application.status}
-            onChange={(status) => clientsStore.updateApplication(found.application.id, { status })}
-          />
+          {nextStatuses.length > 0 && (
+            <>
+              <Button
+                variant="secondary"
+                block
+                className="-mt-4"
+                disabled={busy !== null}
+                onClick={() => setStatusOpen(true)}
+              >
+                <PencilLine size={20} />
+                {t('application.changeStatus')}
+              </Button>
+              <OptionSheet
+                open={statusOpen}
+                onClose={() => setStatusOpen(false)}
+                title={t('application.changeStatus')}
+                options={nextStatuses.map((status) => ({
+                  value: status,
+                  label: t(`application.status.${status}`),
+                }))}
+                value={null}
+                onChange={changeStatus}
+              />
+            </>
+          )}
 
           <Section title={t('application.contract.section')}>
             {found.application.contractNumber ? (
@@ -187,20 +225,14 @@ export function ApplicationDetailPage() {
 
       {found?.application.status === 'pending' && (
         <footer className="flex shrink-0 flex-col gap-1 px-5 pt-3 pb-[max(1.25rem,env(safe-area-inset-bottom))]">
-          <Button
-            variant="ghost"
-            block
-            loading={busy === 'reject'}
-            disabled={busy !== null}
-            onClick={() => void decide('reject')}
-          >
+          <Button variant="ghost" block disabled={busy !== null} onClick={() => setRejecting(true)}>
             {t('application.reject')}
           </Button>
           <Button
             block
             loading={busy === 'approve'}
             disabled={busy !== null}
-            onClick={() => void decide('approve')}
+            onClick={() => void approve()}
           >
             {t('code.submit')}
           </Button>
@@ -215,6 +247,8 @@ export function ApplicationDetailPage() {
           </Button>
         </footer>
       )}
+
+      {rejecting && <RejectSheet onClose={() => setRejecting(false)} onReject={reject} />}
     </div>
   )
 }

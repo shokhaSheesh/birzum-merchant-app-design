@@ -95,6 +95,25 @@ export async function addContact(clientId: string, contact: Omit<Contact, 'id'>)
   }
 }
 
+export async function updateContact(clientId: string, contact: Contact) {
+  await delay(400)
+  const client = clientsStore.get(clientId)
+  if (client) {
+    clientsStore.update(clientId, {
+      contacts: client.contacts.map((item) => (item.id === contact.id ? contact : item)),
+    })
+  }
+}
+
+export function removeContact(clientId: string, contactId: string) {
+  const client = clientsStore.get(clientId)
+  if (client) {
+    clientsStore.update(clientId, {
+      contacts: client.contacts.filter((item) => item.id !== contactId),
+    })
+  }
+}
+
 export { calculateLimit } from '@/entities/clients/limitsApi'
 
 /** Works out the installment terms for the amount being financed. */
@@ -107,12 +126,15 @@ export const nextApplicationNumber = () => clientsStore.nextApplicationNumber()
 
 export async function createApplication(
   clientId: string,
-  application: Pick<Application, 'id' | 'goodsTotal' | 'installmentTotal' | 'details'>,
+  application: Pick<
+    Application,
+    'id' | 'goodsTotal' | 'installmentTotal' | 'details' | 'locationId'
+  >,
 ) {
   await delay(700)
   const client = clientsStore.get(clientId)
   if (!client) return
   const created: Application = { ...application, date: new Date(), status: 'processing' }
-  takeStockFor(application.details?.products ?? [])
+  takeStockFor(application.details?.products ?? [], application.locationId)
   clientsStore.update(clientId, { applications: [created, ...client.applications] })
 }

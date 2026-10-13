@@ -51,6 +51,21 @@ export type ApplicationDetails = {
   monthlyPayment: number
 }
 
+export const REJECT_REASONS = ['noStock', 'unverified', 'limit', 'clientDeclined', 'other'] as const
+export type RejectReason = (typeof REJECT_REASONS)[number]
+/** Why an application was turned down. The shopper reads it too. */
+export type Rejection = { reason: RejectReason; comment: string }
+
+/** The statuses an application can move to from each one. Empty means it is final. */
+export const NEXT_STATUSES: Record<ApplicationStatus, ApplicationStatus[]> = {
+  pending: ['processing', 'rejected'],
+  processing: ['handed', 'rejected', 'cancelled'],
+  handed: ['closed'],
+  rejected: [],
+  closed: [],
+  cancelled: [],
+}
+
 export type Application = {
   /** Application number as shown to staff, e.g. 252401. */
   id: number
@@ -61,6 +76,10 @@ export type Application = {
   status: ApplicationStatus
   contractNumber?: string
   details?: ApplicationDetails
+  /** The merchant's shop (filial) the sale belongs to. */
+  locationId?: string
+  /** Set when the status is `rejected`. */
+  rejection?: Rejection
 }
 
 export type Client = {
@@ -159,7 +178,7 @@ export const seedClients: Client[] = [
         status: 'handed',
         contractNumber: 'B-33410/26',
         details: {
-          products: [{ name: 'Televizor 43', price: 4_200_000, quantity: 1 }],
+          products: [{ name: 'Televizor 43', price: 4_200_000, quantity: 1, productId: 'p2' }],
           downPayment: 0,
           paymentDay: 5,
           term: 12,
@@ -176,8 +195,8 @@ export const seedClients: Client[] = [
         contractNumber: 'B-37067/26',
         details: {
           products: [
-            { name: 'Samsung Galaxy A55, 256 GB', price: 5_500_000, quantity: 1 },
-            { name: 'Artel konditsioner 12', price: 6_000_000, quantity: 1 },
+            { name: 'Samsung Galaxy A55, 256 GB', price: 5_500_000, quantity: 1, productId: 'p1' },
+            { name: 'Artel konditsioner 12', price: 6_000_000, quantity: 1, productId: 'p7' },
           ],
           downPayment: 0,
           paymentDay: 5,
@@ -233,7 +252,9 @@ export const seedClients: Client[] = [
         status: 'closed',
         contractNumber: 'B-35502/26',
         details: {
-          products: [{ name: 'LG kir yuvish mashinasi', price: 6_900_000, quantity: 1 }],
+          products: [
+            { name: 'LG kir yuvish mashinasi', price: 6_900_000, quantity: 1, productId: 'p3' },
+          ],
           downPayment: 0,
           paymentDay: 10,
           term: 6,
