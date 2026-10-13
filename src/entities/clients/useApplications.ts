@@ -1,17 +1,24 @@
 import { useMemo } from 'react'
+import { OWN_STORE_ID } from '@/entities/catalog/products'
 import type { Application, Client } from './clients'
 import { useClients } from './useClients'
 
 export type ApplicationWithClient = { application: Application; client: Client }
 
-/** Every client's applications in one list, newest first. */
+/** Whether an application was filed with the signed-in merchant's shop. */
+export const isOwn = (application: Application) =>
+  (application.storeId ?? OWN_STORE_ID) === OWN_STORE_ID
+
+/** Every client's applications with the merchant's shop in one list, newest first. */
 export function useApplications() {
   const clients = useClients()
 
   return useMemo<ApplicationWithClient[]>(
     () =>
       clients
-        .flatMap((client) => client.applications.map((application) => ({ application, client })))
+        .flatMap((client) =>
+          client.applications.filter(isOwn).map((application) => ({ application, client })),
+        )
         .sort(
           (a, b) =>
             b.application.date.getTime() - a.application.date.getTime() ||

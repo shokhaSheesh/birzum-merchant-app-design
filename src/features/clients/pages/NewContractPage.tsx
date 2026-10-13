@@ -20,7 +20,7 @@ import { calculateTerms, createApplication, nextApplicationNumber } from '../api
 import { InstallmentTermsCard } from '@/shared/ui/InstallmentTermsCard'
 import { TERMS, type Fulfilment, type Term } from '@/entities/clients/clients'
 import { fulfilmentValid } from '@/entities/clients/fulfilment'
-import { FulfilmentFields } from '@/entities/clients/ui/FulfilmentFields'
+import { CardSelect, FulfilmentFields } from '@/entities/clients/ui/FulfilmentFields'
 import { FulfilmentRows } from '@/entities/clients/ui/FulfilmentRows'
 import { MIN_APPLICATION_TOTAL, type InstallmentTerms } from '@/entities/clients/installment'
 import { ProductsSummary } from '@/entities/clients/ui/ProductsSummary'
@@ -162,7 +162,8 @@ export function NewContractPage() {
       liveError ||
       submitError ||
       paymentDay === null ||
-      !fulfilmentValid(fulfilment, cardId)
+      !cardId ||
+      !fulfilmentValid(fulfilment)
     )
       return
     if (terms) {
@@ -364,6 +365,9 @@ export function NewContractPage() {
         <FulfilmentFields
           fulfilment={fulfilment}
           onFulfilment={setFulfilment}
+          showErrors={submitted}
+        />
+        <CardSelect
           cards={client.cards}
           cardId={cardId}
           onCard={setPickedCard}

@@ -7,7 +7,7 @@ import { CardExpiryField, CardNumberField } from '@/shared/ui/CardFields'
 import { FormScreen } from '@/shared/ui/FormScreen'
 import { IconBadge } from '@/shared/ui/IconBadge'
 import { ScreenIntro } from '@/shared/ui/ScreenIntro'
-import { sendCardCode } from '../api/mockClients'
+import { sendCardCode } from '../cardsApi'
 
 type Props = {
   progress?: { step: number; total: number }

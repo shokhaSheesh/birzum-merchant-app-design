@@ -10,6 +10,7 @@ import { ClientDetailPage } from '@/features/clients/pages/ClientDetailPage'
 import { ClientsPage } from '@/features/clients/pages/ClientsPage'
 import { NewClientPage } from '@/features/clients/pages/NewClientPage'
 import { NewContractPage } from '@/features/clients/pages/NewContractPage'
+import { CustomerAddCardPage } from '@/features/customer-app/pages/CustomerAddCardPage'
 import { CustomerProfilePage } from '@/features/customer-app/pages/CustomerProfilePage'
 import { FavoritesPage } from '@/features/customer-app/pages/FavoritesPage'
 import { CartPage } from '@/features/customer-app/pages/CartPage'
@@ -18,6 +19,7 @@ import { CustomerNotificationsPage } from '@/features/customer-app/pages/Custome
 import { CustomerHomePage } from '@/features/customer-app/pages/CustomerHomePage'
 import { ProductPage } from '@/features/customer-app/pages/ProductPage'
 import { ProductsPage } from '@/features/customer-app/pages/ProductsPage'
+import { PurchasePage } from '@/features/customer-app/pages/PurchasePage'
 import { PurchasesPage } from '@/features/customer-app/pages/PurchasesPage'
 import { SearchPage } from '@/features/customer-app/pages/SearchPage'
 import { StorePage } from '@/features/customer-app/pages/StorePage'
@@ -83,6 +85,8 @@ export const router = createBrowserRouter([
         ],
       },
       { path: ROUTES.customerProduct, element: <ProductPage /> },
+      { path: ROUTES.customerPurchase, element: <PurchasePage /> },
+      { path: ROUTES.customerAddCard, element: <CustomerAddCardPage /> },
       { path: ROUTES.customerStore, element: <StorePage /> },
       { path: ROUTES.customerSearch, element: <SearchPage /> },
       { path: ROUTES.customerCategories, element: <CategoriesPage /> },

@@ -31,7 +31,7 @@ import { OptionSheet } from '@/shared/ui/OptionSheet'
 import { Section } from '@/shared/ui/Section'
 import { StatusBadge } from '@/shared/ui/StatusBadge'
 import { RejectSheet } from '../components/RejectSheet'
-import { downloadContract } from '../lib/contractPdf'
+import { downloadContract } from '@/entities/clients/contractPdf'
 
 export function ApplicationDetailPage() {
   const { t, tl } = useI18n()
@@ -154,7 +154,10 @@ export function ApplicationDetailPage() {
                     value={found.application.contractNumber}
                   />
                 </InfoList>
-                <Button block onClick={() => downloadContract(found)}>
+                <Button
+                  block
+                  onClick={() => downloadContract(found, location && tl(location.name))}
+                >
                   <Download size={20} />
                   {t('application.contract.download')}
                 </Button>

@@ -1,6 +1,7 @@
 import { takeStock } from '@/entities/catalog/products'
 import type { ApplicationDetails, ApplicationProduct, Rejection, Term } from './clients'
 import { clientsStore } from './clientsStore'
+import { paymentSchedule } from './payments'
 import { installmentTerms } from './installment'
 
 const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms))
@@ -14,6 +15,8 @@ export async function submitApplication(
   products: ApplicationProduct[],
   term: Term,
   checkout: Pick<ApplicationDetails, 'fulfilment' | 'cardId'>,
+  /** Which shop the order goes to and, for pickup, which of its filials. */
+  shop: { storeId: string; locationId?: string },
 ) {
   await delay(900)
   const client = clientsStore.get(clientId)
@@ -28,8 +31,7 @@ export async function submitApplication(
         id,
         date: new Date(),
         status: 'pending',
-        // Until the shopper picks a shop at checkout, orders go to the first one
-        locationId: 'l1',
+        ...shop,
         goodsTotal: total,
         installmentTotal: terms.installmentTotal,
         details: {
@@ -78,4 +80,20 @@ export function takeStockFor(products: ApplicationProduct[], locationId?: string
   for (const line of products) {
     if (line.productId) takeStock(line.productId, line.valueIds ?? [], line.quantity, locationId)
   }
+}
+
+/** Shopper side: withdraw an order the merchant has not answered yet. */
+export function cancelApplication(number: number) {
+  clientsStore.updateApplication(number, { status: 'cancelled' })
+}
+
+/** Shopper side: pay the next installment. Paying the last one closes the installment. */
+export async function payInstallment(number: number) {
+  await delay(900)
+  const application = find(number)
+  if (!application) return
+  const extraPaid = (application.extraPaid ?? 0) + 1
+  const paid = { ...application, extraPaid }
+  const done = paymentSchedule(paid).every((payment) => payment.state === 'paid')
+  clientsStore.updateApplication(number, { extraPaid, status: done ? 'closed' : 'handed' })
 }

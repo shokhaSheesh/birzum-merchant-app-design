@@ -1,5 +1,6 @@
 import { ArrowLeft } from 'lucide-react'
 import { useNavigate, useParams } from 'react-router-dom'
+import { clientAddCardPath } from '@/shared/config/routes'
 import { useI18n } from '@/shared/i18n/useI18n'
 import { formatDate, formatSum } from '@/shared/lib/format'
 import { formatPassport } from '@/shared/lib/passport'
@@ -10,8 +11,9 @@ import { InfoList, InfoRow } from '@/shared/ui/InfoList'
 import { Section } from '@/shared/ui/Section'
 import { ContactsSection } from '../components/ContactsSection'
 import { LimitCard } from '../components/LimitCard'
-import { PaymentCards } from '../components/PaymentCards'
+import { PaymentCards } from '@/entities/clients/ui/PaymentCards'
 import { ApplicationRow } from '@/entities/clients/ui/ApplicationRow'
+import { isOwn } from '@/entities/clients/useApplications'
 import { useClient } from '@/entities/clients/useClients'
 import { fullName, initials } from '@/entities/clients/clientName'
 
@@ -81,16 +83,16 @@ export function ClientDetailPage() {
           </Section>
 
           <Section title={t('client.cards')}>
-            <PaymentCards client={client} />
+            <PaymentCards client={client} addTo={clientAddCardPath(client.id)} />
           </Section>
 
           <ContactsSection client={client} />
           <Section title={t('client.applications')}>
-            {client.applications.length === 0 ? (
+            {client.applications.filter(isOwn).length === 0 ? (
               <p className="text-sm text-ink-muted">{t('client.applications.empty')}</p>
             ) : (
               <ul className="rounded-card bg-surface px-4">
-                {client.applications.map((application) => (
+                {client.applications.filter(isOwn).map((application) => (
                   <ApplicationRow key={application.id} application={application} />
                 ))}
               </ul>

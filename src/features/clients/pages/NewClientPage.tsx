@@ -22,7 +22,7 @@ import {
   verifyCardCode,
   verifyClientCode,
 } from '../api/mockClients'
-import { CardForm } from '../components/CardForm'
+import { CardForm } from '@/entities/clients/ui/CardForm'
 import { MyIdStep } from '../components/MyIdStep'
 import { MARITAL_STATUSES, type MaritalStatus } from '@/entities/clients/clients'
 

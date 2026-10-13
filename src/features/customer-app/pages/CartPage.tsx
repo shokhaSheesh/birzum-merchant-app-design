@@ -1,14 +1,15 @@
-import { Check, Trash2 } from 'lucide-react'
+import { Check, Store, Trash2 } from 'lucide-react'
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { cartStore, useCart } from '@/entities/cart/cartStore'
 import { ProductPicture } from '@/entities/catalog/ProductPicture'
-import { photosOf, stockOf } from '@/entities/catalog/products'
+import { getStore, photosOf, stockOf } from '@/entities/catalog/products'
 import { useVariantNames } from '@/entities/catalog/useVariantNames'
 import { submitApplication } from '@/entities/clients/applicationsApi'
 import { TERMS, type Fulfilment, type Term } from '@/entities/clients/clients'
 import { fulfilmentValid } from '@/entities/clients/fulfilment'
-import { FulfilmentFields } from '@/entities/clients/ui/FulfilmentFields'
+import { CardSelect, FulfilmentFields } from '@/entities/clients/ui/FulfilmentFields'
+import { usePickupPoints } from '@/entities/merchant/usePickupPoints'
 import { installmentTerms } from '@/entities/clients/installment'
 import { useCustomer } from '@/entities/session/customer'
 import { ROUTES } from '@/shared/config/routes'
@@ -21,15 +22,22 @@ import { InstallmentTermsCard } from '@/shared/ui/InstallmentTermsCard'
 import { QuantityStepper } from '@/shared/ui/QuantityField'
 import { TermPicker } from '@/shared/ui/TermPicker'
 
-/** The cart doubles as checkout: products, the term, what it will cost, and one button to send. */
+type ShopChoice = { fulfilment: Fulfilment; pointId: string | null }
+const noChoice: ShopChoice = { fulfilment: { method: 'pickup', address: '' }, pointId: null }
+
+/**
+ * The cart doubles as checkout. Products are grouped by shop, and each shop is asked how its
+ * goods are received; the term and the card are chosen once. Sending files one ariza per shop.
+ */
 export function CartPage() {
   const { t, tl, lang } = useI18n()
   const { names, color } = useVariantNames()
+  const pickupPoints = usePickupPoints()
   const navigate = useNavigate()
   const customer = useCustomer()
   const { lines, total } = useCart()
   const [term, setTerm] = useState<Term>(12)
-  const [fulfilment, setFulfilment] = useState<Fulfilment>({ method: 'pickup', address: '' })
+  const [choices, setChoices] = useState<Record<string, ShopChoice>>({})
   const [pickedCard, setPickedCard] = useState<string | null>(null)
   const [submitted, setSubmitted] = useState(false)
   const [loading, setLoading] = useState(false)
@@ -74,6 +82,27 @@ export function CartPage() {
     )
   }
 
+  // One group per shop, in the order its first product was added
+  const shops = [...new Set(lines.map((line) => line.product.storeId))].map((storeId) => {
+    const points = pickupPoints(storeId)
+    const choice = choices[storeId] ?? noChoice
+    return {
+      storeId,
+      points,
+      choice,
+      // A shop with one filial needs no question
+      pointId: choice.pointId ?? (points.length === 1 ? points[0].id : null),
+      lines: lines.filter((line) => line.product.storeId === storeId),
+    }
+  })
+  const setChoice = (storeId: string, patch: Partial<ShopChoice>) =>
+    setChoices((all) => ({ ...all, [storeId]: { ...(all[storeId] ?? noChoice), ...patch } }))
+  const shopsValid = shops.every(
+    (shop) =>
+      fulfilmentValid(shop.choice.fulfilment) &&
+      (shop.choice.fulfilment.method === 'delivery' || shop.pointId),
+  )
+
   const cards = customer?.cards ?? []
   const cardId = pickedCard ?? (cards.length === 1 ? cards[0].id : null)
   const limit = customer?.limits?.[term]
@@ -86,27 +115,28 @@ export function CartPage() {
 
   const checkout = async () => {
     setSubmitted(true)
-    if (!customer || error || !fulfilmentValid(fulfilment, cardId)) return
+    if (!customer || error || !cardId || !shopsValid) return
     setLoading(true)
-    await submitApplication(
-      customer.id,
-      lines.map(({ product, valueIds, unitPrice, quantity }) => {
-        const variant = names(product, valueIds)
-        return {
-          name:
-            variant.length > 0 ? `${tl(product.name)} (${variant.join(', ')})` : tl(product.name),
-          price: unitPrice,
-          quantity,
-          productId: product.id,
-          valueIds,
-        }
-      }),
-      term,
-      {
-        fulfilment: { ...fulfilment, address: fulfilment.address.trim() },
-        cardId: cardId ?? undefined,
-      },
-    )
+    for (const shop of shops) {
+      const { fulfilment } = shop.choice
+      await submitApplication(
+        customer.id,
+        shop.lines.map(({ product, valueIds, unitPrice, quantity }) => {
+          const variant = names(product, valueIds)
+          return {
+            name:
+              variant.length > 0 ? `${tl(product.name)} (${variant.join(', ')})` : tl(product.name),
+            price: unitPrice,
+            quantity,
+            productId: product.id,
+            valueIds,
+          }
+        }),
+        term,
+        { fulfilment: { ...fulfilment, address: fulfilment.address.trim() }, cardId },
+        { storeId: shop.storeId, locationId: shop.pointId ?? shop.points[0]?.id },
+      )
+    }
     cartStore.clear()
     setSent(true)
   }
@@ -115,49 +145,65 @@ export function CartPage() {
     <div className={page}>
       {title}
 
-      <ul className="flex flex-col gap-3">
-        {lines.map(({ key, product, valueIds, unitPrice, quantity }) => {
-          const variant = names(product, valueIds)
-          return (
-            <li key={key} className="flex gap-3 rounded-card bg-surface p-3">
-              <ProductPicture
-                category={product.category}
-                color={color(product, valueIds)}
-                src={photosOf(product, lang, valueIds)[0]}
-                className="w-20 shrink-0 rounded-control"
-              />
-              <div className="flex min-w-0 flex-1 flex-col gap-2">
-                <div className="flex items-start justify-between gap-2">
-                  <div className="flex min-w-0 flex-col gap-0.5">
-                    <p className="leading-tight font-semibold">{tl(product.name)}</p>
-                    {variant.length > 0 && (
-                      <p className="text-sm text-ink-muted">{variant.join(' · ')}</p>
-                    )}
-                  </div>
-                  <button
-                    type="button"
-                    aria-label={t('cart.remove')}
-                    onClick={() => cartStore.remove(key)}
-                    className="-mt-1.5 -mr-1.5 grid size-10 shrink-0 place-items-center rounded-full text-danger active:bg-danger-soft"
-                  >
-                    <Trash2 size={20} />
-                  </button>
-                </div>
-                <div className="flex items-center justify-between gap-2">
-                  <p className="font-bold">{formatSum(unitPrice * quantity)}</p>
-                  <QuantityStepper
-                    size="sm"
-                    label={t('field.quantity')}
-                    value={quantity}
-                    max={stockOf(product, valueIds)}
-                    onChange={(value) => cartStore.setQuantity(key, value)}
+      {shops.map((shop) => (
+        <section key={shop.storeId} className="flex flex-col gap-3">
+          <h2 className="flex items-center gap-2 text-lg font-bold">
+            <Store size={20} className="shrink-0 text-brand" />
+            {getStore(shop.storeId)?.name}
+          </h2>
+          <ul className="flex flex-col gap-3">
+            {shop.lines.map(({ key, product, valueIds, unitPrice, quantity }) => {
+              const variant = names(product, valueIds)
+              return (
+                <li key={key} className="flex gap-3 rounded-card bg-surface p-3">
+                  <ProductPicture
+                    category={product.category}
+                    color={color(product, valueIds)}
+                    src={photosOf(product, lang, valueIds)[0]}
+                    className="w-20 shrink-0 rounded-control"
                   />
-                </div>
-              </div>
-            </li>
-          )
-        })}
-      </ul>
+                  <div className="flex min-w-0 flex-1 flex-col gap-2">
+                    <div className="flex items-start justify-between gap-2">
+                      <div className="flex min-w-0 flex-col gap-0.5">
+                        <p className="leading-tight font-semibold">{tl(product.name)}</p>
+                        {variant.length > 0 && (
+                          <p className="text-sm text-ink-muted">{variant.join(' · ')}</p>
+                        )}
+                      </div>
+                      <button
+                        type="button"
+                        aria-label={t('cart.remove')}
+                        onClick={() => cartStore.remove(key)}
+                        className="-mt-1.5 -mr-1.5 grid size-10 shrink-0 place-items-center rounded-full text-danger active:bg-danger-soft"
+                      >
+                        <Trash2 size={20} />
+                      </button>
+                    </div>
+                    <div className="flex items-center justify-between gap-2">
+                      <p className="font-bold">{formatSum(unitPrice * quantity)}</p>
+                      <QuantityStepper
+                        size="sm"
+                        label={t('field.quantity')}
+                        value={quantity}
+                        max={stockOf(product, valueIds)}
+                        onChange={(value) => cartStore.setQuantity(key, value)}
+                      />
+                    </div>
+                  </div>
+                </li>
+              )
+            })}
+          </ul>
+          <FulfilmentFields
+            fulfilment={shop.choice.fulfilment}
+            onFulfilment={(fulfilment) => setChoice(shop.storeId, { fulfilment })}
+            showErrors={submitted}
+            points={shop.points}
+            pointId={shop.pointId}
+            onPoint={(pointId) => setChoice(shop.storeId, { pointId })}
+          />
+        </section>
+      ))}
 
       <div className="flex flex-col gap-3">
         <TermPicker terms={TERMS} value={term} onChange={setTerm} />
@@ -167,16 +213,7 @@ export function CartPage() {
         )}
       </div>
 
-      <div className="flex flex-col gap-4">
-        <FulfilmentFields
-          fulfilment={fulfilment}
-          onFulfilment={setFulfilment}
-          cards={cards}
-          cardId={cardId}
-          onCard={setPickedCard}
-          showErrors={submitted}
-        />
-      </div>
+      <CardSelect cards={cards} cardId={cardId} onCard={setPickedCard} showErrors={submitted} />
 
       <div className="flex flex-col gap-3">
         {error && <Alert message={error} />}

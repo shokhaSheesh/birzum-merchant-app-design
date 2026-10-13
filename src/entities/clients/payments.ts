@@ -32,8 +32,21 @@ export function paymentSchedule(application: Application, today = new Date()): P
   if (latestPast && application.status === 'handed' && application.id % 2 === 0) {
     latestPast.state = 'overdue'
   }
+  // Payments made in the app settle the earliest open ones
+  payments
+    .filter((payment) => payment.state !== 'paid')
+    .slice(0, application.extraPaid ?? 0)
+    .forEach((payment) => {
+      payment.state = 'paid'
+    })
   return payments
 }
+
+/** The payment to make next: the earliest one not yet paid. */
+export const nextPayment = (application: Application) =>
+  application.status === 'handed'
+    ? paymentSchedule(application).find((payment) => payment.state !== 'paid')
+    : undefined
 
 /** Applications in these statuses have goods with the client and payments running or finished. */
 export const hasSchedule = (application: Application) =>

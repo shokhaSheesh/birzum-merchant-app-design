@@ -1,6 +1,9 @@
+import { Link } from 'react-router-dom'
+import { getStore, OWN_STORE_ID } from '@/entities/catalog/products'
 import { applicationStatusTone } from '@/entities/clients/applicationStatus'
 import { RejectionNote } from '@/entities/clients/ui/RejectionNote'
 import { useCustomer } from '@/entities/session/customer'
+import { customerPurchasePath } from '@/shared/config/routes'
 import { useI18n } from '@/shared/i18n/useI18n'
 import { formatDateTime, formatSum, groupDigits } from '@/shared/lib/format'
 import { EmptyState } from '@/shared/ui/EmptyState'
@@ -24,42 +27,50 @@ export function PurchasesPage() {
       ) : (
         <ul className="flex flex-col gap-3">
           {applications.map((application) => (
-            <li key={application.id} className="flex flex-col gap-2 rounded-card bg-surface p-4">
-              <div className="flex items-start justify-between gap-3">
-                <div className="flex flex-col gap-0.5">
-                  <p className="font-semibold">
-                    {t('review.number', { number: groupDigits(application.id) })}
-                  </p>
-                  <p className="text-sm text-ink-muted">{formatDateTime(application.date)}</p>
-                </div>
-                <StatusBadge tone={applicationStatusTone[application.status]}>
-                  {t(`application.status.${application.status}`)}
-                </StatusBadge>
-              </div>
-              {application.rejection && <RejectionNote rejection={application.rejection} />}
-              {application.details && (
-                <>
-                  <p className="text-sm text-ink-muted">
-                    {application.details.products
-                      .map((item) => `${item.name} × ${item.quantity}`)
-                      .join(', ')}
-                  </p>
-                  {application.details.fulfilment && (
-                    <p className="text-sm text-ink-muted">
-                      {t(`delivery.${application.details.fulfilment.method}`)}
-                      {application.details.fulfilment.address &&
-                        ` · ${application.details.fulfilment.address}`}
+            <li key={application.id}>
+              <Link
+                to={customerPurchasePath(application.id)}
+                className="flex flex-col gap-2 rounded-card bg-surface p-4 active:bg-navy-100"
+              >
+                <div className="flex items-start justify-between gap-3">
+                  <div className="flex flex-col gap-0.5">
+                    <p className="font-semibold">
+                      {t('review.number', { number: groupDigits(application.id) })}
                     </p>
-                  )}
-                  <div className="flex items-baseline justify-between border-t border-line pt-2">
                     <p className="text-sm text-ink-muted">
-                      {t('term.months', { count: String(application.details.term) })} ·{' '}
-                      {formatSum(application.details.monthlyPayment)}
+                      {getStore(application.storeId ?? OWN_STORE_ID)?.name} ·{' '}
+                      {formatDateTime(application.date)}
                     </p>
-                    <p className="font-bold">{formatSum(application.installmentTotal)}</p>
                   </div>
-                </>
-              )}
+                  <StatusBadge tone={applicationStatusTone[application.status]}>
+                    {t(`application.status.${application.status}`)}
+                  </StatusBadge>
+                </div>
+                {application.rejection && <RejectionNote rejection={application.rejection} />}
+                {application.details && (
+                  <>
+                    <p className="text-sm text-ink-muted">
+                      {application.details.products
+                        .map((item) => `${item.name} × ${item.quantity}`)
+                        .join(', ')}
+                    </p>
+                    {application.details.fulfilment && (
+                      <p className="text-sm text-ink-muted">
+                        {t(`delivery.${application.details.fulfilment.method}`)}
+                        {application.details.fulfilment.address &&
+                          ` · ${application.details.fulfilment.address}`}
+                      </p>
+                    )}
+                    <div className="flex items-baseline justify-between border-t border-line pt-2">
+                      <p className="text-sm text-ink-muted">
+                        {t('term.months', { count: String(application.details.term) })} ·{' '}
+                        {formatSum(application.details.monthlyPayment)}
+                      </p>
+                      <p className="font-bold">{formatSum(application.installmentTotal)}</p>
+                    </div>
+                  </>
+                )}
+              </Link>
             </li>
           ))}
         </ul>

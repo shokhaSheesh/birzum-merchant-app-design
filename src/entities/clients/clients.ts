@@ -84,8 +84,14 @@ export type Application = {
   status: ApplicationStatus
   contractNumber?: string
   details?: ApplicationDetails
-  /** The merchant's shop (filial) the sale belongs to. */
+  /** The shop (merchant) the goods are bought from. Missing means the signed-in merchant's. */
+  storeId?: string
+  /** The merchant's filial the sale belongs to; for pickup, where the goods are collected. */
   locationId?: string
+  /** Payments the shopper has made in the app on top of the ones already settled. */
+  extraPaid?: number
+  /** True once the shopper has left a review for this purchase. */
+  reviewed?: boolean
   /** Set when the status is `rejected`. */
   rejection?: Rejection
 }

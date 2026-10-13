@@ -9,10 +9,10 @@ import {
   type Client,
   type Contact,
   type MaritalStatus,
-  type PaymentCard,
   type Term,
 } from '@/entities/clients/clients'
 import { takeStockFor } from '@/entities/clients/applicationsApi'
+import { toCard } from '@/entities/clients/cardsApi'
 import { clientsStore } from '@/entities/clients/clientsStore'
 import { installmentTerms, type InstallmentTerms } from '@/entities/clients/installment'
 
@@ -23,12 +23,6 @@ async function checkCode(code: string) {
   await delay(700)
   if (code === '000000') throw new Error('invalid_code')
 }
-
-const toCard = (cardNumber: string): PaymentCard => ({
-  id: newId(),
-  first4: cardNumber.slice(0, 4),
-  last4: cardNumber.slice(-4),
-})
 
 export async function sendClientCode(_phone: string) {
   await delay(700)
@@ -44,12 +38,6 @@ export async function verifyFace() {
 /** Placeholder link for the QR code. The real one comes from the MyID session. */
 export const MYID_QR_URL = 'https://birzum.example/myid/session/demo'
 export const MYID_QR_MOCK_WAIT_MS = 8000
-
-export async function sendCardCode(_cardNumber: string, _expiry: string) {
-  await delay(700)
-}
-
-export const verifyCardCode = (_cardNumber: string, code: string) => checkCode(code)
 
 export type NewClient = {
   phone: string
@@ -81,12 +69,6 @@ export async function createClient({ cardNumber, cardExpiry: _expiry, ...data }:
   return client
 }
 
-export async function addCard(clientId: string, cardNumber: string) {
-  await delay(400)
-  const client = clientsStore.get(clientId)
-  if (client) clientsStore.update(clientId, { cards: [...client.cards, toCard(cardNumber)] })
-}
-
 export async function addContact(clientId: string, contact: Omit<Contact, 'id'>) {
   await delay(400)
   const client = clientsStore.get(clientId)
@@ -114,6 +96,7 @@ export function removeContact(clientId: string, contactId: string) {
   }
 }
 
+export { addCard, sendCardCode, verifyCardCode } from '@/entities/clients/cardsApi'
 export { calculateLimit } from '@/entities/clients/limitsApi'
 
 /** Works out the installment terms for the amount being financed. */

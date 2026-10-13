@@ -399,6 +399,15 @@ The repo holds the merchant app and the client (shopper) app. They share every t
 - Without a limit the shopper can browse but not add to the cart; the product screen says so in an `Alert`.
 - Every camera screen uses `CameraView`: an oval guide and the front camera for a face, a square guide and the back camera for a QR code.
 
+### Client app: from cart to payments
+- **Savat is grouped by shop.** Each group has the shop name, its products, then how the goods are received: `FulfilmentFields` with "Doʻkondan olib ketish" (and an "Olib ketish filiali" select when the shop has several filials) or "Yetkazib berish" with an address. The term and the paying card (`CardSelect`) are chosen once, below the groups. "Buyurtma berish" files one ariza per shop.
+- **Xaridlar** lists the shopper's arizalar as cards with the shop name; each opens the purchase screen.
+- **Purchase screen** (`PurchasePage`): status badge and number, the reject reason if any, an `InfoList` with date, shop, receiving method, card and pickup filial, then products and Nasiya shartlari (no Ustama).
+- Its bottom button depends on the status: a red ghost "Buyurtmani bekor qilish" while the merchant has not answered (confirmation with "Yoʻq, qoldirish"); "Toʻlash: 483 000 UZS" from Topshirilgan on, which opens a sheet with the due date, amount and card. Paying the last installment closes the nasiya.
+- From Topshirilgan on the screen also has secondary "Shartnomani yuklab olish" and "Sharh qoldirish" (five tappable stars and a text). A sent review shows in the merchant's Sharhlar; the button then becomes "Sharhingiz uchun rahmat!".
+- **Profil**: photo, name and phone; Shaxsiy maʼlumotlar; Toʻlov kartalari; Sozlamalar (language, theme); back to the merchant app; sign out.
+- **Cards** (`PaymentCards`, both apps): a small × on each card removes it after a confirmation. The last remaining card has no ×.
+
 ## Home screen
 
 Asosiy reports on one period: a day, a week or a month. It only shows numbers and never holds a form.

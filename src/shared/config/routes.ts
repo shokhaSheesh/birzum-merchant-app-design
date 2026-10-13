@@ -38,6 +38,8 @@ export const ROUTES = {
   customerCart: '/customer/cart',
   customerProduct: '/customer/product/:id',
   customerPurchases: '/customer/purchases',
+  customerPurchase: '/customer/purchases/:number',
+  customerAddCard: '/customer/cards/new',
   customerProfile: '/customer/profile',
   kit: '/kit',
 } as const
@@ -48,6 +50,7 @@ export const clientContractPath = (id: string, term: number) =>
   `/clients/${id}/contract/new?term=${term}`
 export const applicationPath = (number: number) => `/applications/${number}`
 export const customerProductPath = (id: string) => `/customer/product/${id}`
+export const customerPurchasePath = (number: number) => `/customer/purchases/${number}`
 export const customerStorePath = (id: string) => `/customer/stores/${id}`
 /** The product listing, optionally narrowed by a search text, category or brand. */
 export function customerProductsPath(

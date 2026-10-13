@@ -1,5 +1,5 @@
 import type { Fulfilment } from './clients'
 
-/** True when the order can be sent: an address for delivery, and a card. */
-export const fulfilmentValid = (fulfilment: Fulfilment, cardId: string | null) =>
-  !!cardId && (fulfilment.method === 'pickup' || fulfilment.address.trim() !== '')
+/** True when the order says where the goods go: nothing more for pickup, an address for delivery. */
+export const fulfilmentValid = (fulfilment: Fulfilment) =>
+  fulfilment.method === 'pickup' || fulfilment.address.trim() !== ''
