@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom'
 import { cartStore, useCart } from '@/entities/cart/cartStore'
 import { ProductPicture } from '@/entities/catalog/ProductPicture'
 import { stockOf } from '@/entities/catalog/products'
+import { useVariantNames } from '@/entities/catalog/useVariantNames'
 import { submitApplication } from '@/entities/clients/applicationsApi'
 import { TERMS, type Term } from '@/entities/clients/clients'
 import { installmentTerms } from '@/entities/clients/installment'
@@ -20,7 +21,8 @@ import { TermPicker } from '@/shared/ui/TermPicker'
 
 /** The cart doubles as checkout: products, the term, what it will cost, and one button to send. */
 export function CartPage() {
-  const { t } = useI18n()
+  const { t, tl } = useI18n()
+  const { names, color } = useVariantNames()
   const navigate = useNavigate()
   const customer = useCustomer()
   const { lines, total } = useCart()
@@ -80,11 +82,15 @@ export function CartPage() {
     setLoading(true)
     await submitApplication(
       customer.id,
-      lines.map(({ product, variant, unitPrice, quantity }) => ({
-        name: variant.length > 0 ? `${product.name} (${variant.join(', ')})` : product.name,
-        price: unitPrice,
-        quantity,
-      })),
+      lines.map(({ product, valueIds, unitPrice, quantity }) => {
+        const variant = names(product, valueIds)
+        return {
+          name:
+            variant.length > 0 ? `${tl(product.name)} (${variant.join(', ')})` : tl(product.name),
+          price: unitPrice,
+          quantity,
+        }
+      }),
       term,
     )
     cartStore.clear()
@@ -96,44 +102,47 @@ export function CartPage() {
       {title}
 
       <ul className="flex flex-col gap-3">
-        {lines.map(({ key, product, variant, color, unitPrice, quantity }) => (
-          <li key={key} className="flex gap-3 rounded-card bg-surface p-3">
-            <ProductPicture
-              category={product.category}
-              color={color}
-              src={product.images[0]}
-              className="w-20 shrink-0 rounded-control"
-            />
-            <div className="flex min-w-0 flex-1 flex-col gap-2">
-              <div className="flex items-start justify-between gap-2">
-                <div className="flex min-w-0 flex-col gap-0.5">
-                  <p className="leading-tight font-semibold">{product.name}</p>
-                  {variant.length > 0 && (
-                    <p className="text-sm text-ink-muted">{variant.join(' · ')}</p>
-                  )}
+        {lines.map(({ key, product, valueIds, unitPrice, quantity }) => {
+          const variant = names(product, valueIds)
+          return (
+            <li key={key} className="flex gap-3 rounded-card bg-surface p-3">
+              <ProductPicture
+                category={product.category}
+                color={color(product, valueIds)}
+                src={product.images[0]}
+                className="w-20 shrink-0 rounded-control"
+              />
+              <div className="flex min-w-0 flex-1 flex-col gap-2">
+                <div className="flex items-start justify-between gap-2">
+                  <div className="flex min-w-0 flex-col gap-0.5">
+                    <p className="leading-tight font-semibold">{tl(product.name)}</p>
+                    {variant.length > 0 && (
+                      <p className="text-sm text-ink-muted">{variant.join(' · ')}</p>
+                    )}
+                  </div>
+                  <button
+                    type="button"
+                    aria-label={t('cart.remove')}
+                    onClick={() => cartStore.remove(key)}
+                    className="-mt-1.5 -mr-1.5 grid size-10 shrink-0 place-items-center rounded-full text-danger active:bg-danger-soft"
+                  >
+                    <Trash2 size={20} />
+                  </button>
                 </div>
-                <button
-                  type="button"
-                  aria-label={t('cart.remove')}
-                  onClick={() => cartStore.remove(key)}
-                  className="-mt-1.5 -mr-1.5 grid size-10 shrink-0 place-items-center rounded-full text-danger active:bg-danger-soft"
-                >
-                  <Trash2 size={20} />
-                </button>
+                <div className="flex items-center justify-between gap-2">
+                  <p className="font-bold">{formatSum(unitPrice * quantity)}</p>
+                  <QuantityStepper
+                    size="sm"
+                    label={t('field.quantity')}
+                    value={quantity}
+                    max={stockOf(product, valueIds)}
+                    onChange={(value) => cartStore.setQuantity(key, value)}
+                  />
+                </div>
               </div>
-              <div className="flex items-center justify-between gap-2">
-                <p className="font-bold">{formatSum(unitPrice * quantity)}</p>
-                <QuantityStepper
-                  size="sm"
-                  label={t('field.quantity')}
-                  value={quantity}
-                  max={stockOf(product, variant)}
-                  onChange={(value) => cartStore.setQuantity(key, value)}
-                />
-              </div>
-            </div>
-          </li>
-        ))}
+            </li>
+          )
+        })}
       </ul>
 
       <div className="flex flex-col gap-3">

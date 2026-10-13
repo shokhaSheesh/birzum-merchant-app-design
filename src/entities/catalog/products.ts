@@ -1,5 +1,7 @@
 import { useMemo } from 'react'
+import type { LocalizedText } from '@/shared/i18n/dictionaries'
 import { createStore } from '@/shared/lib/createStore'
+import { seedAttributes } from './attributes'
 
 export const CATEGORIES = ['phones', 'tvs', 'appliances', 'laptops'] as const
 export type Category = (typeof CATEGORIES)[number]
@@ -13,36 +15,34 @@ export type Store = {
   reviews: number
 }
 
-/** A choice the shopper makes on a product, e.g. memory or color. An option may change the price. */
-export type VariationOption = {
-  label: string
-  priceDelta?: number
-  /** For colors: the product is drawn in this color on the option's picture. */
-  swatch?: string
-}
-export type Variation = { name: string; options: VariationOption[] }
+/** One option group on a product: an attribute from the directory and which of its values apply. */
+export type ProductVariation = { attributeId: string; valueIds: string[] }
 
 export type Product = {
   id: string
-  name: string
+  name: LocalizedText
   category: Category
   brand: string
-  /** Base price in UZS, before variation price changes. */
+  /** The price shown on cards: the product's own price, or its cheapest variant's. In UZS. */
   price: number
   storeId: string
+  description: LocalizedText
+  variations: ProductVariation[]
   /**
-   * Pieces on hand: location id, then variant key (see `variantKey`), then the count.
-   * A missing entry means zero.
+   * The combinations that are actually sold, by variant key (see `variantKey`), each with its
+   * own price. A product without variations has none and sells at `price`.
+   */
+  variants: Record<string, { price: number }>
+  /**
+   * Pieces on hand: location id, then variant key, then the count. A missing entry means zero.
    */
   stock: Record<string, Record<string, number>>
+  /** Characteristics, in display order. */
+  specs: { label: LocalizedText; value: LocalizedText }[]
   /** Photo URLs, first one is the cover. Empty until the merchant adds some. */
   images: string[]
   /** Hidden products stay in the merchant's list but not in the client app. */
   active: boolean
-  description: string
-  variations: Variation[]
-  /** Label and value pairs, in display order. */
-  specs: [string, string][]
 }
 
 // Invented sample shops and catalogue. Replace with the API.
@@ -58,21 +58,35 @@ export const stores: Store[] = [
   },
 ]
 
-const SWATCHES: Record<string, string> = {
-  Qora: '#2b3440',
-  Koʻk: '#3f74b8',
-  Binafsha: '#8468c4',
-  Oq: '#f4f5f6',
-  Kumush: '#b9c1c7',
-  Yashil: '#5aa277',
+// The samples are written in a short form (Uzbek names, a price difference per option) and
+// expanded into the real model below.
+type SeedVariation = { name: string; options: { label: string; priceDelta?: number }[] }
+type SeedProduct = {
+  id: string
+  name: string
+  category: Category
+  brand: string
+  price: number
+  storeId: string
+  stock: number
+  description: string
+  variations: SeedVariation[]
+  specs: [string, string][]
 }
 
-const colors = (...labels: string[]): Variation => ({
+const colors = (...labels: string[]): SeedVariation => ({
   name: 'Rang',
-  options: labels.map((label) => ({ label, swatch: SWATCHES[label] })),
+  options: labels.map((label) => ({ label })),
 })
 
-type SeedProduct = Omit<Product, 'stock' | 'images' | 'active'> & { stock: number }
+const RUSSIAN_NAMES: Record<string, string> = {
+  p2: 'Телевизор 43',
+  p3: 'Стиральная машина LG',
+  p4: 'Ноутбук Lenovo IdeaPad',
+  p6: 'Телевизор 55 Smart',
+  p7: 'Кондиционер Artel',
+  p8: 'Ноутбук HP 15',
+}
 
 const seedProducts: SeedProduct[] = [
   {
@@ -284,50 +298,83 @@ export const BRANDS = ['Apple', 'Artel', 'HP', 'Huawei', 'Lenovo', 'LG', 'Samsun
 /** The shop the signed-in merchant belongs to. Its products are the ones it can manage. */
 export const OWN_STORE_ID = 's1'
 
-/** Identifies one combination of options, e.g. "Qora|256 GB". Empty for a product without variations. */
-export const variantKey = (labels: string[]) => labels.join('|')
+/** Identifies one combination by its value ids, e.g. "black|256". Empty for a product without variations. */
+export const variantKey = (valueIds: string[]) => valueIds.join('|')
+export const variantIds = (key: string) => (key === '' ? [] : key.split('|'))
 
-/** Every combination of a product's options, as lists of labels. One empty list if it has none. */
-export function variantCombos(variations: Variation[]): string[][] {
+/** Every possible combination of the chosen values, as lists of value ids. */
+export function allCombos(variations: ProductVariation[]): string[][] {
   return variations.reduce<string[][]>(
     (combos, variation) =>
-      combos.flatMap((combo) => variation.options.map((option) => [...combo, option.label])),
+      combos.flatMap((combo) => variation.valueIds.map((valueId) => [...combo, valueId])),
     [[]],
   )
 }
 
-/** Pieces on hand across all locations: of one variant, or of the whole product. */
-export function stockOf(product: Product, labels?: string[]) {
+/** The combinations a product is actually sold in. One empty list if it has no variations. */
+export const soldCombos = (product: Product) =>
+  product.variations.length === 0 ? [[]] : Object.keys(product.variants).map(variantIds)
+
+export const priceOf = (product: Product, valueIds: string[]) =>
+  product.variants[variantKey(valueIds)]?.price ?? product.price
+
+/** Pieces on hand across all locations: of one variant, or of every variant that is sold. */
+export function stockOf(product: Product, valueIds?: string[]) {
+  const keys = (valueIds ? [valueIds] : soldCombos(product)).map(variantKey)
   return Object.values(product.stock).reduce(
-    (sum, byVariant) =>
-      sum +
-      (labels
-        ? (byVariant[variantKey(labels)] ?? 0)
-        : Object.values(byVariant).reduce((a, b) => a + b, 0)),
+    (sum, byVariant) => sum + keys.reduce((n, key) => n + (byVariant[key] ?? 0), 0),
     0,
   )
 }
 
-// Sample stock: the seed count for every variant, split over the shop's first two locations
-function seedStock(product: SeedProduct): Product['stock'] {
-  const own = product.storeId === OWN_STORE_ID
-  const first: Record<string, number> = {}
-  const second: Record<string, number> = {}
-  for (const combo of variantCombos(product.variations)) {
-    first[variantKey(combo)] = Math.ceil(product.stock * 0.6)
-    second[variantKey(combo)] = Math.floor(product.stock * 0.4)
-  }
-  return own ? { l1: first, l2: second } : { [`${product.storeId}-main`]: first }
-}
+function fromSeed(seed: SeedProduct): Product {
+  const text = (uz: string, ru = ''): LocalizedText => ({ uz, ru })
+  const attributes = seed.variations.map((variation) =>
+    seedAttributes.find((attribute) => attribute.name.uz === variation.name)!,
+  )
+  const variations = seed.variations.map((variation, i) => ({
+    attributeId: attributes[i].id,
+    valueIds: variation.options.map(
+      (option) => attributes[i].values.find((value) => value.name.uz === option.label)!.id,
+    ),
+  }))
 
-export const productsStore = createStore<Product>(
-  seedProducts.map((product) => ({
-    ...product,
-    stock: seedStock(product),
+  // In the samples every combination is sold: base price plus each option's difference
+  const variants: Product['variants'] = {}
+  const stockFirst: Record<string, number> = {}
+  const stockSecond: Record<string, number> = {}
+  for (const combo of allCombos(variations)) {
+    const key = variantKey(combo)
+    const extra = combo.reduce((sum, valueId, i) => {
+      const at = variations[i].valueIds.indexOf(valueId)
+      return sum + (seed.variations[i].options[at].priceDelta ?? 0)
+    }, 0)
+    if (variations.length > 0) variants[key] = { price: seed.price + extra }
+    stockFirst[key] = Math.ceil(seed.stock * 0.6)
+    stockSecond[key] = Math.floor(seed.stock * 0.4)
+  }
+
+  return {
+    id: seed.id,
+    name: text(seed.name, RUSSIAN_NAMES[seed.id] ?? seed.name),
+    category: seed.category,
+    brand: seed.brand,
+    price: seed.price,
+    storeId: seed.storeId,
+    description: text(seed.description),
+    variations,
+    variants,
+    stock:
+      seed.storeId === OWN_STORE_ID
+        ? { l1: stockFirst, l2: stockSecond }
+        : { [`${seed.storeId}-main`]: stockFirst },
+    specs: seed.specs.map(([label, value]) => ({ label: text(label), value: text(value) })),
     images: [],
     active: true,
-  })),
-)
+  }
+}
+
+export const productsStore = createStore<Product>(seedProducts.map(fromSeed))
 
 /** What shoppers can see: visible products from every shop. */
 export const useCatalog = () => {

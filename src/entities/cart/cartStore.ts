@@ -1,20 +1,19 @@
 import { useSyncExternalStore } from 'react'
-import type { Product } from '@/entities/catalog/products'
+import { variantKey, type Product } from '@/entities/catalog/products'
 
 export type CartLine = {
   key: string
   product: Product
-  /** The chosen option of each variation, in order, e.g. ["256 GB", "Qora"]. */
-  variant: string[]
-  /** Body color of the chosen color option, if the product has one. */
-  color?: string
-  /** Price of one piece with the chosen options, in UZS. */
+  /** Value ids of the chosen variant, in the product's variation order. */
+  valueIds: string[]
+  /** Price of one piece of that variant, in UZS. */
   unitPrice: number
   quantity: number
 }
 
-/** The same product with different options is a different line. */
-export const cartKey = (productId: string, variant: string[]) => [productId, ...variant].join('|')
+/** The same product in a different variant is a different line. */
+export const cartKey = (productId: string, valueIds: string[]) =>
+  `${productId}/${variantKey(valueIds)}`
 
 // The shopper's cart, kept in memory. A page refresh empties it.
 let lines: CartLine[] = []
@@ -32,10 +31,10 @@ export const cartStore = {
     }
   },
   get: () => lines,
-  add(product: Product, variant: string[], unitPrice: number, color?: string) {
-    const key = cartKey(product.id, variant)
+  add(product: Product, valueIds: string[], unitPrice: number) {
+    const key = cartKey(product.id, valueIds)
     if (lines.some((line) => line.key === key)) return
-    change([...lines, { key, product, variant, color, unitPrice, quantity: 1 }])
+    change([...lines, { key, product, valueIds, unitPrice, quantity: 1 }])
   },
   /** Setting the quantity to zero removes the line. */
   setQuantity(key: string, quantity: number) {

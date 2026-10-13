@@ -1,13 +1,25 @@
 import { ImagePlus, Plus, Trash2, X } from 'lucide-react'
-import { useRef, useState } from 'react'
+import { useRef, useState, type FormEvent } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
+import { attributesStore, SWATCH_PRESETS, type Attribute } from '@/entities/catalog/attributes'
 import {
+  allCombos,
   BRANDS,
   CATEGORIES,
   OWN_STORE_ID,
   productsStore,
+  variantKey,
   type Category,
 } from '@/entities/catalog/products'
+import type { Lang, LocalizedText } from '@/shared/i18n/dictionaries'
+import {
+  emptyText,
+  fillMissing,
+  isBlank,
+  isComplete,
+  missingLang,
+  withLang,
+} from '@/shared/i18n/localized'
 import { useI18n } from '@/shared/i18n/useI18n'
 import { cn } from '@/shared/lib/cn'
 import { newId } from '@/shared/lib/createStore'
@@ -18,24 +30,16 @@ import { FormScreen } from '@/shared/ui/FormScreen'
 import { NumberField } from '@/shared/ui/NumberField'
 import { Section } from '@/shared/ui/Section'
 import { Select } from '@/shared/ui/Select'
+import { Sheet } from '@/shared/ui/Sheet'
 import { TextAreaField } from '@/shared/ui/TextAreaField'
 import { TextField } from '@/shared/ui/TextField'
+import { FormLanguage } from '../components/FormLanguage'
+import { SwatchPicker } from '../components/SwatchPicker'
 
-type OptionDraft = { id: number; label: string; priceDelta: number | null; swatch?: string }
-type GroupDraft = { id: number; name: string; color: boolean; options: OptionDraft[] }
-type SpecDraft = { id: number; label: string; value: string }
-
-// Colors a merchant can pick for a color option. Data, not theme: they describe the product.
-const SWATCHES = [
-  { name: 'Qora', hex: '#2b3440' },
-  { name: 'Oq', hex: '#f4f5f6' },
-  { name: 'Kumush', hex: '#b9c1c7' },
-  { name: 'Koʻk', hex: '#3f74b8' },
-  { name: 'Yashil', hex: '#5aa277' },
-  { name: 'Binafsha', hex: '#8468c4' },
-  { name: 'Qizil', hex: '#c9484a' },
-  { name: 'Oltin', hex: '#d6b36a' },
-]
+type GroupDraft = { id: number; attributeId: string | null; valueIds: string[] }
+type SpecDraft = { id: number; label: LocalizedText; value: LocalizedText }
+/** A combination's row: whether it is sold, and at what price. */
+type ComboDraft = { on: boolean; price: number | null }
 
 // Keys for rows that are added and removed while editing; never saved
 let lastDraftId = 0
@@ -43,89 +47,132 @@ const draftId = () => ++lastDraftId
 
 const iconButton =
   'grid size-10 shrink-0 place-items-center rounded-full text-danger active:bg-danger-soft'
+const chip = 'h-10 rounded-control border-2 px-3.5 text-sm font-semibold'
 
-/** Create or edit a product: photos, what it is, its price, its variants and its characteristics. */
+/**
+ * Create or edit a product. Text is written once per language. Variant types come from the
+ * directory; the merchant then ticks which combinations of their values are actually sold
+ * and prices each one.
+ */
 export function ProductFormPage() {
-  const { t } = useI18n()
+  const { t, tl, lang: appLang } = useI18n()
   const navigate = useNavigate()
   const { id } = useParams()
   const existing = productsStore.get(id)
+  const attributes = attributesStore.useAll()
   const fileInput = useRef<HTMLInputElement>(null)
 
+  const [lang, setLang] = useState<Lang>(appLang)
   const [images, setImages] = useState<string[]>(existing?.images ?? [])
-  const [name, setName] = useState(existing?.name ?? '')
+  const [name, setName] = useState<LocalizedText>(existing?.name ?? emptyText())
+  const [description, setDescription] = useState<LocalizedText>(
+    existing?.description ?? emptyText(),
+  )
   const [category, setCategory] = useState<Category | null>(existing?.category ?? null)
   const [brand, setBrand] = useState<string | null>(existing?.brand ?? null)
   const [price, setPrice] = useState<number | null>(existing?.price ?? null)
-  const [description, setDescription] = useState(existing?.description ?? '')
   const [active, setActive] = useState(existing?.active ?? true)
   const [submitted, setSubmitted] = useState(false)
   const [groups, setGroups] = useState<GroupDraft[]>(() =>
-    (existing?.variations ?? []).map((variation) => ({
-      id: draftId(),
-      name: variation.name,
-      color: variation.options.some((option) => option.swatch),
-      options: variation.options.map((option) => ({
-        id: draftId(),
-        label: option.label,
-        priceDelta: option.priceDelta ?? null,
-        swatch: option.swatch,
-      })),
-    })),
+    (existing?.variations ?? []).map((variation) => ({ id: draftId(), ...variation })),
+  )
+  const [comboDrafts, setComboDrafts] = useState<Record<string, ComboDraft>>(() =>
+    Object.fromEntries(
+      Object.entries(existing?.variants ?? {}).map(([key, variant]) => [
+        key,
+        { on: true, price: variant.price },
+      ]),
+    ),
   )
   const [specs, setSpecs] = useState<SpecDraft[]>(() =>
-    (existing?.specs ?? []).map(([label, value]) => ({ id: draftId(), label, value })),
+    (existing?.specs ?? []).map((spec) => ({ id: draftId(), ...spec })),
   )
+  /** The attribute a new value is being added to, while that sheet is open. */
+  const [addingTo, setAddingTo] = useState<Attribute | null>(null)
 
+  const attributeOf = (group: GroupDraft) => attributes.find((a) => a.id === group.attributeId)
   const patchGroup = (groupId: number, patch: Partial<GroupDraft>) =>
     setGroups((list) => list.map((g) => (g.id === groupId ? { ...g, ...patch } : g)))
-  const patchOption = (group: GroupDraft, optionId: number, patch: Partial<OptionDraft>) =>
-    patchGroup(group.id, {
-      options: group.options.map((o) => (o.id === optionId ? { ...o, ...patch } : o)),
-    })
-  const emptyOption = (): OptionDraft => ({ id: draftId(), label: '', priceDelta: null })
+  const patchSpec = (specId: number, patch: Partial<SpecDraft>) =>
+    setSpecs((list) => list.map((s) => (s.id === specId ? { ...s, ...patch } : s)))
 
-  const groupsValid = groups.every(
-    (group) =>
-      group.name.trim() !== '' &&
-      group.options.length > 0 &&
-      group.options.every((option) => option.label.trim() !== ''),
+  const groupsValid = groups.every((group) => group.attributeId && group.valueIds.length > 0)
+  const variations = groups.flatMap((group) =>
+    group.attributeId && group.valueIds.length > 0
+      ? [{ attributeId: group.attributeId, valueIds: group.valueIds }]
+      : [],
   )
-  const required = (filled: boolean) => (submitted && !filled ? t('error.required') : undefined)
+  const combos = variations.length > 0 ? allCombos(variations) : []
+  const comboOf = (combo: string[]): ComboDraft =>
+    comboDrafts[variantKey(combo)] ?? { on: false, price: null }
+  const setCombo = (combo: string[], patch: Partial<ComboDraft>) =>
+    setComboDrafts((drafts) => ({
+      ...drafts,
+      [variantKey(combo)]: { ...comboOf(combo), ...patch },
+    }))
+  const sold = combos.filter((combo) => comboOf(combo).on)
+  const combosValid =
+    combos.length === 0 || (sold.length > 0 && sold.every((combo) => comboOf(combo).price))
 
-  const addPhotos = (files: FileList | null) => {
-    if (!files) return
-    setImages((list) => [...list, ...Array.from(files).map((file) => URL.createObjectURL(file))])
+  const valueName = (index: number, valueId: string) => {
+    const value = attributes
+      .find((a) => a.id === variations[index].attributeId)
+      ?.values.find((v) => v.id === valueId)
+    return value ? tl(value.name) : valueId
+  }
+  // With two or more variant types, rows are grouped under the first one's values
+  const sections =
+    variations.length > 1
+      ? variations[0].valueIds.map((valueId) => ({
+          heading: valueName(0, valueId),
+          combos: combos.filter((combo) => combo[0] === valueId),
+          from: 1,
+        }))
+      : [{ heading: null, combos, from: 0 }]
+
+  const fillEmpty = () => {
+    setName(fillMissing(name))
+    setDescription(fillMissing(description))
+    setSpecs((list) =>
+      list.map((s) => ({ ...s, label: fillMissing(s.label), value: fillMissing(s.value) })),
+    )
   }
 
   const save = () => {
     setSubmitted(true)
-    if (name.trim() === '' || !category || !brand || !price || !groupsValid) return
+    const missing = missingLang([name])
+    if (missing) setLang(missing)
+    if (missing || !category || !brand || !price || !groupsValid || !combosValid) return
+
+    const variants = Object.fromEntries(
+      sold.map((combo) => [variantKey(combo), { price: comboOf(combo).price ?? price }]),
+    )
     productsStore.save({
       id: existing?.id ?? newId(),
       storeId: existing?.storeId ?? OWN_STORE_ID,
       stock: existing?.stock ?? {},
-      name: name.trim(),
+      name: fillMissing(name),
+      description: fillMissing(description),
       category,
       brand,
-      price,
-      description: description.trim(),
+      // Cards show the cheapest way to buy the product
+      price: sold.length > 0 ? Math.min(...Object.values(variants).map((v) => v.price)) : price,
       images,
       active,
-      variations: groups.map((group) => ({
-        name: group.name.trim(),
-        options: group.options.map((option) => ({
-          label: option.label.trim(),
-          priceDelta: option.priceDelta ?? undefined,
-          swatch: group.color ? (option.swatch ?? SWATCHES[0].hex) : undefined,
-        })),
-      })),
+      variations,
+      variants,
       specs: specs
-        .filter((spec) => spec.label.trim() !== '' && spec.value.trim() !== '')
-        .map((spec) => [spec.label.trim(), spec.value.trim()]),
+        .filter((spec) => !isBlank(spec.label) && !isBlank(spec.value))
+        .map((spec) => ({ label: fillMissing(spec.label), value: fillMissing(spec.value) })),
     })
     navigate(-1)
   }
+
+  const formError = !groupsValid
+    ? t('error.pickValues')
+    : !combosValid
+      ? t('error.combos')
+      : undefined
 
   return (
     <FormScreen
@@ -133,7 +180,7 @@ export function ProductFormPage() {
       onBack={() => navigate(-1)}
       footer={
         <div className="flex flex-col gap-3">
-          {submitted && !groupsValid && <Alert message={t('error.variations')} />}
+          {submitted && formError && <Alert message={formError} />}
           <Button type="submit" block>
             {t('common.save')}
           </Button>
@@ -172,20 +219,28 @@ export function ProductFormPage() {
             multiple
             hidden
             onChange={(e) => {
-              addPhotos(e.target.files)
+              const files = Array.from(e.target.files ?? [])
+              setImages((list) => [...list, ...files.map((file) => URL.createObjectURL(file))])
               e.target.value = ''
             }}
           />
         </div>
       </Section>
 
+      <FormLanguage value={lang} onChange={setLang} onFillEmpty={fillEmpty} />
+
       <div className="flex flex-col gap-4">
         <TextField
           label={t('field.name')}
           autoComplete="off"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-          error={required(name.trim() !== '')}
+          value={name[lang]}
+          onChange={(e) => setName(withLang(name, lang, e.target.value))}
+          error={submitted && !isComplete(name) ? t('error.bothLanguages') : undefined}
+        />
+        <TextAreaField
+          label={t('product.description')}
+          value={description[lang]}
+          onChange={(e) => setDescription(withLang(description, lang, e.target.value))}
         />
         <Select
           label={t('filter.category')}
@@ -195,14 +250,14 @@ export function ProductFormPage() {
           }))}
           value={category}
           onChange={setCategory}
-          error={required(category !== null)}
+          error={submitted && !category ? t('error.required') : undefined}
         />
         <Select
           label={t('filter.brand')}
           options={BRANDS.map((value) => ({ value, label: value }))}
           value={brand}
           onChange={setBrand}
-          error={required(brand !== null)}
+          error={submitted && !brand ? t('error.required') : undefined}
         />
         <NumberField
           label={t('product.price')}
@@ -212,136 +267,168 @@ export function ProductFormPage() {
           maxDigits={10}
           error={submitted && !price ? t('error.price') : undefined}
         />
-        <TextAreaField
-          label={t('product.description')}
-          value={description}
-          onChange={(e) => setDescription(e.target.value)}
-        />
       </div>
 
       <Section title={t('product.variations')} hint={t('product.variations.hint')}>
-        {groups.map((group, index) => (
-          <div key={group.id} className="flex flex-col gap-3 rounded-card bg-surface p-4">
-            <div className="flex min-h-10 items-center justify-between">
-              <p className="font-semibold">{t('variation.group', { n: String(index + 1) })}</p>
-              <button
-                type="button"
-                aria-label={t('common.remove')}
-                onClick={() => setGroups((list) => list.filter((g) => g.id !== group.id))}
-                className={cn(iconButton, '-mr-2')}
-              >
-                <Trash2 size={20} />
-              </button>
-            </div>
-            <TextField
-              label={t('variation.name')}
-              autoComplete="off"
-              placeholder="Xotira"
-              value={group.name}
-              onChange={(e) => patchGroup(group.id, { name: e.target.value })}
-              error={submitted && group.name.trim() === '' ? t('error.required') : undefined}
-            />
-            <Checkbox
-              label={t('variation.color')}
-              checked={group.color}
-              onChange={(color) => patchGroup(group.id, { color })}
-            />
-
-            {group.options.map((option) => (
-              <div key={option.id} className="flex flex-col gap-3 border-t border-line pt-3">
-                <div className="flex items-end gap-2">
-                  <div className="min-w-0 flex-1">
-                    <TextField
-                      label={t('variation.option')}
-                      autoComplete="off"
-                      value={option.label}
-                      onChange={(e) => patchOption(group, option.id, { label: e.target.value })}
-                      error={
-                        submitted && option.label.trim() === '' ? t('error.required') : undefined
-                      }
-                    />
-                  </div>
-                  <button
-                    type="button"
-                    aria-label={t('common.remove')}
-                    onClick={() =>
-                      patchGroup(group.id, {
-                        options: group.options.filter((o) => o.id !== option.id),
-                      })
-                    }
-                    className={cn(iconButton, 'mb-1.5 -mr-2')}
-                  >
-                    <X size={20} />
-                  </button>
+        {groups.map((group) => {
+          const attribute = attributeOf(group)
+          const taken = groups.filter((g) => g.id !== group.id).map((g) => g.attributeId)
+          return (
+            <div key={group.id} className="flex flex-col gap-3 rounded-card bg-surface p-4">
+              <div className="flex items-end gap-2">
+                <div className="min-w-0 flex-1">
+                  <Select
+                    label={t('attribute.edit')}
+                    options={attributes
+                      .filter((a) => !taken.includes(a.id))
+                      .map((a) => ({ value: a.id, label: tl(a.name) }))}
+                    value={group.attributeId}
+                    onChange={(attributeId) => patchGroup(group.id, { attributeId, valueIds: [] })}
+                    error={submitted && !group.attributeId ? t('error.required') : undefined}
+                  />
                 </div>
-                {group.color && (
-                  <div
-                    role="radiogroup"
-                    aria-label={t('variation.swatch')}
-                    className="flex flex-wrap gap-2"
-                  >
-                    {SWATCHES.map((swatch) => {
-                      const selected = option.swatch === swatch.hex
+                <button
+                  type="button"
+                  aria-label={t('common.remove')}
+                  onClick={() => setGroups((list) => list.filter((g) => g.id !== group.id))}
+                  className={cn(iconButton, '-mr-2 mb-1.5')}
+                >
+                  <Trash2 size={20} />
+                </button>
+              </div>
+
+              {attribute && (
+                <div className="flex flex-col gap-2">
+                  <p className="text-sm font-medium text-ink-muted">{t('attribute.values')}</p>
+                  <div className="flex flex-wrap gap-2">
+                    {attribute.values.map((value) => {
+                      const on = group.valueIds.includes(value.id)
                       return (
                         <button
-                          key={swatch.hex}
+                          key={value.id}
                           type="button"
-                          role="radio"
-                          aria-checked={selected}
-                          aria-label={swatch.name}
+                          role="checkbox"
+                          aria-checked={on}
                           onClick={() =>
-                            patchOption(group, option.id, {
-                              swatch: swatch.hex,
-                              label: option.label.trim() === '' ? swatch.name : option.label,
+                            patchGroup(group.id, {
+                              // Keep the directory's order whatever order they are ticked in
+                              valueIds: attribute.values
+                                .map((v) => v.id)
+                                .filter((valueId) =>
+                                  valueId === value.id ? !on : group.valueIds.includes(valueId),
+                                ),
                             })
                           }
                           className={cn(
-                            'size-9 rounded-full border-2 p-0.5',
-                            selected ? 'border-primary' : 'border-transparent',
+                            chip,
+                            'flex items-center gap-2 bg-canvas',
+                            on ? 'border-primary' : 'border-line text-ink-muted',
                           )}
                         >
-                          <span
-                            className="block size-full rounded-full border border-line"
-                            style={{ background: swatch.hex }}
-                          />
+                          {value.swatch && (
+                            <span
+                              className="size-4 rounded-full border border-line"
+                              style={{ background: value.swatch }}
+                            />
+                          )}
+                          {tl(value.name)}
                         </button>
                       )
                     })}
+                    <button
+                      type="button"
+                      onClick={() => setAddingTo(attribute)}
+                      className={cn(
+                        chip,
+                        'flex items-center gap-1 border-dashed border-navy-400 text-brand',
+                      )}
+                    >
+                      <Plus size={16} />
+                      {t('attribute.newValue')}
+                    </button>
                   </div>
-                )}
-                <NumberField
-                  label={t('variation.extra')}
-                  value={option.priceDelta}
-                  onChange={(priceDelta) => patchOption(group, option.id, { priceDelta })}
-                  suffix={t('common.currency')}
-                  maxDigits={9}
-                />
-              </div>
-            ))}
-            <Button
-              variant="ghost"
-              block
-              onClick={() => patchGroup(group.id, { options: [...group.options, emptyOption()] })}
+                </div>
+              )}
+            </div>
+          )
+        })}
+        {groups.length < attributes.length && (
+          <Button
+            variant="secondary"
+            block
+            onClick={() =>
+              setGroups((list) => [...list, { id: draftId(), attributeId: null, valueIds: [] }])
+            }
+          >
+            <Plus size={20} />
+            {t('variation.addGroup')}
+          </Button>
+        )}
+        <p className="text-sm text-ink-muted">{t('attribute.note')}</p>
+      </Section>
+
+      {combos.length > 0 && (
+        <Section
+          title={`${t('product.combos')} (${sold.length} / ${combos.length})`}
+          hint={t('product.combos.hint')}
+          action={
+            <button
+              type="button"
+              onClick={() =>
+                combos.forEach((combo) =>
+                  setCombo(combo, { on: true, price: comboOf(combo).price ?? price }),
+                )
+              }
+              className="shrink-0 text-sm font-semibold text-brand"
             >
-              <Plus size={20} />
-              {t('variation.addOption')}
-            </Button>
-          </div>
-        ))}
-        <Button
-          variant="secondary"
-          block
-          onClick={() =>
-            setGroups((list) => [
-              ...list,
-              { id: draftId(), name: '', color: false, options: [emptyOption()] },
-            ])
+              {t('product.combos.all')}
+            </button>
           }
         >
-          <Plus size={20} />
-          {t('variation.addGroup')}
-        </Button>
-      </Section>
+          {sections.map((section) => (
+            <div key={section.heading ?? 'all'} className="rounded-card bg-surface px-4 py-1">
+              {section.heading && (
+                <p className="flex items-baseline justify-between border-b border-line py-2.5 font-semibold">
+                  {section.heading}
+                  <span className="text-sm font-normal text-ink-muted">
+                    {section.combos.filter((combo) => comboOf(combo).on).length} /{' '}
+                    {section.combos.length}
+                  </span>
+                </p>
+              )}
+              {section.combos.map((combo) => {
+                const draft = comboOf(combo)
+                const label = combo
+                  .slice(section.from)
+                  .map((valueId, i) => valueName(i + section.from, valueId))
+                  .join(' · ')
+                return (
+                  <div
+                    key={variantKey(combo)}
+                    className="flex flex-col gap-2 border-b border-line py-2.5 last:border-b-0"
+                  >
+                    <Checkbox
+                      label={label}
+                      checked={draft.on}
+                      onChange={(on) => setCombo(combo, { on, price: draft.price ?? price })}
+                    />
+                    {draft.on && (
+                      <NumberField
+                        label={t('product.price')}
+                        value={draft.price}
+                        onChange={(value) => setCombo(combo, { price: value })}
+                        suffix={t('common.currency')}
+                        maxDigits={10}
+                        error={submitted && !draft.price ? t('error.price') : undefined}
+                      />
+                    )}
+                  </div>
+                )
+              })}
+            </div>
+          ))}
+        </Section>
+      )}
 
       <Section title={t('product.specs')}>
         {specs.map((spec) => (
@@ -350,21 +437,17 @@ export function ProductFormPage() {
               <TextField
                 label={t('field.name')}
                 autoComplete="off"
-                value={spec.label}
+                value={spec.label[lang]}
                 onChange={(e) =>
-                  setSpecs((list) =>
-                    list.map((s) => (s.id === spec.id ? { ...s, label: e.target.value } : s)),
-                  )
+                  patchSpec(spec.id, { label: withLang(spec.label, lang, e.target.value) })
                 }
               />
               <TextField
                 label={t('spec.value')}
                 autoComplete="off"
-                value={spec.value}
+                value={spec.value[lang]}
                 onChange={(e) =>
-                  setSpecs((list) =>
-                    list.map((s) => (s.id === spec.id ? { ...s, value: e.target.value } : s)),
-                  )
+                  patchSpec(spec.id, { value: withLang(spec.value, lang, e.target.value) })
                 }
               />
             </div>
@@ -372,7 +455,7 @@ export function ProductFormPage() {
               type="button"
               aria-label={t('common.remove')}
               onClick={() => setSpecs((list) => list.filter((s) => s.id !== spec.id))}
-              className={cn(iconButton, 'mb-1.5 -mr-2')}
+              className={cn(iconButton, '-mr-2 mb-1.5')}
             >
               <X size={20} />
             </button>
@@ -381,7 +464,9 @@ export function ProductFormPage() {
         <Button
           variant="secondary"
           block
-          onClick={() => setSpecs((list) => [...list, { id: draftId(), label: '', value: '' }])}
+          onClick={() =>
+            setSpecs((list) => [...list, { id: draftId(), label: emptyText(), value: emptyText() }])
+          }
         >
           <Plus size={20} />
           {t('product.specs.add')}
@@ -397,6 +482,75 @@ export function ProductFormPage() {
         />
         <p className="text-sm text-ink-muted">{t('product.stockNote')}</p>
       </div>
+
+      {addingTo && (
+        <NewValueSheet
+          attribute={addingTo}
+          onClose={() => setAddingTo(null)}
+          onAdded={(valueId) =>
+            setGroups((list) =>
+              list.map((g) =>
+                g.attributeId === addingTo.id ? { ...g, valueIds: [...g.valueIds, valueId] } : g,
+              ),
+            )
+          }
+        />
+      )}
     </FormScreen>
+  )
+}
+
+type NewValueProps = {
+  attribute: Attribute
+  onClose: () => void
+  onAdded: (valueId: string) => void
+}
+
+/** Adds a value to the directory without leaving the product form: its name in each language. */
+function NewValueSheet({ attribute, onClose, onAdded }: NewValueProps) {
+  const { t, tl } = useI18n()
+  const [name, setName] = useState<LocalizedText>(emptyText())
+  const [swatch, setSwatch] = useState(SWATCH_PRESETS[0])
+  const [submitted, setSubmitted] = useState(false)
+
+  const add = (e: FormEvent) => {
+    // The sheet's form sits inside the product form in React's tree: keep the submit to itself
+    e.preventDefault()
+    e.stopPropagation()
+    setSubmitted(true)
+    if (!isComplete(name)) return
+    const value = {
+      id: newId(),
+      name: fillMissing(name),
+      swatch: attribute.color ? swatch : undefined,
+    }
+    attributesStore.update(attribute.id, { values: [...attribute.values, value] })
+    onAdded(value.id)
+    onClose()
+  }
+
+  return (
+    <Sheet open onClose={onClose} title={`${tl(attribute.name)}: ${t('attribute.newValue')}`}>
+      <form onSubmit={add} noValidate className="flex flex-col gap-4 pt-1 pb-1">
+        <TextField
+          label="Oʻzbekcha"
+          autoComplete="off"
+          value={name.uz}
+          onChange={(e) => setName(withLang(name, 'uz', e.target.value))}
+          error={submitted && name.uz.trim() === '' ? t('error.required') : undefined}
+        />
+        <TextField
+          label="Русский"
+          autoComplete="off"
+          value={name.ru}
+          onChange={(e) => setName(withLang(name, 'ru', e.target.value))}
+          error={submitted && name.ru.trim() === '' ? t('error.required') : undefined}
+        />
+        {attribute.color && <SwatchPicker value={swatch} onChange={setSwatch} />}
+        <Button type="submit" block className="mt-2">
+          {t('common.save')}
+        </Button>
+      </form>
+    </Sheet>
   )
 }

@@ -9,7 +9,7 @@ import { LikeButton } from './LikeButton'
 
 /** A product in a two-column grid: picture with a heart, name, price and the lowest monthly payment. */
 export function ProductCard({ product }: { product: Product }) {
-  const { t } = useI18n()
+  const { t, tl } = useI18n()
   const lowestMonthly = installmentTerms(product.price, 24).monthlyPayment
 
   return (
@@ -20,7 +20,7 @@ export function ProductCard({ product }: { product: Product }) {
           src={product.images[0]}
           className="rounded-card"
         />
-        <p className="line-clamp-2 leading-tight font-semibold">{product.name}</p>
+        <p className="line-clamp-2 leading-tight font-semibold">{tl(product.name)}</p>
         <p className="font-bold">{formatSum(product.price)}</p>
         <p className="self-start rounded-full bg-green-200 px-2.5 py-0.5 text-xs font-semibold whitespace-nowrap">
           {t('catalog.perMonth', { amount: groupDigits(lowestMonthly) })}

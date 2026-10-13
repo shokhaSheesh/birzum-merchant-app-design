@@ -9,13 +9,13 @@ import { ListRow, ListScreen } from '../components/ListScreen'
 
 /** The merchant's own products, visible or hidden. */
 export function ProductsPage() {
-  const { t } = useI18n()
+  const { t, tl } = useI18n()
   const [query, setQuery] = useState('')
   const needle = query.trim().toLowerCase()
   const products = productsStore
     .useAll()
     .filter((product) => product.storeId === OWN_STORE_ID)
-    .filter((product) => `${product.name} ${product.brand}`.toLowerCase().includes(needle))
+    .filter((product) => `${tl(product.name)} ${product.brand}`.toLowerCase().includes(needle))
 
   return (
     <ListScreen
@@ -43,7 +43,7 @@ export function ProductsPage() {
                 className="w-14 shrink-0 rounded-control"
               />
             }
-            title={product.name}
+            title={tl(product.name)}
             lines={[
               `${product.brand} · ${t(`catalog.category.${product.category}`)}`,
               `${formatSum(product.price)} · ${t('product.totalStock', {

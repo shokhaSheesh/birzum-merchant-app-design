@@ -16,6 +16,8 @@ export const ROUTES = {
   manageProducts: '/manage/products',
   manageProduct: '/manage/products/:id',
   manageInventory: '/manage/inventory',
+  manageAttributes: '/manage/attributes',
+  manageAttribute: '/manage/attributes/:id',
   manageLocations: '/manage/locations',
   manageLocation: '/manage/locations/:id',
   manageStaff: '/manage/staff',
@@ -56,5 +58,7 @@ export function customerProductsPath(
   return query ? `/customer/products?${query}` : '/customer/products'
 }
 /** A management record's form. Pass "new" as the id to create one. */
-export const managePath = (section: 'products' | 'locations' | 'staff' | 'roles', id: string) =>
-  `/manage/${section}/${id}`
+export const managePath = (
+  section: 'products' | 'attributes' | 'locations' | 'staff' | 'roles',
+  id: string,
+) => `/manage/${section}/${id}`

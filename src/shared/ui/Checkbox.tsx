@@ -13,7 +13,7 @@ export function Checkbox({ label, description, checked, onChange, disabled }: Pr
   const id = useId()
 
   return (
-    <label htmlFor={id} className="flex cursor-pointer items-start gap-3 py-1">
+    <label htmlFor={id} className="relative flex cursor-pointer items-start gap-3 py-1">
       <input
         id={id}
         type="checkbox"

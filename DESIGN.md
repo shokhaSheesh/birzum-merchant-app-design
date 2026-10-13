@@ -323,16 +323,31 @@ Menyu is the merchant's last tab. It holds the signed-in user, then everything t
 - Picking several of something (a staff member's shops, a role's permissions) is a list of `Checkbox`es, with a red line under it if none is chosen.
 - **Categories and brands are never created here.** They come from the Birzum admin panel, so in the product form they are `Select`s.
 
+### Text in two languages
+Anything a merchant writes that shoppers read is stored once per language (`LocalizedText`): product names and descriptions, characteristic names and values, variant types and their values. It is shown with `tl()`, which falls back to the other language if one is empty.
+
+- A form with such fields starts them with `FormLanguage`: a "Matn tili" switch between Oʻzbekcha and Русский. The text fields under it show the chosen language; switching it does not lose the other one.
+- Under the switch is a ghost "Boʻsh maydonlarni boshqa tildan toʻldirish", for text that is the same in both, such as "128 GB".
+- Names must be filled in both languages. On a failed save the form jumps to the language that has a gap and marks the field "Ikkala tilda ham kiriting". Optional text (description, characteristics) is copied from the other language when left empty.
+- Fields that are not text for shoppers (price, category, brand, phone) are not affected by the switch.
+
+### Variant types (the directory)
+- Menyu → Katalog → Variant turlari lists what products can vary by (Rang, Xotira, …), each with its values. A type marked "Rang sifatida koʻrsatish" gives each value a color swatch.
+- Types and values are created here, in both languages, and reused on every product. A product never has free-typed variant names.
+- From the product form a missing value can be added on the spot ("Yangi qiymat" opens a sheet asking for both languages); a whole new type is created in the directory.
+
 ### Product form
-- Top to bottom: photos, name, category, brand, price, description, variations, characteristics, visibility.
+- Top to bottom: photos, the text language switch, name, description, category, brand, price, variants, combinations, characteristics, visibility.
 - **Photos** are 96px square tiles in a wrapping row, each with a small remove button; the last tile is a dashed "Rasm qoʻshish". The first photo is the cover.
-- **A variation group** is a `surface` card: group name, a "Rang sifatida koʻrsatish" checkbox, then its options. Each option has a name and a "Qoʻshimcha narx"; a color option also gets a row of round swatches. A ghost "Variant qoʻshish" ends the card and a secondary "Guruh qoʻshish" ends the section.
+- **Variantlar:** one `surface` card per variant type: a `Select` of the type, then its values as outline chips that are ticked on and off (navy border when on, with the swatch for colors).
+- **Kombinatsiyalar** appears once values are chosen and lists every combination of them. The merchant ticks the ones that are actually sold; a ticked row opens a price field, pre-filled with the product's price. The title counts them ("4 / 6") and "Hammasini tanlash" ticks all. With two or more types the rows are grouped under the first type's values, each group with its own count.
+- A combination that is not ticked does not exist: it has no price, no stock row in Ombor, and in the client app that choice is faded and struck through.
 - **Characteristics** are rows of two fields, name and value, each with a remove button.
 - Stock is not in the product form. It is entered in Ombor.
 
 ### Ombor
 - Shops across the top as `FilterChips`; the list below is that shop's stock.
-- One card per product, with one row per variant combination ("Qora · 128 GB") and a compact `QuantityStepper`. A product without variations has a single "Qoldiq" row.
+- One card per product, with one row per combination that is sold ("Qora · 128 GB") and a compact `QuantityStepper`. A product without variations has a single "Qoldiq" row.
 - Changes save as they are made; there is no save button.
 
 ## Two apps, one system
@@ -348,6 +363,7 @@ The repo holds the merchant app and the client (shopper) app. They share every t
 - **The product listing is one screen** reached from a category, a suggestion or "Hammasi". Its title says what is listed. Under it: the count on the left and a "Filtr" pill on the right, which opens a sheet with Kategoriya, Brend and the price. Price is two number fields ("Dan", "Gacha") over a `RangeSlider` with two handles; the fields and handles stay in sync. The sheet's primary button says how many products the current choice would show ("5 ta mahsulotni koʻrsatish") and is disabled at zero; "Tozalash" sits above it. With filters on, the pill turns navy and shows how many are set.
 - A product is always a `ProductCard` in a two-column grid: square picture on a tinted tile, name (two lines at most), price, and a green-tint pill with the lowest monthly payment ("oyiga … dan").
 - **Product screen, top to bottom:** picture, stock badge, name and price; the variations, color first; Nasiya shartlari; the seller card with its rating; description; characteristics in an `InfoList`; similar products in a sideways row. Like, then share, sit at the top right.
+- **A value that is not sold with the other current choices is faded** (and struck through if it is text). Tapping it still works: the screen moves to a combination that has it.
 - **Variations are light, not filled** (`VariationPicker`). A color is a 64px picture of the product in that color; any other option is a small text pill. The chosen one is marked by a navy border only, and its name is repeated beside the group label ("Rang: Koʻk"). The main picture follows the chosen color.
 - **The term is always a `TermPicker`, in both apps:** one grey strip of numbers where only the chosen one turns white and spells out "oy" ("18 oy"). Where the limit depends on the term, one muted line under it gives the limit for the chosen term.
 - **The client never sees "Ustama".** `InstallmentTermsCard` is used with `showMarkup={false}`: monthly payment, term and the total only.

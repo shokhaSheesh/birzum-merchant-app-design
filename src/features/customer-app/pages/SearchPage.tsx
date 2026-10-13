@@ -16,7 +16,7 @@ type Suggestion = { text: string; kind?: string; to: string }
  * categories and product names; picking one, or pressing Enter, opens the product listing.
  */
 export function SearchPage() {
-  const { t } = useI18n()
+  const { t, tl } = useI18n()
   const products = useCatalog()
   const navigate = useNavigate()
   const [query, setQuery] = useState('')
@@ -38,10 +38,10 @@ export function SearchPage() {
           }),
         ),
         ...products
-          .filter((product) => matches(product.name))
+          .filter((product) => matches(tl(product.name)))
           .map((product) => ({
-            text: product.name,
-            to: customerProductsPath({ q: product.name }),
+            text: tl(product.name),
+            to: customerProductsPath({ q: tl(product.name) }),
           })),
       ]
     : []

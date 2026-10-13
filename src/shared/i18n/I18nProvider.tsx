@@ -34,6 +34,7 @@ export function I18nProvider({ children }: { children: ReactNode }) {
       },
       t: (key, params) =>
         dictionaries[lang][key].replace(/\{(\w+)\}/g, (match, name) => params?.[name] ?? match),
+      tl: (text) => text[lang] || text.uz || text.ru,
     }),
     [lang],
   )

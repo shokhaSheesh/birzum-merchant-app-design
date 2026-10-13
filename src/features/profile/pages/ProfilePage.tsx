@@ -6,6 +6,7 @@ import {
   MapPin,
   Package,
   ShieldCheck,
+  Tags,
   UsersRound,
 } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
@@ -70,6 +71,9 @@ export function ProfilePage() {
           <MenuList>
             {can('products') && (
               <MenuRow icon={Package} label={t('manage.products')} to={ROUTES.manageProducts} />
+            )}
+            {can('products') && (
+              <MenuRow icon={Tags} label={t('manage.attributes')} to={ROUTES.manageAttributes} />
             )}
             {can('inventory') && (
               <MenuRow icon={Boxes} label={t('manage.inventory')} to={ROUTES.manageInventory} />

@@ -29,9 +29,9 @@ type Filters = {
   priceTo: number
 }
 
-const matches = (product: Product, needle: string, filters: Filters) =>
+const matches = (product: Product, name: string, needle: string, filters: Filters) =>
   (!needle ||
-    product.name.toLowerCase().includes(needle) ||
+    name.toLowerCase().includes(needle) ||
     product.brand.toLowerCase().includes(needle)) &&
   (filters.category === ALL || product.category === filters.category) &&
   (filters.brand === ALL || product.brand === filters.brand) &&
@@ -40,7 +40,7 @@ const matches = (product: Product, needle: string, filters: Filters) =>
 
 /** The product listing. It opens from a category, a search result or "Hammasi", and can be filtered. */
 export function ProductsPage() {
-  const { t } = useI18n()
+  const { t, tl } = useI18n()
   const [searchParams] = useSearchParams()
   const products = useCatalog()
   // The slider runs from the cheapest to the dearest product, rounded out to whole steps
@@ -63,9 +63,11 @@ export function ProductsPage() {
   const [open, setOpen] = useState(false)
 
   const needle = query.toLowerCase()
-  const items = products.filter((product) => matches(product, needle, filters))
+  const items = products.filter((product) => matches(product, tl(product.name), needle, filters))
   // What "Qoʻllash" would show, so the shopper sees the effect before applying
-  const draftCount = products.filter((product) => matches(product, needle, draft)).length
+  const draftCount = products.filter((product) =>
+    matches(product, tl(product.name), needle, draft),
+  ).length
   const activeCount = [
     filters.category !== ALL,
     filters.brand !== ALL,

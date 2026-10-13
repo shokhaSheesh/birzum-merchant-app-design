@@ -25,6 +25,8 @@ import { StoresPage } from '@/features/customer-app/pages/StoresPage'
 import { CustomerAuthPage } from '@/features/customer-auth/pages/CustomerAuthPage'
 import { HomePage } from '@/features/home/pages/HomePage'
 import { KitPage } from '@/features/kit/pages/KitPage'
+import { AttributeFormPage } from '@/features/manage/pages/AttributeFormPage'
+import { AttributesPage } from '@/features/manage/pages/AttributesPage'
 import { InventoryPage } from '@/features/manage/pages/InventoryPage'
 import { LocationFormPage } from '@/features/manage/pages/LocationFormPage'
 import { LocationsPage } from '@/features/manage/pages/LocationsPage'
@@ -59,6 +61,8 @@ export const router = createBrowserRouter([
       { path: ROUTES.manageProducts, element: <ManageProductsPage /> },
       { path: ROUTES.manageProduct, element: <ProductFormPage /> },
       { path: ROUTES.manageInventory, element: <InventoryPage /> },
+      { path: ROUTES.manageAttributes, element: <AttributesPage /> },
+      { path: ROUTES.manageAttribute, element: <AttributeFormPage /> },
       { path: ROUTES.manageLocations, element: <LocationsPage /> },
       { path: ROUTES.manageLocation, element: <LocationFormPage /> },
       { path: ROUTES.manageStaff, element: <StaffPage /> },

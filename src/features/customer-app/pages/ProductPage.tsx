@@ -6,10 +6,14 @@ import { ProductPicture } from '@/entities/catalog/ProductPicture'
 import {
   getProduct,
   getStore,
+  priceOf,
+  soldCombos,
   stockOf,
   useCatalog,
+  variantKey,
   type Product,
 } from '@/entities/catalog/products'
+import { useVariantNames } from '@/entities/catalog/useVariantNames'
 import { TERMS, type Term } from '@/entities/clients/clients'
 import { installmentTerms } from '@/entities/clients/installment'
 import { useCustomer } from '@/entities/session/customer'
@@ -20,12 +24,12 @@ import { Alert } from '@/shared/ui/Alert'
 import { Button } from '@/shared/ui/Button'
 import { InfoList, InfoRow } from '@/shared/ui/InfoList'
 import { InstallmentTermsCard } from '@/shared/ui/InstallmentTermsCard'
+import { PageHeader } from '@/shared/ui/PageHeader'
 import { QuantityStepper } from '@/shared/ui/QuantityField'
 import { Section } from '@/shared/ui/Section'
 import { StatusBadge } from '@/shared/ui/StatusBadge'
 import { TermPicker } from '@/shared/ui/TermPicker'
 import { LikeButton } from '../components/LikeButton'
-import { PageHeader } from '@/shared/ui/PageHeader'
 import { ProductCard } from '../components/ProductCard'
 import { StoreRating } from '../components/StoreRating'
 import { VariationPicker } from '../components/VariationPicker'
@@ -40,21 +44,34 @@ export function ProductPage() {
 }
 
 function ProductDetails({ product }: { product: Product }) {
-  const { t } = useI18n()
+  const { t, tl } = useI18n()
   const navigate = useNavigate()
   const customer = useCustomer()
   const { lines } = useCart()
+  const { attributes, color: colorOf } = useVariantNames()
   const [term, setTerm] = useState<Term>(12)
-  /** The picked option of each variation, by position. */
-  const [picked, setPicked] = useState<number[]>(() => product.variations.map(() => 0))
   const [copied, setCopied] = useState(false)
+  const combos = soldCombos(product)
+  /** The chosen value of each variation, by position. Always a combination that is sold. */
+  const [picked, setPicked] = useState<string[]>(() => combos[0] ?? [])
+
+  const isSold = (valueIds: string[]) => variantKey(valueIds) in product.variants
+  const swap = (index: number, valueId: string) =>
+    picked.map((current, at) => (at === index ? valueId : current))
+
+  /** Picks a value; if it is not sold with the other choices, moves to a combination that has it. */
+  const pick = (index: number, valueId: string) => {
+    const wanted = swap(index, valueId)
+    const next = isSold(wanted) ? wanted : combos.find((combo) => combo[index] === valueId)
+    if (next) setPicked(next)
+  }
 
   /** Opens the phone's share sheet; where there is none, copies the link instead. */
   const share = async () => {
     const url = window.location.href
     try {
       if (navigator.share) {
-        await navigator.share({ title: product.name, url })
+        await navigator.share({ title: tl(product.name), url })
       } else {
         await navigator.clipboard.writeText(url)
         setCopied(true)
@@ -66,13 +83,11 @@ function ProductDetails({ product }: { product: Product }) {
   }
 
   const store = getStore(product.storeId)
-  const options = product.variations.map((variation, i) => variation.options[picked[i]])
-  const variant = options.map((option) => option.label)
-  const color = options.find((option) => option.swatch)?.swatch
-  const unitPrice = product.price + options.reduce((sum, o) => sum + (o.priceDelta ?? 0), 0)
-  const line = lines.find((l) => l.key === cartKey(product.id, variant))
+  const unitPrice = priceOf(product, picked)
+  const color = colorOf(product, picked)
+  const line = lines.find((l) => l.key === cartKey(product.id, picked))
   const hasLimit = !!customer?.limits
-  const stock = stockOf(product, variant)
+  const stock = stockOf(product, picked)
   const inStock = stock > 0
   const similar = useCatalog().filter((p) => p.category === product.category && p.id !== product.id)
 
@@ -106,19 +121,28 @@ function ProductDetails({ product }: { product: Product }) {
           <StatusBadge tone={inStock ? 'success' : 'danger'}>
             {inStock ? t('product.stock.in', { count: String(stock) }) : t('product.stock.out')}
           </StatusBadge>
-          <h1 className="text-xl leading-tight font-bold">{product.name}</h1>
+          <h1 className="text-xl leading-tight font-bold">{tl(product.name)}</h1>
           <p className="text-2xl font-bold">{formatSum(unitPrice)}</p>
         </div>
 
-        {product.variations.map((variation, i) => (
-          <VariationPicker
-            key={variation.name}
-            variation={variation}
-            category={product.category}
-            value={picked[i]}
-            onChange={(index) => setPicked((list) => list.map((v, at) => (at === i ? index : v)))}
-          />
-        ))}
+        {product.variations.map((variation, i) => {
+          const attribute = attributes.find((a) => a.id === variation.attributeId)
+          return (
+            attribute && (
+              <VariationPicker
+                key={variation.attributeId}
+                attribute={attribute}
+                valueIds={variation.valueIds.filter((valueId) =>
+                  combos.some((combo) => combo[i] === valueId),
+                )}
+                category={product.category}
+                value={picked[i]}
+                onChange={(valueId) => pick(i, valueId)}
+                isAvailable={(valueId) => isSold(swap(i, valueId))}
+              />
+            )
+          )
+        })}
 
         <Section title={t('contract.conditions')}>
           <TermPicker terms={TERMS} value={term} onChange={setTerm} />
@@ -143,17 +167,21 @@ function ProductDetails({ product }: { product: Product }) {
           </Section>
         )}
 
-        <Section title={t('product.description')}>
-          <p className="text-ink-muted">{product.description}</p>
-        </Section>
+        {tl(product.description) !== '' && (
+          <Section title={t('product.description')}>
+            <p className="text-ink-muted">{tl(product.description)}</p>
+          </Section>
+        )}
 
-        <Section title={t('product.specs')}>
-          <InfoList>
-            {product.specs.map(([label, value]) => (
-              <InfoRow key={label} label={label} value={value} />
-            ))}
-          </InfoList>
-        </Section>
+        {product.specs.length > 0 && (
+          <Section title={t('product.specs')}>
+            <InfoList>
+              {product.specs.map((spec, i) => (
+                <InfoRow key={i} label={tl(spec.label)} value={tl(spec.value)} />
+              ))}
+            </InfoList>
+          </Section>
+        )}
 
         {similar.length > 0 && (
           <Section title={t('product.similar')}>
@@ -191,7 +219,7 @@ function ProductDetails({ product }: { product: Product }) {
           <Button
             block
             disabled={!hasLimit || !inStock}
-            onClick={() => cartStore.add(product, variant, unitPrice, color)}
+            onClick={() => cartStore.add(product, picked, unitPrice)}
           >
             <ShoppingCart size={20} />
             {inStock ? t('product.addToCart') : t('product.stock.out')}
