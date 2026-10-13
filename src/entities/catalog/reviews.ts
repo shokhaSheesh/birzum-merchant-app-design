@@ -1,3 +1,5 @@
+import { createStore } from '@/shared/lib/createStore'
+
 /** What a shopper said about a shop after buying from it. */
 export type Review = {
   id: string
@@ -11,7 +13,7 @@ export type Review = {
 }
 
 // Invented sample reviews of the signed-in merchant's shop. Replace with the API.
-export const reviews: Review[] = [
+export const reviewsStore = createStore<Review>([
   {
     id: 'rv1',
     storeId: 's1',
@@ -48,4 +50,4 @@ export const reviews: Review[] = [
     date: new Date(2026, 8, 15),
     productName: 'Samsung Galaxy A55',
   },
-]
+])

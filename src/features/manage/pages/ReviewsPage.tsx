@@ -1,10 +1,12 @@
-import { Star } from 'lucide-react'
+import { Star, Trash2 } from 'lucide-react'
+import { useState } from 'react'
 import { OWN_STORE_ID } from '@/entities/catalog/products'
-import { reviews } from '@/entities/catalog/reviews'
+import { reviewsStore } from '@/entities/catalog/reviews'
 import { useI18n } from '@/shared/i18n/useI18n'
 import { cn } from '@/shared/lib/cn'
 import { formatDate } from '@/shared/lib/format'
 import { Avatar } from '@/shared/ui/Avatar'
+import { ConfirmSheet } from '@/shared/ui/ConfirmSheet'
 import { EmptyState } from '@/shared/ui/EmptyState'
 import { PageHeader } from '@/shared/ui/PageHeader'
 
@@ -22,10 +24,14 @@ function Stars({ rating, size }: { rating: number; size: number }) {
   )
 }
 
-/** What shoppers wrote about the merchant's shop, with the average on top. */
+/**
+ * What shoppers wrote about the merchant's shop, with the average on top. A false or abusive
+ * review can be deleted, which also takes it out of the client app and the rating.
+ */
 export function ReviewsPage() {
   const { t } = useI18n()
-  const own = reviews.filter((review) => review.storeId === OWN_STORE_ID)
+  const own = reviewsStore.useAll().filter((review) => review.storeId === OWN_STORE_ID)
+  const [deleting, setDeleting] = useState<string | null>(null)
   const average = own.reduce((sum, review) => sum + review.rating, 0) / (own.length || 1)
 
   return (
@@ -65,13 +71,31 @@ export function ReviewsPage() {
                     <p className="shrink-0 text-sm text-ink-muted">{formatDate(review.date)}</p>
                   </div>
                   <p>{review.text}</p>
-                  <p className="text-sm text-ink-muted">{review.productName}</p>
+                  <div className="flex items-center justify-between gap-3">
+                    <p className="min-w-0 truncate text-sm text-ink-muted">{review.productName}</p>
+                    <button
+                      type="button"
+                      aria-label={t('common.delete')}
+                      onClick={() => setDeleting(review.id)}
+                      className="-my-2 -mr-2 grid size-10 shrink-0 place-items-center rounded-full text-danger active:bg-danger-soft"
+                    >
+                      <Trash2 size={18} />
+                    </button>
+                  </div>
                 </li>
               ))}
             </ul>
           </>
         )}
       </div>
+      <ConfirmSheet
+        open={deleting !== null}
+        onClose={() => setDeleting(null)}
+        title={t('reviews.delete.title')}
+        message={t('reviews.delete.message')}
+        confirmLabel={t('common.delete')}
+        onConfirm={() => deleting && reviewsStore.remove(deleting)}
+      />
     </div>
   )
 }

@@ -32,6 +32,10 @@ const uz = {
   'payments.overdueAlert': 'Muddati oʻtgan toʻlov: {amount}',
   'manage.reviews': 'Sharhlar',
   'reviews.summary': '{count} ta sharh asosida',
+  'reviews.delete.title': 'Sharh oʻchirilsinmi?',
+  'reviews.delete.message':
+    'Sharh klient ilovasidan ham olib tashlanadi va reytingda hisobga olinmaydi.',
+  'home.locations': '{count} ta filial',
   'contract.pickProduct': 'Mahsulot',
   'contract.pickVariant': 'Varianti',
   'contract.inStock': 'Omborda {count} dona',
@@ -477,6 +481,10 @@ const ru: Record<TranslationKey, string> = {
   'payments.overdueAlert': 'Просроченный платёж: {amount}',
   'manage.reviews': 'Отзывы',
   'reviews.summary': 'На основе отзывов: {count}',
+  'reviews.delete.title': 'Удалить отзыв?',
+  'reviews.delete.message':
+    'Отзыв исчезнет из клиентского приложения и не будет учитываться в рейтинге.',
+  'home.locations': 'Филиалов: {count}',
   'contract.pickProduct': 'Товар',
   'contract.pickVariant': 'Вариант',
   'contract.inStock': 'На складе: {count} шт.',

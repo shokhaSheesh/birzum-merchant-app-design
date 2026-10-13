@@ -361,6 +361,7 @@ Only what shoppers read and what really differs by language is stored once per l
 - **In "Yangi shartnoma" products are picked, never typed:** a `Select` of the merchant's products, a second `Select` of that product's sold combinations, then quantity. The price comes from the catalogue, and the row shows how many are in stock or, in red, that there are not enough.
 
 ### Sharhlar
+- Each review has a small red trash button at its bottom right. It opens `ConfirmSheet`; a deleted review leaves the client app and the rating.
 - The average in large type with five stars and the number of reviews, then each review: avatar, name, stars, date, the text, and the product it is about.
 - Stars are amber when filled and grey when empty, the same as `StoreRating` in the client app.
 

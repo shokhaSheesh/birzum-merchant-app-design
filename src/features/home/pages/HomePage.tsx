@@ -5,6 +5,7 @@ import { applicationStatusTone } from '@/entities/clients/applicationStatus'
 import { APPLICATION_STATUSES } from '@/entities/clients/clients'
 import { useApplications, type ApplicationWithClient } from '@/entities/clients/useApplications'
 import { unreadCount } from '@/entities/notifications/notifications'
+import { useMyLocations } from '@/entities/merchant/useMyLocations'
 import { currentUser } from '@/entities/session/user'
 import { ROUTES } from '@/shared/config/routes'
 import { calendarNames } from '@/shared/i18n/dictionaries'
@@ -62,7 +63,8 @@ function toBars(items: ApplicationWithClient[], period: Period, weekdays: string
 
 /** Start screen: the chosen day, week or month in numbers. */
 export function HomePage() {
-  const { t, lang } = useI18n()
+  const { t, tl, lang } = useI18n()
+  const myLocations = useMyLocations()
   const user = currentUser
   const navigate = useNavigate()
   const [period, setPeriod] = useState<Period>(() => ({ unit: 'week', anchor: new Date() }))
@@ -83,7 +85,10 @@ export function HomePage() {
             {t('home.greeting', { name: user.firstName })}
           </p>
           <p className="truncate text-sm text-ink-muted">
-            {user.store} · {user.branch}
+            {user.store}
+            {myLocations.length === 1 && ` · ${tl(myLocations[0].name)}`}
+            {myLocations.length > 1 &&
+              ` · ${t('home.locations', { count: String(myLocations.length) })}`}
           </p>
         </div>
         <Link

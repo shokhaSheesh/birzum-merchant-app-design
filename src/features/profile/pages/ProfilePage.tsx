@@ -12,6 +12,7 @@ import {
 } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 import { unreadCount } from '@/entities/notifications/notifications'
+import { useMyLocations } from '@/entities/merchant/useMyLocations'
 import { usePermissions } from '@/entities/merchant/usePermissions'
 import { currentUser } from '@/entities/session/user'
 import { logout } from '@/features/auth/api/mockAuth'
@@ -31,11 +32,12 @@ import { Section } from '@/shared/ui/Section'
 import { Select } from '@/shared/ui/Select'
 
 export function ProfilePage() {
-  const { t, lang, setLang } = useI18n()
+  const { t, tl, lang, setLang } = useI18n()
   const { theme, setTheme } = useTheme()
   const navigate = useNavigate()
   const user = currentUser
   const { can, role } = usePermissions()
+  const myLocations = useMyLocations()
 
   const handleLogout = () => {
     logout()
@@ -64,7 +66,10 @@ export function ProfilePage() {
         <InfoRow label={t('field.login')} value={user.login} />
         <InfoRow label={t('field.phone')} value={formatPhone(user.phone)} />
         <InfoRow label={t('profile.store')} value={user.store} />
-        <InfoRow label={t('profile.branch')} value={user.branch} />
+        <InfoRow
+          label={t(myLocations.length > 1 ? 'manage.locations' : 'profile.branch')}
+          value={myLocations.map((location) => tl(location.name)).join(', ') || '—'}
+        />
       </InfoList>
 
       {(can('products') || can('inventory')) && (

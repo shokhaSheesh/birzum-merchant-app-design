@@ -9,5 +9,4 @@ export const currentUser = {
   /** Nine digits after +998. */
   phone: '901112233',
   store: 'Mega Texno',
-  branch: 'Chilonzor filiali',
 }
