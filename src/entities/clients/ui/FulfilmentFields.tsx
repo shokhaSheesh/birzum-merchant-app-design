@@ -1,9 +1,12 @@
+import { Store, Truck } from 'lucide-react'
 import { useI18n } from '@/shared/i18n/useI18n'
 import { ChoiceGrid } from '@/shared/ui/ChoiceGrid'
 import { Select } from '@/shared/ui/Select'
 import { TextField } from '@/shared/ui/TextField'
 import { cardLabel } from '../cardBrand'
 import { DELIVERY_METHODS, type Fulfilment, type PaymentCard } from '../clients'
+
+const icons = { pickup: Store, delivery: Truck }
 
 type CardProps = {
   cards: PaymentCard[]
@@ -58,7 +61,11 @@ export function FulfilmentFields({
       <ChoiceGrid
         label={t('delivery.method')}
         columns={2}
-        options={DELIVERY_METHODS.map((value) => ({ value, label: t(`delivery.${value}`) }))}
+        options={DELIVERY_METHODS.map((value) => ({
+          value,
+          label: t(`delivery.${value}`),
+          icon: icons[value],
+        }))}
         value={fulfilment.method}
         onChange={(method) => onFulfilment({ ...fulfilment, method })}
       />

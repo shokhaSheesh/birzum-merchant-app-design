@@ -2,16 +2,19 @@ import { Store, Trash2 } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 import { cartStore, useCart } from '@/entities/cart/cartStore'
 import { ProductPicture } from '@/entities/catalog/ProductPicture'
-import { getStore, photosOf, stockOf } from '@/entities/catalog/products'
+import { getStore, photosOf, stockOf, useCatalog } from '@/entities/catalog/products'
 import { useVariantNames } from '@/entities/catalog/useVariantNames'
+import { installmentTerms } from '@/entities/clients/installment'
 import { useCustomer } from '@/entities/session/customer'
 import { ROUTES } from '@/shared/config/routes'
 import { useI18n } from '@/shared/i18n/useI18n'
-import { formatSum } from '@/shared/lib/format'
+import { formatSum, groupDigits } from '@/shared/lib/format'
 import { Alert } from '@/shared/ui/Alert'
 import { Button } from '@/shared/ui/Button'
 import { EmptyState } from '@/shared/ui/EmptyState'
 import { QuantityStepper } from '@/shared/ui/QuantityField'
+import { Section } from '@/shared/ui/Section'
+import { ProductCard } from '../components/ProductCard'
 
 /**
  * The cart: what the shopper picked, grouped by shop, with quantities to adjust. How the
@@ -23,16 +26,16 @@ export function CartPage() {
   const navigate = useNavigate()
   const customer = useCustomer()
   const { lines, total, count } = useCart()
+  const catalog = useCatalog()
 
   const title = (
     <h1 className="flex min-h-10 items-center text-2xl font-bold">{t('customer.nav.cart')}</h1>
   )
-  const page =
-    'flex min-h-full flex-col gap-6 px-5 pt-[max(1.5rem,env(safe-area-inset-top))] pb-tabbar'
+  const page = 'flex min-h-full flex-col gap-6 px-5 pt-[max(1.5rem,env(safe-area-inset-top))]'
 
   if (lines.length === 0) {
     return (
-      <div className={page}>
+      <div className={`${page} pb-tabbar`}>
         {title}
         <div className="flex flex-1 flex-col justify-center gap-4">
           <EmptyState title={t('cart.empty.title')} hint={t('cart.empty.hint')} />
@@ -46,6 +49,14 @@ export function CartPage() {
 
   const storeIds = [...new Set(lines.map((line) => line.product.storeId))]
   const needsLimit = !customer?.limits
+  // More from the categories already in the cart
+  const inCart = new Set(lines.map((line) => line.product.id))
+  const categories = new Set(lines.map((line) => line.product.category))
+  const similar = catalog.filter(
+    (product) => categories.has(product.category) && !inCart.has(product.id),
+  )
+  // The longest term gives the lowest monthly payment; the real term is chosen at checkout
+  const lowestMonthly = (amount: number) => installmentTerms(amount, 24).monthlyPayment
 
   return (
     <div className={page}>
@@ -88,7 +99,14 @@ export function CartPage() {
                         </button>
                       </div>
                       <div className="flex items-center justify-between gap-2">
-                        <p className="font-bold">{formatSum(unitPrice * quantity)}</p>
+                        <div className="flex min-w-0 flex-col">
+                          <p className="font-bold">{formatSum(unitPrice * quantity)}</p>
+                          <p className="text-xs text-ink-muted">
+                            {t('cart.monthly', {
+                              amount: groupDigits(lowestMonthly(unitPrice * quantity)),
+                            })}
+                          </p>
+                        </div>
                         <QuantityStepper
                           size="sm"
                           label={t('field.quantity')}
@@ -105,12 +123,30 @@ export function CartPage() {
         </section>
       ))}
 
-      <div className="flex flex-col gap-3">
-        <div className="flex items-baseline justify-between gap-3 rounded-card bg-surface p-4">
-          <p className="text-sm text-ink-muted">
-            {t('contract.summary.total')} · {t('common.pieces', { count: String(count) })}
+      {similar.length > 0 && (
+        <Section title={t('product.similar')}>
+          <div className="-mx-5 flex snap-x scroll-px-5 gap-3 overflow-x-auto px-5 pb-1">
+            {similar.map((product) => (
+              <div key={product.id} className="w-40 shrink-0 snap-start">
+                <ProductCard product={product} />
+              </div>
+            ))}
+          </div>
+        </Section>
+      )}
+
+      {/* Stays in view above the tab bar while the list scrolls under it */}
+      <div className="sticky bottom-0 -mx-5 mt-auto flex flex-col gap-3 border-t border-line bg-canvas px-5 pt-3 pb-tabbar">
+        <div className="flex items-end justify-between gap-3">
+          <div className="flex flex-col">
+            <p className="text-sm text-ink-muted">
+              {t('contract.summary.total')} · {t('common.pieces', { count: String(count) })}
+            </p>
+            <p className="text-xl leading-tight font-bold">{formatSum(total)}</p>
+          </div>
+          <p className="rounded-full bg-green-200 px-2.5 py-0.5 text-xs font-semibold whitespace-nowrap">
+            {t('cart.monthly', { amount: groupDigits(lowestMonthly(total)) })}
           </p>
-          <p className="text-xl font-bold">{formatSum(total)}</p>
         </div>
         {needsLimit && <Alert message={t('product.needLimit')} />}
         <Button block disabled={needsLimit} onClick={() => navigate(ROUTES.customerCheckout)}>

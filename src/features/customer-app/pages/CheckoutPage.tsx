@@ -2,7 +2,8 @@ import { Check, Store } from 'lucide-react'
 import { useState } from 'react'
 import { Navigate, useNavigate } from 'react-router-dom'
 import { cartStore, useCart } from '@/entities/cart/cartStore'
-import { getStore, stockOf } from '@/entities/catalog/products'
+import { ProductPicture } from '@/entities/catalog/ProductPicture'
+import { getStore, photosOf, stockOf } from '@/entities/catalog/products'
 import { useVariantNames } from '@/entities/catalog/useVariantNames'
 import { submitApplication } from '@/entities/clients/applicationsApi'
 import { TERMS, type Fulfilment, type Term } from '@/entities/clients/clients'
@@ -16,7 +17,7 @@ import { useI18n } from '@/shared/i18n/useI18n'
 import { formatSum } from '@/shared/lib/format'
 import { Alert } from '@/shared/ui/Alert'
 import { Button } from '@/shared/ui/Button'
-import { InstallmentTermsCard } from '@/shared/ui/InstallmentTermsCard'
+import { InfoList, InfoRow } from '@/shared/ui/InfoList'
 import { PageHeader } from '@/shared/ui/PageHeader'
 import { Section } from '@/shared/ui/Section'
 import { TermPicker } from '@/shared/ui/TermPicker'
@@ -25,17 +26,19 @@ type ShopChoice = { fulfilment: Fulfilment; pointId: string | null }
 const noChoice: ShopChoice = { fulfilment: { method: 'pickup', address: '' }, pointId: null }
 
 /**
- * Checkout, the step after the cart. Each shop is asked how its goods are received; the
- * term and the card are chosen once. Sending files one ariza per shop.
+ * Checkout, the step after the cart. Each shop first asks how its goods are received, then
+ * lists its products, each with its own term. The card is chosen once. Sending files one
+ * ariza per shop and term, since an ariza has a single term.
  */
 export function CheckoutPage() {
-  const { t, tl } = useI18n()
-  const { names } = useVariantNames()
+  const { t, tl, lang } = useI18n()
+  const { names, color } = useVariantNames()
   const pickupPoints = usePickupPoints()
   const navigate = useNavigate()
   const customer = useCustomer()
   const { lines, total } = useCart()
-  const [term, setTerm] = useState<Term>(12)
+  /** The term chosen for each cart line, by its key. Lines not touched yet are at 12 months. */
+  const [terms, setTerms] = useState<Record<string, Term>>({})
   const [choices, setChoices] = useState<Record<string, ShopChoice>>({})
   const [pickedCard, setPickedCard] = useState<string | null>(null)
   const [submitted, setSubmitted] = useState(false)
@@ -61,6 +64,10 @@ export function CheckoutPage() {
     )
   }
   if (lines.length === 0 || !customer) return <Navigate to={ROUTES.customerCart} replace />
+
+  const termOf = (key: string): Term => terms[key] ?? 12
+  const planOf = (line: (typeof lines)[number]) =>
+    installmentTerms(line.unitPrice * line.quantity, termOf(line.key))
 
   const lineName = ({ product, valueIds }: (typeof lines)[number]) => {
     const variant = names(product, valueIds)
@@ -96,12 +103,22 @@ export function CheckoutPage() {
 
   const cards = customer.cards
   const cardId = pickedCard ?? (cards.length === 1 ? cards[0].id : null)
-  const limit = customer.limits?.[term]
+  const plans = lines.map(planOf)
+  const monthlyTotal = plans.reduce((sum, plan) => sum + plan.monthlyPayment, 0)
+  const installmentTotal = plans.reduce((sum, plan) => sum + plan.installmentTotal, 0)
+  // Each term has its own limit, so mixed terms are measured as shares of their limits
+  const limits = customer.limits
+  const limitUsed = limits
+    ? lines.reduce(
+        (share, line) => share + (line.unitPrice * line.quantity) / limits[termOf(line.key)],
+        0,
+      )
+    : null
   const error =
-    limit === undefined
+    limitUsed === null
       ? t('product.needLimit')
-      : total > limit
-        ? t('error.overLimit', { limit: formatSum(limit) })
+      : limitUsed > 1
+        ? t('checkout.overLimit')
         : undefined
   const shortAnywhere = shops.some((shop) => shop.short.length > 0)
 
@@ -111,19 +128,24 @@ export function CheckoutPage() {
     setLoading(true)
     for (const shop of shops) {
       const { fulfilment } = shop.choice
-      await submitApplication(
-        customer.id,
-        shop.lines.map((line) => ({
-          name: lineName(line),
-          price: line.unitPrice,
-          quantity: line.quantity,
-          productId: line.product.id,
-          valueIds: line.valueIds,
-        })),
-        term,
-        { fulfilment: { ...fulfilment, address: fulfilment.address.trim() }, cardId },
-        { storeId: shop.storeId, locationId: shop.pointId ?? shop.points[0]?.id },
-      )
+      // An ariza has one term: lines with different terms go into separate ones
+      for (const term of TERMS) {
+        const group = shop.lines.filter((line) => termOf(line.key) === term)
+        if (group.length === 0) continue
+        await submitApplication(
+          customer.id,
+          group.map((line) => ({
+            name: lineName(line),
+            price: line.unitPrice,
+            quantity: line.quantity,
+            productId: line.product.id,
+            valueIds: line.valueIds,
+          })),
+          term,
+          { fulfilment: { ...fulfilment, address: fulfilment.address.trim() }, cardId },
+          { storeId: shop.storeId, locationId: shop.pointId ?? shop.points[0]?.id },
+        )
+      }
     }
     cartStore.clear()
     setSent(true)
@@ -140,22 +162,6 @@ export function CheckoutPage() {
               <Store size={20} className="shrink-0 text-brand" />
               {getStore(shop.storeId)?.name}
             </h2>
-            <ul className="rounded-card bg-surface px-4">
-              {shop.lines.map((line) => (
-                <li
-                  key={line.key}
-                  className="flex items-baseline justify-between gap-3 border-b border-line py-3 last:border-b-0"
-                >
-                  <p className="min-w-0 break-words">
-                    {lineName(line)}
-                    <span className="text-ink-muted"> × {line.quantity}</span>
-                  </p>
-                  <p className="shrink-0 font-semibold">
-                    {formatSum(line.unitPrice * line.quantity)}
-                  </p>
-                </li>
-              ))}
-            </ul>
             <FulfilmentFields
               fulfilment={shop.choice.fulfilment}
               onFulfilment={(fulfilment) => setChoice(shop.storeId, { fulfilment })}
@@ -169,20 +175,58 @@ export function CheckoutPage() {
                 message={t('checkout.short', { products: shop.short.map(lineName).join(', ') })}
               />
             )}
+            <ul className="flex flex-col gap-3">
+              {shop.lines.map((line) => {
+                const variant = names(line.product, line.valueIds)
+                return (
+                  <li key={line.key} className="flex flex-col gap-3 rounded-card bg-surface p-3">
+                    <div className="flex gap-3">
+                      <ProductPicture
+                        category={line.product.category}
+                        color={color(line.product, line.valueIds)}
+                        src={photosOf(line.product, lang, line.valueIds)[0]}
+                        className="w-16 shrink-0 rounded-control"
+                      />
+                      <div className="flex min-w-0 flex-1 flex-col gap-0.5">
+                        <p className="leading-tight font-semibold">{tl(line.product.name)}</p>
+                        <p className="text-sm text-ink-muted">
+                          {[...variant, t('common.pieces', { count: String(line.quantity) })].join(
+                            ' · ',
+                          )}
+                        </p>
+                        <p className="font-bold">
+                          {t('checkout.perMonth', {
+                            amount: formatSum(planOf(line).monthlyPayment),
+                          })}
+                        </p>
+                      </div>
+                    </div>
+                    <TermPicker
+                      terms={TERMS}
+                      value={termOf(line.key)}
+                      onChange={(term) => setTerms((all) => ({ ...all, [line.key]: term }))}
+                    />
+                  </li>
+                )
+              })}
+            </ul>
           </section>
         ))}
 
+        <CardSelect cards={cards} cardId={cardId} onCard={setPickedCard} showErrors={submitted} />
+
         <Section title={t('contract.conditions')}>
-          <TermPicker terms={TERMS} value={term} onChange={setTerm} />
-          <InstallmentTermsCard terms={installmentTerms(total, term)} showMarkup={false} />
-          {limit !== undefined && (
+          <InfoList>
+            <InfoRow label={t('application.goodsTotal')} value={formatSum(total)} />
+            <InfoRow label={t('contract.installmentTotal')} value={formatSum(installmentTotal)} />
+            <InfoRow label={t('checkout.monthlyTotal')} value={formatSum(monthlyTotal)} />
+          </InfoList>
+          {limitUsed !== null && (
             <p className="text-sm text-ink-muted">
-              {t('cart.limit', { amount: formatSum(limit) })}
+              {t('checkout.limitUsed', { percent: String(Math.round(limitUsed * 100)) })}
             </p>
           )}
         </Section>
-
-        <CardSelect cards={cards} cardId={cardId} onCard={setPickedCard} showErrors={submitted} />
       </div>
 
       <footer className="flex shrink-0 flex-col gap-3 px-5 pt-3 pb-[max(1.25rem,env(safe-area-inset-bottom))]">

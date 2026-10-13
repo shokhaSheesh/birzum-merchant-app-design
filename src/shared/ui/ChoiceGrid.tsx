@@ -1,3 +1,4 @@
+import type { LucideIcon } from 'lucide-react'
 import { useId } from 'react'
 import { cn } from '@/shared/lib/cn'
 
@@ -5,6 +6,7 @@ export type Choice<T extends string | number> = {
   value: T
   label: string
   description?: string
+  icon?: LucideIcon
 }
 
 type Props<T extends string | number> = {
@@ -19,7 +21,10 @@ type Props<T extends string | number> = {
 
 const grids = { 2: 'grid-cols-2', 3: 'grid-cols-3', 5: 'grid-cols-5', 6: 'grid-cols-6' }
 
-/** Pick one of a few short options that should all stay visible, such as a term in months. */
+/**
+ * Pick one of a few short options that should all stay visible, such as a payment day. The
+ * chosen one is marked the light way: a navy border on pale green, never a solid navy block.
+ */
 export function ChoiceGrid<T extends string | number>({
   label,
   options,
@@ -50,15 +55,14 @@ export function ChoiceGrid<T extends string | number>({
                 'flex min-h-13 min-w-0 flex-col items-center justify-center rounded-control border-[1.5px] px-1 py-1.5 text-center transition-colors',
                 'focus-visible:ring-3 focus-visible:ring-green-200 focus-visible:outline-none',
                 selected
-                  ? 'border-primary bg-primary text-on-primary'
-                  : 'border-line bg-canvas active:bg-surface',
+                  ? 'border-primary bg-green-200'
+                  : 'border-line bg-canvas text-ink-muted active:bg-surface',
               )}
             >
-              <span className="font-semibold">{option.label}</span>
+              {option.icon && <option.icon size={22} className="mb-1 text-brand" />}
+              <span className={cn('font-semibold', selected && 'text-ink')}>{option.label}</span>
               {option.description && (
-                <span className={cn('text-xs', selected ? 'opacity-70' : 'text-ink-muted')}>
-                  {option.description}
-                </span>
+                <span className="text-xs text-ink-muted">{option.description}</span>
               )}
             </button>
           )
