@@ -486,6 +486,9 @@ The status, title and reject reason stay above the tabs, and the footer button s
 - The swipe order is the chosen colour's photos first, then the product's other photos (`galleryOf`).
 - **Tapping a photo on the product page opens it full screen** (`PhotoViewer`): a dark screen with a counter and a close button on top, the photo in the middle, and the other photos as 64px thumbnails at the bottom, the current one with a green border. Tapping outside the photo or pressing close returns to the product.
 
+## Category pictures
+A category is shown with a photo, on the home tiles and in the category list. The photo follows the product photo rules: one typical product of the category, alone, on a plain white or transparent backdrop, square, at least 600px, no text or logo, filling about 70% of the frame. For now they borrow sample product photos (`categoryImages`); the admin panel will upload one per category.
+
 ## Shops
 A shop is always shown with `StoreLogo`, a navy rounded square with the shop icon, at 44px in rows and 64px on the shop page. Its rating (`StoreRating`) is the average of its reviews with their count; a shop without reviews says "Hali sharh yoʻq".
 

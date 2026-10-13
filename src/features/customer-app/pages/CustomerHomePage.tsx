@@ -1,6 +1,8 @@
 import { Bell, Heart, Search, Sparkles } from 'lucide-react'
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
+import { categoryImages } from '@/entities/catalog/categoryImages'
+import { ProductPicture } from '@/entities/catalog/ProductPicture'
 import { CATEGORIES, useCatalog } from '@/entities/catalog/products'
 import { initials } from '@/entities/clients/clientName'
 import { calculateLimit } from '@/entities/clients/limitsApi'
@@ -11,7 +13,6 @@ import { Avatar } from '@/shared/ui/Avatar'
 import { Button } from '@/shared/ui/Button'
 import { Section } from '@/shared/ui/Section'
 import { LimitTile } from '../components/LimitTile'
-import { categoryIcons } from '../components/categoryIcons'
 import { ProductCard } from '../components/ProductCard'
 
 const roundButton =
@@ -86,21 +87,20 @@ export function CustomerHomePage() {
         }
       >
         <div className="grid grid-cols-4 gap-2">
-          {CATEGORIES.map((category) => {
-            const Icon = categoryIcons[category]
-            return (
-              <Link
-                key={category}
-                to={customerProductsPath({ category })}
-                className="flex min-w-0 flex-col items-center gap-1.5 text-center text-xs leading-tight font-medium"
-              >
-                <span className="grid aspect-square w-full place-items-center rounded-card bg-surface text-brand active:bg-navy-100">
-                  <Icon size={28} />
-                </span>
-                {t(`catalog.category.${category}`)}
-              </Link>
-            )
-          })}
+          {CATEGORIES.map((category) => (
+            <Link
+              key={category}
+              to={customerProductsPath({ category })}
+              className="flex min-w-0 flex-col items-center gap-1.5 text-center text-xs leading-tight font-medium"
+            >
+              <ProductPicture
+                category={category}
+                src={categoryImages[category]}
+                className="w-full rounded-card"
+              />
+              {t(`catalog.category.${category}`)}
+            </Link>
+          ))}
         </div>
       </Section>
 

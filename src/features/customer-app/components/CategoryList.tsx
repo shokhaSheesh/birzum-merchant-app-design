@@ -1,5 +1,6 @@
 import { ChevronRight } from 'lucide-react'
 import { Link } from 'react-router-dom'
+import { categoryImages } from '@/entities/catalog/categoryImages'
 import { ProductPicture } from '@/entities/catalog/ProductPicture'
 import { CATEGORIES, useCatalog } from '@/entities/catalog/products'
 import { customerProductsPath } from '@/shared/config/routes'
@@ -15,7 +16,11 @@ export function CategoryList() {
       {CATEGORIES.map((category) => (
         <li key={category} className="border-b border-line last:border-b-0">
           <Link to={customerProductsPath({ category })} className="flex items-center gap-3 py-2.5">
-            <ProductPicture category={category} className="w-14 shrink-0 rounded-control" />
+            <ProductPicture
+              category={category}
+              src={categoryImages[category]}
+              className="w-14 shrink-0 rounded-control bg-canvas!"
+            />
             <div className="flex min-w-0 flex-1 flex-col gap-0.5">
               <p className="truncate font-semibold">{t(`catalog.category.${category}`)}</p>
               <p className="text-sm text-ink-muted">
