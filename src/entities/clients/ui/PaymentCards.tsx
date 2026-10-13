@@ -2,6 +2,7 @@ import { Plus, X } from 'lucide-react'
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useI18n } from '@/shared/i18n/useI18n'
+import { toast } from '@/shared/lib/toast'
 import { ConfirmSheet } from '@/shared/ui/ConfirmSheet'
 import { cardBrand, cardLabel } from '../cardBrand'
 import { removeCard } from '../cardsApi'
@@ -61,7 +62,11 @@ export function PaymentCards({ client, addTo }: Props) {
         title={t('client.cards.remove.title')}
         message={removing ? cardLabel(removing) : ''}
         confirmLabel={t('common.delete')}
-        onConfirm={() => removing && removeCard(client.id, removing.id)}
+        onConfirm={() => {
+          if (!removing) return
+          removeCard(client.id, removing.id)
+          toast(t('toast.deleted'))
+        }}
       />
     </>
   )

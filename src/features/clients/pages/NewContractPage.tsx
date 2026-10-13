@@ -35,18 +35,34 @@ import {
   variantKey,
 } from '@/entities/catalog/products'
 import { useVariantNames } from '@/entities/catalog/useVariantNames'
+import { useActor } from '@/entities/merchant/useActor'
 import { useMyLocations } from '@/entities/merchant/useMyLocations'
 
 /** A row of the form: which catalogue product, which of its variants (by key), and how many. */
-type Line = { id: number; productId: string | null; variant: string | null; quantity: number }
+type Line = {
+  id: number
+  productId: string | null
+  variant: string | null
+  quantity: number
+  term: Term
+}
+/** The lines that share a term become one application, with these terms. */
+type Plan = { term: Term; terms: InstallmentTerms }
 
 const PAYMENT_DAYS = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
-const emptyProduct = (id: number): Line => ({ id, productId: null, variant: null, quantity: 1 })
+const emptyProduct = (id: number, term: Term): Line => ({
+  id,
+  productId: null,
+  variant: null,
+  quantity: 1,
+  term,
+})
 
 /**
- * New installment contract for a client. The form collects term, products, down payment
- * and payment day; "Davom etish" first reveals the installment terms, then opens a review
- * step, and confirming the review creates the application.
+ * New installment contract for a client. Each product gets its own term; the form also
+ * collects the down payment and payment day. "Davom etish" first reveals the installment
+ * terms, then opens a review step. An application has one term, so confirming creates one
+ * application per term used.
  */
 export function NewContractPage() {
   const { t, tl } = useI18n()
@@ -57,8 +73,9 @@ export function NewContractPage() {
   const client = useClient(id)
 
   const requestedTerm = Number(searchParams.get('term')) as Term
-  const [term, setTerm] = useState<Term>(TERMS.includes(requestedTerm) ? requestedTerm : 12)
-  const [products, setProducts] = useState<Line[]>([emptyProduct(1)])
+  /** The term a new product row starts with: the one chosen on the client's limit card. */
+  const startTerm: Term = TERMS.includes(requestedTerm) ? requestedTerm : 12
+  const [products, setProducts] = useState<Line[]>([emptyProduct(1, startTerm)])
   const catalogue = productsStore
     .useAll()
     .filter((product) => product.storeId === OWN_STORE_ID && product.active)
@@ -73,10 +90,9 @@ export function NewContractPage() {
   const [pickedCard, setPickedCard] = useState<string | null>(null)
   const [submitted, setSubmitted] = useState(false)
   const [loading, setLoading] = useState(false)
-  const [calculated, setCalculated] = useState<{ terms: InstallmentTerms; inputs: string } | null>(
-    null,
-  )
+  const [calculated, setCalculated] = useState<{ plans: Plan[]; inputs: string } | null>(null)
   const [review, setReview] = useState<{ number: number } | null>(null)
+  const me = useActor()
   const scrollIntoView = useCallback(
     (el: HTMLElement | null) => el?.scrollIntoView({ behavior: 'smooth', block: 'end' }),
     [],
@@ -86,7 +102,7 @@ export function NewContractPage() {
   if (!client.limits) return <Navigate to={clientPath(client.id)} replace />
 
   const cardId = pickedCard ?? (client.cards.length === 1 ? client.cards[0].id : null)
-  const limit = client.limits[term]
+  const limits = client.limits
   // Each row resolved against the catalogue: what it is called, what one costs, how many are left
   const rows = products.map((line) => {
     const product = catalogue.find((item) => item.id === line.productId)
@@ -108,23 +124,34 @@ export function NewContractPage() {
       stock: product && chosen ? stockOf(product, chosen, locationId ?? undefined) : 0,
     }
   })
-  const summary = rows.map((row) => ({
-    name: row.name,
-    price: row.price,
-    quantity: row.line.quantity,
-    productId: row.product?.id,
-    valueIds: row.valueIds ?? undefined,
-  }))
+  const summaryOf = (term: Term) =>
+    rows
+      .filter((row) => row.line.term === term)
+      .map((row) => ({
+        name: row.name,
+        price: row.price,
+        quantity: row.line.quantity,
+        productId: row.product?.id,
+        valueIds: row.valueIds ?? undefined,
+      }))
   const total = rows.reduce((sum, row) => sum + row.price * row.line.quantity, 0)
-  const financed = Math.max(0, total - (downPayment ?? 0))
+  // One group per term in use. The down payment is shared out by each group's part of the total.
+  const groups = TERMS.filter((term) => rows.some((row) => row.line.term === term)).map((term) => {
+    const goods = rows
+      .filter((row) => row.line.term === term)
+      .reduce((sum, row) => sum + row.price * row.line.quantity, 0)
+    const down = total > 0 ? Math.round(((downPayment ?? 0) * goods) / total) : 0
+    return { term, goods, down, financed: Math.max(0, goods - down) }
+  })
+  // Each term has its own limit, so mixed terms are measured as shares of their limits
+  const limitUsed = groups.reduce((share, group) => share + group.financed / limits[group.term], 0)
 
   // Terms are only valid for the numbers they were calculated from
   const inputs = JSON.stringify([
-    term,
-    products.map((p) => [p.productId, p.variant, p.quantity]),
+    products.map((p) => [p.productId, p.variant, p.quantity, p.term]),
     downPayment,
   ])
-  const terms = calculated?.inputs === inputs ? calculated.terms : null
+  const plans = calculated?.inputs === inputs ? calculated.plans : null
 
   const productsValid = rows.every(
     (row) => row.product && row.valueIds && row.line.quantity <= row.stock,
@@ -133,8 +160,8 @@ export function NewContractPage() {
   const liveError =
     total > 0 && (downPayment ?? 0) >= total
       ? t('error.downPayment')
-      : financed > limit
-        ? t('error.overLimit', { limit: formatSum(limit) })
+      : limitUsed > 1
+        ? t('checkout.overLimit')
         : undefined
   const submitError =
     total < MIN_APPLICATION_TOTAL
@@ -148,7 +175,7 @@ export function NewContractPage() {
     )
 
   const addProduct = () => {
-    setProducts((list) => [...list, emptyProduct(nextProductId)])
+    setProducts((list) => [...list, emptyProduct(nextProductId, startTerm)])
     setNextProductId((n) => n + 1)
   }
 
@@ -166,38 +193,68 @@ export function NewContractPage() {
       !fulfilmentValid(fulfilment)
     )
       return
-    if (terms) {
+    if (plans) {
       setReview({ number: nextApplicationNumber() })
       return
     }
     setLoading(true)
-    setCalculated({ terms: await calculateTerms(financed, term), inputs })
+    const next: Plan[] = []
+    for (const group of groups) {
+      next.push({ term: group.term, terms: await calculateTerms(group.financed, group.term) })
+    }
+    setCalculated({ plans: next, inputs })
     setLoading(false)
   }
 
   const confirm = async () => {
-    if (!terms || !review) return
+    if (!plans || !review) return
     setLoading(true)
-    await createApplication(client.id, {
-      id: review.number,
-      goodsTotal: total,
-      installmentTotal: terms.installmentTotal,
-      locationId: locationId ?? undefined,
-      details: {
-        products: summary,
-        downPayment: downPayment ?? 0,
-        paymentDay: paymentDay ?? 1,
-        term: terms.term,
-        markupPercent: terms.markupPercent,
-        monthlyPayment: terms.monthlyPayment,
-        fulfilment: { ...fulfilment, address: fulfilment.address.trim() },
-        cardId: cardId ?? undefined,
-      },
-    })
+    for (const [i, plan] of plans.entries()) {
+      const group = groups.find((item) => item.term === plan.term)
+      if (!group) continue
+      await createApplication(
+        client.id,
+        {
+          id: review.number + i,
+          goodsTotal: group.goods,
+          installmentTotal: plan.terms.installmentTotal,
+          locationId: locationId ?? undefined,
+          details: {
+            products: summaryOf(plan.term),
+            downPayment: group.down,
+            paymentDay: paymentDay ?? 1,
+            term: plan.term,
+            markupPercent: plan.terms.markupPercent,
+            monthlyPayment: plan.terms.monthlyPayment,
+            fulfilment: { ...fulfilment, address: fulfilment.address.trim() },
+            cardId: cardId ?? undefined,
+          },
+        },
+        me,
+      )
+    }
     backToClient()
   }
 
-  if (review && terms) {
+  /** One block per term: its products and its terms. Shown before confirming. */
+  const planBlocks = (plans ?? []).map((plan) => (
+    <Section
+      key={plan.term}
+      title={t('term.months', { count: String(plan.term) })}
+      hint={
+        review && plans && plans.length > 1
+          ? t('review.number', {
+              number: groupDigits(review.number + plans.indexOf(plan)),
+            })
+          : undefined
+      }
+    >
+      <ProductsSummary products={summaryOf(plan.term)} />
+      <InstallmentTermsCard terms={plan.terms} />
+    </Section>
+  ))
+
+  if (review && plans) {
     return (
       <FormScreen
         onSubmit={() => void confirm()}
@@ -217,13 +274,13 @@ export function NewContractPage() {
           <StatusBadge tone="info">{t('application.status.processing')}</StatusBadge>
           <h1 className="text-2xl font-bold">{t('review.title')}</h1>
           <p className="text-ink-muted">
-            {t('review.number', { number: groupDigits(review.number) })}
+            {plans.length > 1
+              ? t('review.several', { count: String(plans.length) })
+              : t('review.number', { number: groupDigits(review.number) })}
           </p>
         </div>
 
-        <Section title={t('contract.products')}>
-          <ProductsSummary products={summary} />
-        </Section>
+        {planBlocks}
 
         {locations.length > 1 && (
           <InfoList>
@@ -249,10 +306,6 @@ export function NewContractPage() {
             <InfoRow label={t('field.paymentDay')} value={String(paymentDay)} />
           </InfoList>
         </Section>
-
-        <Section title={t('contract.conditions')}>
-          <InstallmentTermsCard terms={terms} />
-        </Section>
       </FormScreen>
     )
   }
@@ -272,11 +325,6 @@ export function NewContractPage() {
       }
     >
       <h1 className="text-2xl font-bold">{t('contract.title')}</h1>
-
-      <Section title={t('contract.terms')}>
-        <TermPicker terms={TERMS} value={term} onChange={setTerm} />
-        <p className="text-sm text-ink-muted">{t('cart.limit', { amount: formatSum(limit) })}</p>
-      </Section>
 
       {locations.length > 1 && (
         <Select
@@ -345,6 +393,17 @@ export function NewContractPage() {
                     ? t('error.outOfStock')
                     : t('contract.inStock', { count: String(stock) })}
                 </p>
+                <div className="flex flex-col gap-1.5">
+                  <p className="text-sm font-medium text-ink-muted">{t('client.limit.term')}</p>
+                  <TermPicker
+                    terms={TERMS}
+                    value={line.term}
+                    onChange={(term) => updateProduct(line.id, { term })}
+                  />
+                  <p className="text-sm text-ink-muted">
+                    {t('cart.limit', { amount: formatSum(limits[line.term]) })}
+                  </p>
+                </div>
                 <div className="flex items-baseline justify-between border-t border-line pt-3">
                   <p className="text-sm text-ink-muted">
                     {formatSum(price)} × {line.quantity}
@@ -394,11 +453,22 @@ export function NewContractPage() {
         />
       </Section>
 
-      {terms && (
-        <div ref={scrollIntoView}>
-          <Section title={t('contract.conditions')}>
-            <InstallmentTermsCard terms={terms} />
-          </Section>
+      {total > 0 && (
+        <p className="-mt-3 text-sm text-ink-muted">
+          {t('checkout.limitUsedClient', { percent: String(Math.round(limitUsed * 100)) })}
+        </p>
+      )}
+
+      {plans && (
+        <div ref={scrollIntoView} className="flex flex-col gap-7">
+          {plans.map((plan) => (
+            <Section
+              key={plan.term}
+              title={`${t('contract.conditions')} · ${t('term.months', { count: String(plan.term) })}`}
+            >
+              <InstallmentTermsCard terms={plan.terms} />
+            </Section>
+          ))}
         </div>
       )}
     </FormScreen>

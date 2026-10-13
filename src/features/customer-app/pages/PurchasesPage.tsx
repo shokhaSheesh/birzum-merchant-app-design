@@ -6,6 +6,8 @@ import { APPLICATION_STATUSES, type ApplicationStatus } from '@/entities/clients
 import { useCustomer } from '@/entities/session/customer'
 import { customerPurchasePath } from '@/shared/config/routes'
 import { useI18n } from '@/shared/i18n/useI18n'
+import { useLoaded } from '@/shared/lib/useLoaded'
+import { SkeletonCards } from '@/shared/ui/Skeleton'
 import { formatDateTime, formatSum, groupDigits } from '@/shared/lib/format'
 import { DateRangeChip, type DateRange } from '@/shared/ui/DateRangeChip'
 import { EmptyState } from '@/shared/ui/EmptyState'
@@ -15,6 +17,7 @@ import { StatusBadge } from '@/shared/ui/StatusBadge'
 /** The shopper's own arizalar and where each one stands. */
 export function PurchasesPage() {
   const { t } = useI18n()
+  const loaded = useLoaded()
   const all = useCustomer()?.applications ?? []
   const [status, setStatus] = useState<'all' | ApplicationStatus>('all')
   const [range, setRange] = useState<DateRange>({ from: null, to: null })
@@ -56,7 +59,9 @@ export function PurchasesPage() {
         />
       )}
 
-      {applications.length === 0 ? (
+      {!loaded ? (
+        <SkeletonCards />
+      ) : applications.length === 0 ? (
         <div className="flex flex-1 flex-col justify-center">
           {all.length === 0 ? (
             <EmptyState title={t('purchases.empty.title')} hint={t('purchases.empty.hint')} />

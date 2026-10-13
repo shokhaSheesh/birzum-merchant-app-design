@@ -14,6 +14,7 @@ import {
 import type { Lang, LocalizedText } from '@/shared/i18n/dictionaries'
 import { emptyText, fillMissing, isBlank, isComplete } from '@/shared/i18n/localized'
 import { useI18n } from '@/shared/i18n/useI18n'
+import { toast } from '@/shared/lib/toast'
 import { cn } from '@/shared/lib/cn'
 import { newId } from '@/shared/lib/createStore'
 import { Alert } from '@/shared/ui/Alert'
@@ -164,6 +165,7 @@ export function ProductFormPage() {
         .filter((spec) => !isBlank(spec.label) && !isBlank(spec.value))
         .map((spec) => ({ label: fillMissing(spec.label), value: fillMissing(spec.value) })),
     })
+    toast(t('toast.saved'))
     navigate(-1)
   }
 

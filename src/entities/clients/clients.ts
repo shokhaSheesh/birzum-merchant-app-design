@@ -74,6 +74,11 @@ export const NEXT_STATUSES: Record<ApplicationStatus, ApplicationStatus[]> = {
   cancelled: [],
 }
 
+/** Who made a change to an application. */
+export type Actor = { kind: 'staff' | 'customer' | 'system'; name: string }
+/** One line of an application's change log: the status it moved to, when, and by whom. */
+export type HistoryEntry = { status: ApplicationStatus; at: Date; by: Actor; comment?: string }
+
 export type Application = {
   /** Application number as shown to staff, e.g. 252401. */
   id: number
@@ -96,6 +101,10 @@ export type Application = {
   reviewed?: boolean
   /** Set when the status is `rejected`. */
   rejection?: Rejection
+  /** Why it was cancelled, in the words of whoever cancelled it. */
+  cancelComment?: string
+  /** Every status change, oldest first. Sample applications get theirs from `historyOf`. */
+  history?: HistoryEntry[]
 }
 
 export type Client = {

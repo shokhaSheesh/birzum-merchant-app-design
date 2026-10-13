@@ -3,7 +3,9 @@ import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { ROUTES } from '@/shared/config/routes'
 import { useI18n } from '@/shared/i18n/useI18n'
+import { useLoaded } from '@/shared/lib/useLoaded'
 import { Button } from '@/shared/ui/Button'
+import { SkeletonRows } from '@/shared/ui/Skeleton'
 import { EmptyState } from '@/shared/ui/EmptyState'
 import { SearchField } from '@/shared/ui/SearchField'
 import { ClientRow } from '@/entities/clients/ui/ClientRow'
@@ -12,6 +14,7 @@ import { searchClients } from '../lib/searchClients'
 
 export function ClientsPage() {
   const { t } = useI18n()
+  const loaded = useLoaded()
   const navigate = useNavigate()
   const [query, setQuery] = useState('')
   const clients = searchClients(useClients(), query)
@@ -35,7 +38,9 @@ export function ClientsPage() {
       </header>
 
       <div className="min-h-0 flex-1 overflow-y-auto px-5 pb-tabbar">
-        {clients.length === 0 ? (
+        {!loaded ? (
+          <SkeletonRows />
+        ) : clients.length === 0 ? (
           <EmptyState title={t('clients.empty.title')} hint={t('clients.empty.hint')} />
         ) : (
           <div className="flex flex-col gap-2">

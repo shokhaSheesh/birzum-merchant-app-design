@@ -11,6 +11,7 @@ export function CustomerAddCardPage() {
   if (!customer) return <Navigate to={ROUTES.customerApp} replace />
   return (
     <AddCardFlow
+      own
       client={customer}
       onDone={() => navigate(ROUTES.customerCards, { replace: true })}
     />

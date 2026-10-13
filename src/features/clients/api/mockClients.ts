@@ -5,6 +5,7 @@
 //   here fixed invented values are used.
 
 import {
+  type Actor,
   type Application,
   type Client,
   type Contact,
@@ -113,11 +114,18 @@ export async function createApplication(
     Application,
     'id' | 'goodsTotal' | 'installmentTotal' | 'details' | 'locationId'
   >,
+  by: Actor,
 ) {
   await delay(700)
   const client = clientsStore.get(clientId)
   if (!client) return
-  const created: Application = { ...application, date: new Date(), status: 'processing' }
+  const now = new Date()
+  const created: Application = {
+    ...application,
+    date: now,
+    status: 'processing',
+    history: [{ status: 'processing', at: now, by }],
+  }
   takeStockFor(application.details?.products ?? [], application.locationId)
   clientsStore.update(clientId, { applications: [created, ...client.applications] })
 }

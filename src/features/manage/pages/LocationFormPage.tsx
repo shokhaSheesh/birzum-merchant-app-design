@@ -6,6 +6,7 @@ import { staffStore } from '@/entities/merchant/staff'
 import type { LocalizedText } from '@/shared/i18n/dictionaries'
 import { emptyText, fillMissing, isComplete } from '@/shared/i18n/localized'
 import { useI18n } from '@/shared/i18n/useI18n'
+import { toast } from '@/shared/lib/toast'
 import { newId } from '@/shared/lib/createStore'
 import { PHONE_DIGITS } from '@/shared/lib/phone'
 import { Button } from '@/shared/ui/Button'
@@ -43,6 +44,7 @@ export function LocationFormPage() {
       phone,
       active,
     })
+    toast(t('toast.saved'))
     navigate(-1)
   }
 

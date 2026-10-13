@@ -366,6 +366,10 @@ Only what shoppers read and what really differs by language is stored once per l
 - **Toʻlov jadvali** appears from Topshirilgan on: a red `Alert` with the overdue amount if there is one, a progress bar with "4 / 12 toʻlangan" and the remaining sum, then every payment with its date, amount and a badge: green "Toʻlangan", grey "Kutilmoqda", red "Muddati oʻtgan".
 - **In "Yangi shartnoma" products are picked, never typed:** a `Select` of the merchant's products, a second `Select` of that product's sold combinations, then quantity. The price comes from the catalogue, and the row shows how many are in stock or, in red, that there are not enough.
 - **Filial.** Every ariza belongs to one filial. A seller with several picks it at the top of "Yangi shartnoma"; stock is checked and taken in that filial. The detail screen shows it as a "Filial" row.
+- **Starting an ariza.** From a client's limit card, or from "+ Qoʻshish" on Arizalar, which first asks which client (a sheet with search; a client without a limit is opened to calculate it).
+- **Terms are per product** in "Yangi shartnoma" too: each product card has its own `TermPicker` and shows that term's limit. An ariza has one term, so products with different terms become separate arizalar; the review step says so and shows one block per term. The down payment is shared out by each block's part of the total.
+- **Cancelling asks why** (`CancelSheet`), for the merchant and the shopper alike. A cancelled ariza shows `CancelNote` under its status: who cancelled and their comment.
+- **Tarix** is the last tab of the merchant's ariza (`HistoryList`): every status change, newest first, with the date and time, who made it (seller by name, client, or system) and their comment.
 - **Status steps.** "Holatni oʻzgartirish" lists only the next steps (`NEXT_STATUSES`): pending → Rasmiylashtirilmoqda or Rad etilgan; Rasmiylashtirilmoqda → Topshirilgan, Rad etilgan or Bekor qilingan; Topshirilgan → Nasiya yopilgan. Final statuses have no button.
 - **Rejecting always asks why** (`RejectSheet`): a reason from the list and a comment, required for "Boshqa sabab". The reason is shown with `RejectionNote`, a red card under the status, in the merchant's ariza and in the shopper's Xaridlar.
 - **Product lines** (`ProductsSummary`) start with the product picture, 56px.
@@ -491,6 +495,16 @@ A category is shown with a photo, on the home tiles and in the category list. Th
 
 ## Shops
 A shop is always shown with `StoreLogo`, a navy rounded square with the shop icon, at 44px in rows and 64px on the shop page. Its rating (`StoreRating`) is the average of its reviews with their count; a shop without reviews says "Hali sharh yoʻq".
+
+## Loading, errors and confirmations
+Open `/states` (Menyu → Dizayn → Holatlar namunasi) to see every one of these as a full screen.
+- **Loading** is a skeleton in the shape of what is coming, never a spinner in the middle of the screen: `SkeletonRows` for a list card, `SkeletonGrid` for product cards, `SkeletonCards` for stacked cards, `SkeletonDetail` for a detail screen. Headers, search and filters stay real while the list loads. Buttons show their own spinner (`loading`).
+- **Errors that replace a screen** use `ErrorState`: an icon in a soft grey circle, a title, one sentence, one button. Five kinds: no internet and server error ("Qayta urinish"), session expired ("Qayta kirish"), page not found ("Asosiyga qaytish"), no permission ("Orqaga"). An unknown address shows the not-found one.
+- **Errors inside a form** stay where they are: under the field, or an `Alert` above the button.
+- **Confirmations** are a toast (`toast()` from `shared/lib/toast`): a dark pill at the top with a green check, gone after about two seconds. "Saqlandi" after a save, "Oʻchirildi" after a delete, "Yuborildi" after a review. A failed save is the same pill in red. A toast never asks a question; that is a sheet.
+
+## Who is reading
+Shared pieces that speak about the client must know which app they are in. In the merchant app the client is "klient"; in the client app the same text says "siz" and "sizning": the card form ("Klient kartasi" becomes "Karta qoʻshish"), reject reasons, and who cancelled. These components take an `own` flag for the client app.
 
 ## One primary button per screen
 A screen has at most one solid navy button: its main action, in the footer. Everything else on the page (download a contract, leave a review, change status, add a row) is `secondary`.

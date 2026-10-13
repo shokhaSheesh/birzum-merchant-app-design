@@ -7,6 +7,7 @@ import type { PaymentCard } from '@/entities/clients/clients'
 import { useCustomer } from '@/entities/session/customer'
 import { ROUTES } from '@/shared/config/routes'
 import { useI18n } from '@/shared/i18n/useI18n'
+import { toast } from '@/shared/lib/toast'
 import { Button } from '@/shared/ui/Button'
 import { ConfirmSheet } from '@/shared/ui/ConfirmSheet'
 import { PageHeader } from '@/shared/ui/PageHeader'
@@ -65,7 +66,11 @@ export function CustomerCardsPage() {
         title={t('client.cards.remove.title')}
         message={removing ? cardLabel(removing) : ''}
         confirmLabel={t('common.delete')}
-        onConfirm={() => customer && removing && removeCard(customer.id, removing.id)}
+        onConfirm={() => {
+          if (!customer || !removing) return
+          removeCard(customer.id, removing.id)
+          toast(t('toast.deleted'))
+        }}
       />
     </div>
   )

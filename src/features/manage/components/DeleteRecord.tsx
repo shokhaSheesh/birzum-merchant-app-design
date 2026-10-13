@@ -1,6 +1,7 @@
 import { Trash2 } from 'lucide-react'
 import { useState } from 'react'
 import { useI18n } from '@/shared/i18n/useI18n'
+import { toast } from '@/shared/lib/toast'
 import { Alert } from '@/shared/ui/Alert'
 import { Button } from '@/shared/ui/Button'
 import { ConfirmSheet } from '@/shared/ui/ConfirmSheet'
@@ -30,7 +31,10 @@ export function DeleteRecord({ onDelete, blocked }: Props) {
         title={t('confirm.delete.title')}
         message={t('confirm.delete.message')}
         confirmLabel={t('common.delete')}
-        onConfirm={onDelete}
+        onConfirm={() => {
+          onDelete()
+          toast(t('toast.deleted'))
+        }}
       />
     </>
   )

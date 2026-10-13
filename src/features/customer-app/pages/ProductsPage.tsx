@@ -11,6 +11,8 @@ import {
   type Product,
 } from '@/entities/catalog/products'
 import { useI18n } from '@/shared/i18n/useI18n'
+import { useLoaded } from '@/shared/lib/useLoaded'
+import { SkeletonGrid } from '@/shared/ui/Skeleton'
 import { cn } from '@/shared/lib/cn'
 import { Button } from '@/shared/ui/Button'
 import { EmptyState } from '@/shared/ui/EmptyState'
@@ -46,6 +48,7 @@ const matches = (product: Product, name: string, needle: string, filters: Filter
 /** The product listing. It opens from a category, a search result or "Hammasi", and can be filtered. */
 export function ProductsPage() {
   const { t, tl } = useI18n()
+  const loaded = useLoaded()
   const [searchParams] = useSearchParams()
   const products = useCatalog()
   // The slider runs from the cheapest to the dearest product, rounded out to whole steps
@@ -131,7 +134,9 @@ export function ProductsPage() {
       </div>
 
       <div className="min-h-0 flex-1 overflow-y-auto px-5 pt-1 pb-6">
-        {items.length === 0 ? (
+        {!loaded ? (
+          <SkeletonGrid count={6} />
+        ) : items.length === 0 ? (
           <EmptyState title={t('catalog.empty.title')} hint={t('applications.empty.hint')} />
         ) : (
           <div className="grid grid-cols-2 gap-x-3 gap-y-5">

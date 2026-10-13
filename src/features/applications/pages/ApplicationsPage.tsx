@@ -1,3 +1,4 @@
+import { Plus } from 'lucide-react'
 import { useState } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import { shortName } from '@/entities/clients/clientName'
@@ -6,16 +7,21 @@ import { ApplicationRow } from '@/entities/clients/ui/ApplicationRow'
 import { useApplications } from '@/entities/clients/useApplications'
 import { LocationChip } from '@/entities/merchant/ui/LocationChip'
 import { useI18n } from '@/shared/i18n/useI18n'
+import { useLoaded } from '@/shared/lib/useLoaded'
+import { Button } from '@/shared/ui/Button'
 import { DateRangeChip, type DateRange } from '@/shared/ui/DateRangeChip'
+import { SkeletonRows } from '@/shared/ui/Skeleton'
 import { EmptyState } from '@/shared/ui/EmptyState'
 import { FilterChips } from '@/shared/ui/FilterChips'
 import { SearchField } from '@/shared/ui/SearchField'
+import { PickClientSheet } from '../components/PickClientSheet'
 import { searchApplications } from '../lib/searchApplications'
 
 type Filter = 'all' | ApplicationStatus
 
 export function ApplicationsPage() {
   const { t } = useI18n()
+  const loaded = useLoaded()
   const [query, setQuery] = useState('')
   const [searchParams] = useSearchParams()
   const requested = searchParams.get('status') as ApplicationStatus
@@ -24,6 +30,7 @@ export function ApplicationsPage() {
   )
   const [range, setRange] = useState<DateRange>({ from: null, to: null })
   const [locationId, setLocationId] = useState<string | null>(null)
+  const [creating, setCreating] = useState(false)
 
   const all = useApplications()
   const dayStart = range.from ? new Date(range.from).setHours(0, 0, 0, 0) : undefined
@@ -41,7 +48,13 @@ export function ApplicationsPage() {
   return (
     <div className="flex h-full flex-col">
       <header className="flex shrink-0 flex-col gap-4 px-5 pt-[max(1.5rem,env(safe-area-inset-top))] pb-3">
-        <h1 className="flex min-h-10 items-center text-2xl font-bold">{t('nav.applications')}</h1>
+        <div className="flex items-center justify-between gap-3">
+          <h1 className="flex min-h-10 items-center text-2xl font-bold">{t('nav.applications')}</h1>
+          <Button size="sm" onClick={() => setCreating(true)}>
+            <Plus size={18} />
+            {t('clients.create')}
+          </Button>
+        </div>
         <SearchField
           label={t('applications.search')}
           placeholder={t('applications.search')}
@@ -73,7 +86,9 @@ export function ApplicationsPage() {
       </header>
 
       <div className="min-h-0 flex-1 overflow-y-auto px-5 pb-tabbar">
-        {items.length === 0 ? (
+        {!loaded ? (
+          <SkeletonRows avatar={false} />
+        ) : items.length === 0 ? (
           <EmptyState title={t('applications.empty.title')} hint={t('applications.empty.hint')} />
         ) : (
           <div className="flex flex-col gap-2">
@@ -92,6 +107,7 @@ export function ApplicationsPage() {
           </div>
         )}
       </div>
+      {creating && <PickClientSheet onClose={() => setCreating(false)} />}
     </div>
   )
 }

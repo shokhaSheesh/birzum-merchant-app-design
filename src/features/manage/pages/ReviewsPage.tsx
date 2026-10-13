@@ -4,6 +4,7 @@ import { OWN_STORE_ID } from '@/entities/catalog/products'
 import { reviewsStore } from '@/entities/catalog/reviews'
 import { ReviewItem, Stars } from '@/entities/catalog/ui/ReviewItem'
 import { useI18n } from '@/shared/i18n/useI18n'
+import { toast } from '@/shared/lib/toast'
 import { ConfirmSheet } from '@/shared/ui/ConfirmSheet'
 import { EmptyState } from '@/shared/ui/EmptyState'
 import { PageHeader } from '@/shared/ui/PageHeader'
@@ -62,7 +63,11 @@ export function ReviewsPage() {
         title={t('reviews.delete.title')}
         message={t('reviews.delete.message')}
         confirmLabel={t('common.delete')}
-        onConfirm={() => deleting && reviewsStore.remove(deleting)}
+        onConfirm={() => {
+          if (!deleting) return
+          reviewsStore.remove(deleting)
+          toast(t('toast.deleted'))
+        }}
       />
     </div>
   )

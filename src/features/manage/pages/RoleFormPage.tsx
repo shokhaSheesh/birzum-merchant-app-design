@@ -4,6 +4,7 @@ import { useNavigate, useParams } from 'react-router-dom'
 import { PERMISSIONS, rolesStore, type Permission } from '@/entities/merchant/roles'
 import { staffStore } from '@/entities/merchant/staff'
 import { useI18n } from '@/shared/i18n/useI18n'
+import { toast } from '@/shared/lib/toast'
 import { newId } from '@/shared/lib/createStore'
 import { Button } from '@/shared/ui/Button'
 import { Checkbox } from '@/shared/ui/Checkbox'
@@ -33,6 +34,7 @@ export function RoleFormPage() {
     setSubmitted(true)
     if (name.trim() === '' || permissions.length === 0) return
     rolesStore.save({ id: existing?.id ?? newId(), name: name.trim(), permissions })
+    toast(t('toast.saved'))
     navigate(-1)
   }
 

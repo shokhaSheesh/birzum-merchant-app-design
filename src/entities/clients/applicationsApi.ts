@@ -1,10 +1,37 @@
 import { takeStock } from '@/entities/catalog/products'
-import type { ApplicationDetails, ApplicationProduct, Rejection, Term } from './clients'
+import type {
+  Actor,
+  Application,
+  ApplicationDetails,
+  ApplicationProduct,
+  ApplicationStatus,
+  Rejection,
+  Term,
+} from './clients'
+import { shortName } from './clientName'
+import { historyOf, SYSTEM } from './history'
 import { clientsStore } from './clientsStore'
 import { paymentSchedule } from './payments'
 import { installmentTerms } from './installment'
 
 const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms))
+
+/** Moves an application to a status and writes the move into its change log. */
+function move(
+  number: number,
+  status: ApplicationStatus,
+  by: Actor,
+  patch: Partial<Application> = {},
+  comment?: string,
+) {
+  const application = find(number)
+  if (!application) return
+  clientsStore.updateApplication(number, {
+    ...patch,
+    status,
+    history: [...historyOf(application), { status, at: new Date(), by, comment }],
+  })
+}
 
 /**
  * Shopper side: checking out the cart files an application (ariza) that waits for the
@@ -31,6 +58,13 @@ export async function submitApplication(
         id,
         date: new Date(),
         status: 'pending',
+        history: [
+          {
+            status: 'pending',
+            at: new Date(),
+            by: { kind: 'customer', name: shortName(client) },
+          },
+        ],
         ...shop,
         goodsTotal: total,
         installmentTotal: terms.installmentTotal,
@@ -51,29 +85,39 @@ export async function submitApplication(
 }
 
 /** Merchant side: accept a shopper's application. It moves on to being drawn up. */
-export async function approveApplication(number: number) {
+export async function approveApplication(number: number, by: Actor) {
   await delay(900)
   const application = find(number)
   takeStockFor(application?.details?.products ?? [], application?.locationId)
-  clientsStore.updateApplication(number, { status: 'processing' })
+  move(number, 'processing', by)
 }
 
-export async function rejectApplication(number: number, rejection: Rejection) {
+export async function rejectApplication(number: number, rejection: Rejection, by: Actor) {
   await delay(600)
-  clientsStore.updateApplication(number, { status: 'rejected', rejection })
+  move(number, 'rejected', by, { rejection }, rejection.comment)
 }
 
 /** Marks the goods as given to the client. The contract gets its number and payments run from here. */
-export async function handOverApplication(number: number) {
+export async function handOverApplication(number: number, by: Actor) {
   await delay(700)
   const application = find(number)
-  clientsStore.updateApplication(number, {
-    status: 'handed',
+  move(number, 'handed', by, {
     // The contract is drawn up at hand-over, if it was not already
     contractNumber:
       application?.contractNumber ??
       `B-${number % 100_000}/${String(new Date().getFullYear()).slice(2)}`,
   })
+}
+
+/** Either side withdraws an application, saying why. */
+export async function cancelApplication(number: number, comment: string, by: Actor) {
+  await delay(500)
+  move(number, 'cancelled', by, { cancelComment: comment }, comment)
+}
+
+/** Merchant side: mark a running installment as fully paid. */
+export function closeApplication(number: number, by: Actor) {
+  move(number, 'closed', by)
 }
 
 const find = (number: number) =>
@@ -89,11 +133,6 @@ export function takeStockFor(products: ApplicationProduct[], locationId?: string
   }
 }
 
-/** Shopper side: withdraw an order the merchant has not answered yet. */
-export function cancelApplication(number: number) {
-  clientsStore.updateApplication(number, { status: 'cancelled' })
-}
-
 /** Shopper side: pay the next installment. Paying the last one closes the installment. */
 export async function payInstallment(number: number) {
   await delay(900)
@@ -102,9 +141,7 @@ export async function payInstallment(number: number) {
   const extraPaid = (application.extraPaid ?? 0) + 1
   const paid = { ...application, extraPaid }
   const done = paymentSchedule(paid).every((payment) => payment.state === 'paid')
-  clientsStore.updateApplication(number, {
-    extraPaid,
-    paidDates: [...(application.paidDates ?? []), new Date()],
-    status: done ? 'closed' : 'handed',
-  })
+  const patch = { extraPaid, paidDates: [...(application.paidDates ?? []), new Date()] }
+  if (done) move(number, 'closed', SYSTEM, patch)
+  else clientsStore.updateApplication(number, patch)
 }

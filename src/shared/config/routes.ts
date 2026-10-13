@@ -45,8 +45,12 @@ export const ROUTES = {
   customerAddCard: '/customer/cards/new',
   customerProfile: '/customer/profile',
   kit: '/kit',
+  /** Gallery of loading, error and empty states, for developers. */
+  states: '/states',
+  stateDemo: '/states/:kind',
 } as const
 
+export const stateDemoPath = (kind: string) => `/states/${kind}`
 export const clientPath = (id: string) => `/clients/${id}`
 export const clientAddCardPath = (id: string) => `/clients/${id}/cards/new`
 export const clientContractPath = (id: string, term: number) =>

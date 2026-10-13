@@ -5,6 +5,7 @@ import { getStore, OWN_STORE_ID } from '@/entities/catalog/products'
 import { reviewsStore, type Review } from '@/entities/catalog/reviews'
 import { applicationStatusTone } from '@/entities/clients/applicationStatus'
 import { cancelApplication } from '@/entities/clients/applicationsApi'
+import { shortName } from '@/entities/clients/clientName'
 import type { Application } from '@/entities/clients/clients'
 import { clientsStore } from '@/entities/clients/clientsStore'
 import { downloadContract } from '@/entities/clients/contractPdf'
@@ -12,14 +13,16 @@ import { hasSchedule, nextPayment } from '@/entities/clients/payments'
 import { FulfilmentRows } from '@/entities/clients/ui/FulfilmentRows'
 import { PaymentSchedule } from '@/entities/clients/ui/PaymentSchedule'
 import { ProductsSummary } from '@/entities/clients/ui/ProductsSummary'
+import { CancelNote } from '@/entities/clients/ui/CancelNote'
+import { CancelSheet } from '@/entities/clients/ui/CancelSheet'
 import { RejectionNote } from '@/entities/clients/ui/RejectionNote'
 import { usePickupPoints } from '@/entities/merchant/usePickupPoints'
 import { useCustomer } from '@/entities/session/customer'
 import { useI18n } from '@/shared/i18n/useI18n'
+import { toast } from '@/shared/lib/toast'
 import { newId } from '@/shared/lib/createStore'
 import { formatDateTime, formatSum, groupDigits } from '@/shared/lib/format'
 import { Button } from '@/shared/ui/Button'
-import { ConfirmSheet } from '@/shared/ui/ConfirmSheet'
 import { EmptyState } from '@/shared/ui/EmptyState'
 import { InfoList, InfoRow } from '@/shared/ui/InfoList'
 import { InstallmentTermsCard } from '@/shared/ui/InstallmentTermsCard'
@@ -75,13 +78,15 @@ export function PurchasePage() {
   const payment = nextPayment(application)
   const received = status === 'handed' || status === 'closed'
 
-  const sendReview = (rating: number, text: string) =>
+  const sendReview = (rating: number, text: string) => {
     saveReview(application, {
       storeId,
       author: `${customer.firstName} ${customer.lastName[0]}.`,
       rating,
       text,
     })
+    toast(t('toast.sent'))
+  }
 
   return (
     <div className="flex h-full flex-col">
@@ -99,7 +104,12 @@ export function PurchasePage() {
 
         {application.rejection && (
           <div className="-mt-3">
-            <RejectionNote rejection={application.rejection} />
+            <RejectionNote rejection={application.rejection} own />
+          </div>
+        )}
+        {status === 'cancelled' && (
+          <div className="-mt-3">
+            <CancelNote application={application} own />
           </div>
         )}
 
@@ -204,15 +214,17 @@ export function PurchasePage() {
           onSend={sendReview}
         />
       )}
-      <ConfirmSheet
-        open={cancelling}
-        onClose={() => setCancelling(false)}
-        title={t('purchase.cancel.title')}
-        message={t('purchase.cancel.message')}
-        confirmLabel={t('purchase.cancel')}
-        cancelLabel={t('purchase.cancel.keep')}
-        onConfirm={() => cancelApplication(application.id)}
-      />
+      {cancelling && (
+        <CancelSheet
+          onClose={() => setCancelling(false)}
+          onCancel={(comment) =>
+            cancelApplication(application.id, comment, {
+              kind: 'customer',
+              name: shortName(customer),
+            })
+          }
+        />
+      )}
     </div>
   )
 }

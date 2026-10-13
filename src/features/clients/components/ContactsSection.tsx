@@ -1,6 +1,7 @@
 import { ChevronRight, Plus, Trash2 } from 'lucide-react'
 import { useState, type FormEvent } from 'react'
 import { useI18n } from '@/shared/i18n/useI18n'
+import { toast } from '@/shared/lib/toast'
 import { formatPhone, PHONE_DIGITS } from '@/shared/lib/phone'
 import { Button } from '@/shared/ui/Button'
 import { ConfirmSheet } from '@/shared/ui/ConfirmSheet'
@@ -45,6 +46,7 @@ export function ContactsSection({ client }: { client: Client }) {
       : addContact(client.id, values))
     setLoading(false)
     setOpen(false)
+    toast(t('toast.saved'))
   }
 
   return (
@@ -134,7 +136,11 @@ export function ContactsSection({ client }: { client: Client }) {
         title={t('confirm.delete.title')}
         message={t('confirm.delete.message')}
         confirmLabel={t('common.delete')}
-        onConfirm={() => deleting && removeContact(client.id, deleting.id)}
+        onConfirm={() => {
+          if (!deleting) return
+          removeContact(client.id, deleting.id)
+          toast(t('toast.deleted'))
+        }}
       />
     </Section>
   )

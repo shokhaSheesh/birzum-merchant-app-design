@@ -5,6 +5,7 @@ import { locationsStore } from '@/entities/merchant/locations'
 import { rolesStore } from '@/entities/merchant/roles'
 import { CURRENT_STAFF_ID, staffStore } from '@/entities/merchant/staff'
 import { useI18n } from '@/shared/i18n/useI18n'
+import { toast } from '@/shared/lib/toast'
 import { newId } from '@/shared/lib/createStore'
 import { PHONE_DIGITS } from '@/shared/lib/phone'
 import { Button } from '@/shared/ui/Button'
@@ -56,6 +57,7 @@ export function StaffFormPage() {
       locationIds,
       active,
     })
+    toast(t('toast.saved'))
     navigate(-1)
   }
 

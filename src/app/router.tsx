@@ -1,4 +1,4 @@
-import { createBrowserRouter, Navigate } from 'react-router-dom'
+import { createBrowserRouter } from 'react-router-dom'
 import { ApplicationDetailPage } from '@/features/applications/pages/ApplicationDetailPage'
 import { ApplicationsPage } from '@/features/applications/pages/ApplicationsPage'
 import { ChangePasswordPage } from '@/features/auth/pages/ChangePasswordPage'
@@ -43,6 +43,8 @@ import { RolesPage } from '@/features/manage/pages/RolesPage'
 import { StaffFormPage } from '@/features/manage/pages/StaffFormPage'
 import { StaffPage } from '@/features/manage/pages/StaffPage'
 import { NotificationsPage } from '@/features/notifications/pages/NotificationsPage'
+import { NotFoundPage, StateDemoPage } from '@/features/states/pages/StateDemoPage'
+import { StatesPage } from '@/features/states/pages/StatesPage'
 import { ProfilePage } from '@/features/profile/pages/ProfilePage'
 import { ROUTES } from '@/shared/config/routes'
 import { DeviceLayout } from './layouts/DeviceLayout'
@@ -58,6 +60,8 @@ export const router = createBrowserRouter([
       { path: ROUTES.changePassword, element: <ChangePasswordPage /> },
       { path: ROUTES.confirmLogin, element: <ConfirmLoginPage /> },
       { path: ROUTES.kit, element: <KitPage /> },
+      { path: ROUTES.states, element: <StatesPage /> },
+      { path: ROUTES.stateDemo, element: <StateDemoPage /> },
       { path: ROUTES.newClient, element: <NewClientPage /> },
       { path: ROUTES.clientDetail, element: <ClientDetailPage /> },
       { path: ROUTES.clientAddCard, element: <AddCardPage /> },
@@ -109,7 +113,7 @@ export const router = createBrowserRouter([
           { path: ROUTES.profile, element: <ProfilePage /> },
         ],
       },
-      { path: '*', element: <Navigate to={ROUTES.home} replace /> },
+      { path: '*', element: <NotFoundPage /> },
     ],
   },
 ])

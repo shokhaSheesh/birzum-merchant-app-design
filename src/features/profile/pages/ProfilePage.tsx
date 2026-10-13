@@ -2,9 +2,11 @@ import {
   ArrowLeftRight,
   Bell,
   Boxes,
+  LoaderCircle,
   LogOut,
   MapPin,
   Package,
+  Shapes,
   ShieldCheck,
   Star,
   Tags,
@@ -135,6 +137,13 @@ export function ProfilePage() {
           value={theme}
           onChange={setTheme}
         />
+      </Section>
+
+      <Section title={t('states.design')}>
+        <MenuList>
+          <MenuRow icon={Shapes} label={t('states.kit')} to={ROUTES.kit} />
+          <MenuRow icon={LoaderCircle} label={t('states.title')} to={ROUTES.states} />
+        </MenuList>
       </Section>
 
       <Button variant="secondary" block className="mt-auto" onClick={handleLogout}>

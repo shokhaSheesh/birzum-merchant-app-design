@@ -5,18 +5,23 @@ import { applicationStatusTone } from '@/entities/clients/applicationStatus'
 import { NEXT_STATUSES, type ApplicationStatus, type Rejection } from '@/entities/clients/clients'
 import {
   approveApplication,
+  cancelApplication,
+  closeApplication,
   handOverApplication,
   rejectApplication,
 } from '@/entities/clients/applicationsApi'
-import { clientsStore } from '@/entities/clients/clientsStore'
 import { fullName, initials } from '@/entities/clients/clientName'
 import { hasSchedule } from '@/entities/clients/payments'
 import { FulfilmentRows } from '@/entities/clients/ui/FulfilmentRows'
 import { PaymentSchedule } from '@/entities/clients/ui/PaymentSchedule'
+import { CancelNote } from '@/entities/clients/ui/CancelNote'
+import { CancelSheet } from '@/entities/clients/ui/CancelSheet'
+import { HistoryList } from '@/entities/clients/ui/HistoryList'
 import { RejectionNote } from '@/entities/clients/ui/RejectionNote'
 import { ProductsSummary } from '@/entities/clients/ui/ProductsSummary'
 import { useApplication } from '@/entities/clients/useApplications'
 import { locationsStore } from '@/entities/merchant/locations'
+import { useActor } from '@/entities/merchant/useActor'
 import { clientPath } from '@/shared/config/routes'
 import { useI18n } from '@/shared/i18n/useI18n'
 import { formatDate, formatSum, groupDigits } from '@/shared/lib/format'
@@ -39,28 +44,30 @@ export function ApplicationDetailPage() {
   const navigate = useNavigate()
   const { number } = useParams()
   const found = useApplication(Number(number))
-  const [tab, setTab] = useState<'info' | 'products' | 'payments'>('info')
+  const [tab, setTab] = useState<'info' | 'products' | 'payments' | 'history'>('info')
   const [statusOpen, setStatusOpen] = useState(false)
   const [rejecting, setRejecting] = useState(false)
+  const [cancelling, setCancelling] = useState(false)
+  const me = useActor()
   const locations = locationsStore.useAll()
   const [busy, setBusy] = useState<'approve' | 'handOver' | null>(null)
 
   const handOver = async () => {
     if (!found) return
     setBusy('handOver')
-    await handOverApplication(found.application.id)
+    await handOverApplication(found.application.id, me)
     setBusy(null)
   }
 
   const approve = async () => {
     if (!found) return
     setBusy('approve')
-    await approveApplication(found.application.id)
+    await approveApplication(found.application.id, me)
     setBusy(null)
   }
 
   const reject = async (rejection: Rejection) => {
-    if (found) await rejectApplication(found.application.id, rejection)
+    if (found) await rejectApplication(found.application.id, rejection, me)
   }
 
   // Each move runs the same step as its own button, so stock and reasons are never skipped
@@ -69,7 +76,8 @@ export function ApplicationDetailPage() {
     if (status === 'rejected') setRejecting(true)
     else if (status === 'processing') void approve()
     else if (status === 'handed') void handOver()
-    else clientsStore.updateApplication(found.application.id, { status })
+    else if (status === 'cancelled') setCancelling(true)
+    else closeApplication(found.application.id, me)
   }
 
   const nextStatuses = found ? NEXT_STATUSES[found.application.status] : []
@@ -107,6 +115,11 @@ export function ApplicationDetailPage() {
               <RejectionNote rejection={found.application.rejection} />
             </div>
           )}
+          {found.application.status === 'cancelled' && (
+            <div className="-mt-3">
+              <CancelNote application={found.application} />
+            </div>
+          )}
 
           <SegmentedTabs
             label={t('application.title')}
@@ -116,6 +129,7 @@ export function ApplicationDetailPage() {
               ...(hasSchedule(found.application)
                 ? [{ value: 'payments' as const, label: t('tab.payments') }]
                 : []),
+              { value: 'history', label: t('tab.history') },
             ]}
             value={tab}
             onChange={setTab}
@@ -250,6 +264,8 @@ export function ApplicationDetailPage() {
           {tab === 'payments' && hasSchedule(found.application) && (
             <PaymentSchedule application={found.application} />
           )}
+
+          {tab === 'history' && <HistoryList application={found.application} />}
         </div>
       )}
 
@@ -279,6 +295,12 @@ export function ApplicationDetailPage() {
       )}
 
       {rejecting && <RejectSheet onClose={() => setRejecting(false)} onReject={reject} />}
+      {cancelling && found && (
+        <CancelSheet
+          onClose={() => setCancelling(false)}
+          onCancel={(comment) => cancelApplication(found.application.id, comment, me)}
+        />
+      )}
     </div>
   )
 }

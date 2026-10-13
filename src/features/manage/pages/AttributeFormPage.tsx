@@ -5,6 +5,7 @@ import { attributesStore, SWATCH_PRESETS } from '@/entities/catalog/attributes'
 import { LANGS, type Lang, type LocalizedText } from '@/shared/i18n/dictionaries'
 import { emptyText, fillMissing, isComplete } from '@/shared/i18n/localized'
 import { useI18n } from '@/shared/i18n/useI18n'
+import { toast } from '@/shared/lib/toast'
 import { newId } from '@/shared/lib/createStore'
 import { Button } from '@/shared/ui/Button'
 import { Checkbox } from '@/shared/ui/Checkbox'
@@ -50,6 +51,7 @@ export function AttributeFormPage() {
         swatch: color ? (v.swatch ?? SWATCH_PRESETS[0]) : undefined,
       })),
     })
+    toast(t('toast.saved'))
     navigate(-1)
   }
 
