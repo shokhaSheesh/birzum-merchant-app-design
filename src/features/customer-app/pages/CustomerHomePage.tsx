@@ -39,7 +39,7 @@ export function CustomerHomePage() {
       <header className="flex items-center gap-2">
         <Avatar initials={initials(customer)} photoUrl={customer.photoUrl} />
         <p className="min-w-0 flex-1 truncate pl-1 text-lg font-bold">
-          {t('home.greeting', { name: customer.firstName })}
+          {t('chome.greeting', { name: customer.firstName })}
         </p>
         <Link to={ROUTES.customerSearch} aria-label={t('search.title')} className={roundButton}>
           <Search size={22} />

@@ -63,10 +63,17 @@ export async function rejectApplication(number: number, rejection: Rejection) {
   clientsStore.updateApplication(number, { status: 'rejected', rejection })
 }
 
-/** Marks the goods as given to the client. Payments run from here. */
+/** Marks the goods as given to the client. The contract gets its number and payments run from here. */
 export async function handOverApplication(number: number) {
   await delay(700)
-  clientsStore.updateApplication(number, { status: 'handed' })
+  const application = find(number)
+  clientsStore.updateApplication(number, {
+    status: 'handed',
+    // The contract is drawn up at hand-over, if it was not already
+    contractNumber:
+      application?.contractNumber ??
+      `B-${number % 100_000}/${String(new Date().getFullYear()).slice(2)}`,
+  })
 }
 
 const find = (number: number) =>
