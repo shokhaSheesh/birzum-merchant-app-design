@@ -400,6 +400,7 @@ The repo holds the merchant app and the client (shopper) app. They share every t
 - Every camera screen uses `CameraView`: an oval guide and the front camera for a face, a square guide and the back camera for a QR code.
 
 ### Client app: from cart to payments
+- **Limit on Asosiy** (`LimitTile`): a navy tile with the six terms in a strip on top, the chosen one green and spelled "12 oy", and that term's limit in large type below. Before a limit exists the tile is the green "Limitni olish" card.
 - **Savat is grouped by shop.** Each group has the shop name, its products, then how the goods are received: `FulfilmentFields` with "Doʻkondan olib ketish" (and an "Olib ketish filiali" select when the shop has several filials) or "Yetkazib berish" with an address. The term and the paying card (`CardSelect`) are chosen once, below the groups. "Buyurtma berish" files one ariza per shop.
 - **Xaridlar** lists the shopper's arizalar as cards with the shop name; each opens the purchase screen.
 - **Purchase screen** (`PurchasePage`): status badge and number, the reject reason if any, an `InfoList` with date, shop, receiving method, card and pickup filial, then products and Nasiya shartlari (no Ustama).

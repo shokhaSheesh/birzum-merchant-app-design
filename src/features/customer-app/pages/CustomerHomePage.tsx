@@ -7,10 +7,10 @@ import { calculateLimit } from '@/entities/clients/limitsApi'
 import { useCustomer } from '@/entities/session/customer'
 import { customerProductsPath, ROUTES } from '@/shared/config/routes'
 import { useI18n } from '@/shared/i18n/useI18n'
-import { formatSum } from '@/shared/lib/format'
 import { Avatar } from '@/shared/ui/Avatar'
 import { Button } from '@/shared/ui/Button'
 import { Section } from '@/shared/ui/Section'
+import { LimitTile } from '../components/LimitTile'
 import { categoryIcons } from '../components/categoryIcons'
 import { ProductCard } from '../components/ProductCard'
 
@@ -25,7 +25,6 @@ export function CustomerHomePage() {
   const [loading, setLoading] = useState(false)
 
   if (!customer) return null
-  const highestLimit = customer.limits && Math.max(...Object.values(customer.limits))
   const hasNews = customer.applications.length > 0
 
   const getLimit = async () => {
@@ -63,7 +62,7 @@ export function CustomerHomePage() {
         </Link>
       </header>
 
-      {highestLimit === null ? (
+      {customer.limits === null ? (
         <section className="flex flex-col gap-4 rounded-card bg-green-200 p-4">
           <div className="flex flex-col gap-1">
             <h2 className="text-lg font-bold">{t('climit.title')}</h2>
@@ -75,13 +74,7 @@ export function CustomerHomePage() {
           </Button>
         </section>
       ) : (
-        <section className="flex flex-col gap-1 rounded-card bg-tile p-5 text-on-tile">
-          <p className="text-sm opacity-75">{t('climit.title')}</p>
-          <p className="text-3xl font-bold">
-            {t('climit.upTo', { amount: formatSum(highestLimit) })}
-          </p>
-          <p className="text-sm opacity-75">{t('climit.hint')}</p>
-        </section>
+        <LimitTile limits={customer.limits} />
       )}
 
       <Section

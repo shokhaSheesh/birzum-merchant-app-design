@@ -214,7 +214,7 @@ const uz = {
   'climit.none.hint':
     'Xarid qilish uchun avval limitingizni bilib oling. Bu bir necha soniya oladi.',
   'climit.get': 'Limitni olish',
-  'climit.upTo': '{amount} gacha',
+  'climit.forTerm': 'Xaridlar uchun limitingiz',
   'climit.hint': 'Limit tanlangan muddatga qarab oʻzgaradi',
   'catalog.search': 'Mahsulot qidirish',
   'catalog.all': 'Hammasi',
@@ -699,7 +699,7 @@ const ru: Record<TranslationKey, string> = {
   'climit.none.hint':
     'Чтобы делать покупки, сначала узнайте свой лимит. Это займёт несколько секунд.',
   'climit.get': 'Получить лимит',
-  'climit.upTo': 'до {amount}',
+  'climit.forTerm': 'Ваш лимит на покупки',
   'climit.hint': 'Лимит зависит от выбранного срока',
   'catalog.search': 'Поиск товаров',
   'catalog.all': 'Все',
