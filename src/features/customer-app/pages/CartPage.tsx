@@ -6,7 +6,9 @@ import { ProductPicture } from '@/entities/catalog/ProductPicture'
 import { photosOf, stockOf } from '@/entities/catalog/products'
 import { useVariantNames } from '@/entities/catalog/useVariantNames'
 import { submitApplication } from '@/entities/clients/applicationsApi'
-import { TERMS, type Term } from '@/entities/clients/clients'
+import { TERMS, type Fulfilment, type Term } from '@/entities/clients/clients'
+import { fulfilmentValid } from '@/entities/clients/fulfilment'
+import { FulfilmentFields } from '@/entities/clients/ui/FulfilmentFields'
 import { installmentTerms } from '@/entities/clients/installment'
 import { useCustomer } from '@/entities/session/customer'
 import { ROUTES } from '@/shared/config/routes'
@@ -27,6 +29,9 @@ export function CartPage() {
   const customer = useCustomer()
   const { lines, total } = useCart()
   const [term, setTerm] = useState<Term>(12)
+  const [fulfilment, setFulfilment] = useState<Fulfilment>({ method: 'pickup', address: '' })
+  const [pickedCard, setPickedCard] = useState<string | null>(null)
+  const [submitted, setSubmitted] = useState(false)
   const [loading, setLoading] = useState(false)
   const [sent, setSent] = useState(false)
 
@@ -69,6 +74,8 @@ export function CartPage() {
     )
   }
 
+  const cards = customer?.cards ?? []
+  const cardId = pickedCard ?? (cards.length === 1 ? cards[0].id : null)
   const limit = customer?.limits?.[term]
   const error =
     limit === undefined
@@ -78,7 +85,8 @@ export function CartPage() {
         : undefined
 
   const checkout = async () => {
-    if (!customer || error) return
+    setSubmitted(true)
+    if (!customer || error || !fulfilmentValid(fulfilment, cardId)) return
     setLoading(true)
     await submitApplication(
       customer.id,
@@ -94,6 +102,10 @@ export function CartPage() {
         }
       }),
       term,
+      {
+        fulfilment: { ...fulfilment, address: fulfilment.address.trim() },
+        cardId: cardId ?? undefined,
+      },
     )
     cartStore.clear()
     setSent(true)
@@ -153,6 +165,17 @@ export function CartPage() {
         {limit !== undefined && (
           <p className="text-sm text-ink-muted">{t('cart.limit', { amount: formatSum(limit) })}</p>
         )}
+      </div>
+
+      <div className="flex flex-col gap-4">
+        <FulfilmentFields
+          fulfilment={fulfilment}
+          onFulfilment={setFulfilment}
+          cards={cards}
+          cardId={cardId}
+          onCard={setPickedCard}
+          showErrors={submitted}
+        />
       </div>
 
       <div className="flex flex-col gap-3">

@@ -18,7 +18,10 @@ import { TermPicker } from '@/shared/ui/TermPicker'
 import { Select } from '@/shared/ui/Select'
 import { calculateTerms, createApplication, nextApplicationNumber } from '../api/mockClients'
 import { InstallmentTermsCard } from '@/shared/ui/InstallmentTermsCard'
-import { TERMS, type Term } from '@/entities/clients/clients'
+import { TERMS, type Fulfilment, type Term } from '@/entities/clients/clients'
+import { fulfilmentValid } from '@/entities/clients/fulfilment'
+import { FulfilmentFields } from '@/entities/clients/ui/FulfilmentFields'
+import { FulfilmentRows } from '@/entities/clients/ui/FulfilmentRows'
 import { MIN_APPLICATION_TOTAL, type InstallmentTerms } from '@/entities/clients/installment'
 import { ProductsSummary } from '@/entities/clients/ui/ProductsSummary'
 import { useClient } from '@/entities/clients/useClients'
@@ -66,6 +69,8 @@ export function NewContractPage() {
   const [nextProductId, setNextProductId] = useState(2)
   const [downPayment, setDownPayment] = useState<number | null>(null)
   const [paymentDay, setPaymentDay] = useState<number | null>(null)
+  const [fulfilment, setFulfilment] = useState<Fulfilment>({ method: 'pickup', address: '' })
+  const [pickedCard, setPickedCard] = useState<string | null>(null)
   const [submitted, setSubmitted] = useState(false)
   const [loading, setLoading] = useState(false)
   const [calculated, setCalculated] = useState<{ terms: InstallmentTerms; inputs: string } | null>(
@@ -80,6 +85,7 @@ export function NewContractPage() {
   if (!client) return <Navigate to={ROUTES.clients} replace />
   if (!client.limits) return <Navigate to={clientPath(client.id)} replace />
 
+  const cardId = pickedCard ?? (client.cards.length === 1 ? client.cards[0].id : null)
   const limit = client.limits[term]
   // Each row resolved against the catalogue: what it is called, what one costs, how many are left
   const rows = products.map((line) => {
@@ -150,7 +156,15 @@ export function NewContractPage() {
 
   const submitForm = async () => {
     setSubmitted(true)
-    if (!locationId || !productsValid || liveError || submitError || paymentDay === null) return
+    if (
+      !locationId ||
+      !productsValid ||
+      liveError ||
+      submitError ||
+      paymentDay === null ||
+      !fulfilmentValid(fulfilment, cardId)
+    )
+      return
     if (terms) {
       setReview({ number: nextApplicationNumber() })
       return
@@ -175,6 +189,8 @@ export function NewContractPage() {
         term: terms.term,
         markupPercent: terms.markupPercent,
         monthlyPayment: terms.monthlyPayment,
+        fulfilment: { ...fulfilment, address: fulfilment.address.trim() },
+        cardId: cardId ?? undefined,
       },
     })
     backToClient()
@@ -224,6 +240,10 @@ export function NewContractPage() {
 
         <Section title={t('contract.payment')}>
           <InfoList>
+            <FulfilmentRows
+              details={{ fulfilment, cardId: cardId ?? undefined }}
+              cards={client.cards}
+            />
             <InfoRow label={t('field.downPayment')} value={formatSum(downPayment ?? 0)} />
             <InfoRow label={t('field.paymentDay')} value={String(paymentDay)} />
           </InfoList>
@@ -338,6 +358,17 @@ export function NewContractPage() {
           <Plus size={20} />
           {t('contract.products.add')}
         </Button>
+      </Section>
+
+      <Section title={t('delivery.title')}>
+        <FulfilmentFields
+          fulfilment={fulfilment}
+          onFulfilment={setFulfilment}
+          cards={client.cards}
+          cardId={cardId}
+          onCard={setPickedCard}
+          showErrors={submitted}
+        />
       </Section>
 
       <Section title={t('contract.payment')} hint={t('contract.payment.hint')}>

@@ -21,6 +21,10 @@ const CATALOG = [
 
 // Which shop and which reject reason a generated application gets, by its number
 const LOCATIONS = ['l1', 'l2', 'l1', 'l3', 'l2']
+const ADDRESSES = [
+  'Toshkent, Mirzo Ulugʻbek tumani, Buyuk Ipak Yoʻli 45, 12-xonadon',
+  'Toshkent, Sergeli tumani, Yangi Sergeli 7, 31-xonadon',
+]
 const REASONS = ['unverified', 'limit', 'noStock', 'clientDeclined'] as const
 
 /** Small deterministic random number generator (mulberry32). */
@@ -90,6 +94,10 @@ export function withGeneratedApplications(clients: Client[]): Client[] {
               term: terms.term,
               markupPercent: terms.markupPercent,
               monthlyPayment: terms.monthlyPayment,
+              fulfilment:
+                number % 3 === 0
+                  ? { method: 'delivery', address: ADDRESSES[number % ADDRESSES.length] }
+                  : { method: 'pickup', address: '' },
             },
           }
         : { id: number, date, status, goodsTotal: 0, installmentTotal: 0 }
@@ -113,6 +121,14 @@ export function withGeneratedApplications(clients: Client[]): Client[] {
           application.status === 'rejected' ? { reason: 'unverified', comment: '' } : undefined,
         ...application,
       })),
-    ],
+    ].map((application): Application => ({
+      ...application,
+      // Every drawn-up application says how the goods are received and which card pays
+      details: application.details && {
+        fulfilment: { method: 'pickup', address: '' },
+        cardId: client.cards[0]?.id,
+        ...application.details,
+      },
+    })),
   }))
 }

@@ -366,6 +366,7 @@ Only what shoppers read and what really differs by language is stored once per l
 - **Status steps.** "Holatni oʻzgartirish" lists only the next steps (`NEXT_STATUSES`): pending → Rasmiylashtirilmoqda or Rad etilgan; Rasmiylashtirilmoqda → Topshirilgan, Rad etilgan or Bekor qilingan; Topshirilgan → Nasiya yopilgan. Final statuses have no button.
 - **Rejecting always asks why** (`RejectSheet`): a reason from the list and a comment, required for "Boshqa sabab". The reason is shown with `RejectionNote`, a red card under the status, in the merchant's ariza and in the shopper's Xaridlar.
 - **Product lines** (`ProductsSummary`) start with the product picture, 56px.
+- **Receiving and card** (`FulfilmentFields`): a two-option `ChoiceGrid` "Doʻkondan olib ketish / Yetkazib berish", an address field only for delivery, and a `Select` of the client's cards. The same block is in the merchant's "Yangi shartnoma" and the shopper's Savat. An ariza shows them as rows in "Toʻlov sozlamalari" (`FulfilmentRows`); the shopper's Xaridlar shows the method and address as one line.
 
 ### Sharhlar
 - Each review has a small red trash button at its bottom right. It opens `ConfirmSheet`; a deleted review leaves the client app and the rating.

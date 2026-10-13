@@ -1,5 +1,5 @@
 import { takeStock } from '@/entities/catalog/products'
-import type { ApplicationProduct, Rejection, Term } from './clients'
+import type { ApplicationDetails, ApplicationProduct, Rejection, Term } from './clients'
 import { clientsStore } from './clientsStore'
 import { installmentTerms } from './installment'
 
@@ -13,6 +13,7 @@ export async function submitApplication(
   clientId: string,
   products: ApplicationProduct[],
   term: Term,
+  checkout: Pick<ApplicationDetails, 'fulfilment' | 'cardId'>,
 ) {
   await delay(900)
   const client = clientsStore.get(clientId)
@@ -38,6 +39,7 @@ export async function submitApplication(
           term,
           markupPercent: terms.markupPercent,
           monthlyPayment: terms.monthlyPayment,
+          ...checkout,
         },
       },
       ...client.applications,

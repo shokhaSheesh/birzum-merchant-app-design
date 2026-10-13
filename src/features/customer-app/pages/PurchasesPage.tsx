@@ -44,6 +44,13 @@ export function PurchasesPage() {
                       .map((item) => `${item.name} × ${item.quantity}`)
                       .join(', ')}
                   </p>
+                  {application.details.fulfilment && (
+                    <p className="text-sm text-ink-muted">
+                      {t(`delivery.${application.details.fulfilment.method}`)}
+                      {application.details.fulfilment.address &&
+                        ` · ${application.details.fulfilment.address}`}
+                    </p>
+                  )}
                   <div className="flex items-baseline justify-between border-t border-line pt-2">
                     <p className="text-sm text-ink-muted">
                       {t('term.months', { count: String(application.details.term) })} ·{' '}

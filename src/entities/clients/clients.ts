@@ -40,6 +40,11 @@ export type ApplicationProduct = {
   valueIds?: string[]
 }
 
+export const DELIVERY_METHODS = ['pickup', 'delivery'] as const
+export type DeliveryMethod = (typeof DELIVERY_METHODS)[number]
+/** How the client gets the goods. The address is only for `delivery`. */
+export type Fulfilment = { method: DeliveryMethod; address: string }
+
 /** What was entered when the contract was drawn up. Missing on applications rejected before that. */
 export type ApplicationDetails = {
   products: ApplicationProduct[]
@@ -49,6 +54,9 @@ export type ApplicationDetails = {
   term: Term
   markupPercent: number
   monthlyPayment: number
+  fulfilment?: Fulfilment
+  /** The client's card the monthly payments are taken from. */
+  cardId?: string
 }
 
 export const REJECT_REASONS = ['noStock', 'unverified', 'limit', 'clientDeclined', 'other'] as const

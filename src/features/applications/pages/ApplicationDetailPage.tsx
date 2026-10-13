@@ -11,6 +11,7 @@ import {
 import { clientsStore } from '@/entities/clients/clientsStore'
 import { fullName, initials } from '@/entities/clients/clientName'
 import { hasSchedule } from '@/entities/clients/payments'
+import { FulfilmentRows } from '@/entities/clients/ui/FulfilmentRows'
 import { PaymentSchedule } from '@/entities/clients/ui/PaymentSchedule'
 import { RejectionNote } from '@/entities/clients/ui/RejectionNote'
 import { ProductsSummary } from '@/entities/clients/ui/ProductsSummary'
@@ -195,6 +196,7 @@ export function ApplicationDetailPage() {
 
               <Section title={t('contract.payment')}>
                 <InfoList>
+                  <FulfilmentRows details={found.application.details} cards={found.client.cards} />
                   <InfoRow
                     label={t('field.downPayment')}
                     value={formatSum(found.application.details.downPayment)}
