@@ -45,7 +45,10 @@ export function InventoryPage() {
             <p className="text-sm text-ink-muted">{t('inventory.hint')}</p>
             <FilterChips
               label={t('manage.locations')}
-              options={locations.map((location) => ({ value: location.id, label: location.name }))}
+              options={locations.map((location) => ({
+                value: location.id,
+                label: tl(location.name),
+              }))}
               value={locationId}
               onChange={setChosen}
             />

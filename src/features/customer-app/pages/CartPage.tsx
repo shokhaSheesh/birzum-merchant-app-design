@@ -3,7 +3,7 @@ import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { cartStore, useCart } from '@/entities/cart/cartStore'
 import { ProductPicture } from '@/entities/catalog/ProductPicture'
-import { stockOf } from '@/entities/catalog/products'
+import { photosOf, stockOf } from '@/entities/catalog/products'
 import { useVariantNames } from '@/entities/catalog/useVariantNames'
 import { submitApplication } from '@/entities/clients/applicationsApi'
 import { TERMS, type Term } from '@/entities/clients/clients'
@@ -89,6 +89,8 @@ export function CartPage() {
             variant.length > 0 ? `${tl(product.name)} (${variant.join(', ')})` : tl(product.name),
           price: unitPrice,
           quantity,
+          productId: product.id,
+          valueIds,
         }
       }),
       term,
@@ -109,7 +111,7 @@ export function CartPage() {
               <ProductPicture
                 category={product.category}
                 color={color(product, valueIds)}
-                src={product.images[0]}
+                src={photosOf(product, valueIds)[0]}
                 className="w-20 shrink-0 rounded-control"
               />
               <div className="flex min-w-0 flex-1 flex-col gap-2">

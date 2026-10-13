@@ -12,6 +12,7 @@ import {
   type PaymentCard,
   type Term,
 } from '@/entities/clients/clients'
+import { takeStockFor } from '@/entities/clients/applicationsApi'
 import { clientsStore } from '@/entities/clients/clientsStore'
 import { installmentTerms, type InstallmentTerms } from '@/entities/clients/installment'
 
@@ -112,5 +113,6 @@ export async function createApplication(
   const client = clientsStore.get(clientId)
   if (!client) return
   const created: Application = { ...application, date: new Date(), status: 'processing' }
+  takeStockFor(application.details?.products ?? [])
   clientsStore.update(clientId, { applications: [created, ...client.applications] })
 }

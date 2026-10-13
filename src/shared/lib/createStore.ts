@@ -24,6 +24,7 @@ export function createStore<T extends { id: string }>(seed: T[]) {
     get: (id: string | undefined) => items.find((item) => item.id === id),
     update: (id: string, patch: Partial<T>) =>
       change(items.map((item) => (item.id === id ? { ...item, ...patch } : item))),
+    remove: (id: string) => change(items.filter((item) => item.id !== id)),
     /** Adds the record, or replaces the one with the same id. */
     save: (record: T) =>
       change(

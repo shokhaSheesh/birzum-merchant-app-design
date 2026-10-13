@@ -1,11 +1,17 @@
-import { ArrowLeft, ChevronRight, Download, PencilLine } from 'lucide-react'
+import { ArrowLeft, ChevronRight, Download, PencilLine, PackageCheck } from 'lucide-react'
 import { useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import { applicationStatusTone } from '@/entities/clients/applicationStatus'
 import { APPLICATION_STATUSES } from '@/entities/clients/clients'
-import { approveApplication, rejectApplication } from '@/entities/clients/applicationsApi'
+import {
+  approveApplication,
+  handOverApplication,
+  rejectApplication,
+} from '@/entities/clients/applicationsApi'
 import { clientsStore } from '@/entities/clients/clientsStore'
 import { fullName, initials } from '@/entities/clients/clientName'
+import { hasSchedule } from '@/entities/clients/payments'
+import { PaymentSchedule } from '@/entities/clients/ui/PaymentSchedule'
 import { ProductsSummary } from '@/entities/clients/ui/ProductsSummary'
 import { useApplication } from '@/entities/clients/useApplications'
 import { clientPath } from '@/shared/config/routes'
@@ -29,7 +35,14 @@ export function ApplicationDetailPage() {
   const { number } = useParams()
   const found = useApplication(Number(number))
   const [statusOpen, setStatusOpen] = useState(false)
-  const [busy, setBusy] = useState<'approve' | 'reject' | null>(null)
+  const [busy, setBusy] = useState<'approve' | 'reject' | 'handOver' | null>(null)
+
+  const handOver = async () => {
+    if (!found) return
+    setBusy('handOver')
+    await handOverApplication(found.application.id)
+    setBusy(null)
+  }
 
   const decide = async (decision: 'approve' | 'reject') => {
     if (!found) return
@@ -130,6 +143,12 @@ export function ApplicationDetailPage() {
             </InfoList>
           </Section>
 
+          {hasSchedule(found.application) && (
+            <Section title={t('payments.title')}>
+              <PaymentSchedule application={found.application} />
+            </Section>
+          )}
+
           {found.application.details ? (
             <>
               <Section title={t('contract.products')}>
@@ -184,6 +203,15 @@ export function ApplicationDetailPage() {
             onClick={() => void decide('approve')}
           >
             {t('code.submit')}
+          </Button>
+        </footer>
+      )}
+
+      {found?.application.status === 'processing' && (
+        <footer className="shrink-0 px-5 pt-3 pb-[max(1.25rem,env(safe-area-inset-bottom))]">
+          <Button block loading={busy === 'handOver'} onClick={() => void handOver()}>
+            <PackageCheck size={20} />
+            {t('application.handOver')}
           </Button>
         </footer>
       )}

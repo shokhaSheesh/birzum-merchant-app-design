@@ -2,10 +2,10 @@ import { Check, ChevronRight, Share2, ShoppingCart, Store as StoreIcon } from 'l
 import { useState } from 'react'
 import { Link, Navigate, useNavigate, useParams } from 'react-router-dom'
 import { cartKey, cartStore, useCart } from '@/entities/cart/cartStore'
-import { ProductPicture } from '@/entities/catalog/ProductPicture'
 import {
   getProduct,
   getStore,
+  photosOf,
   priceOf,
   soldCombos,
   stockOf,
@@ -31,6 +31,7 @@ import { StatusBadge } from '@/shared/ui/StatusBadge'
 import { TermPicker } from '@/shared/ui/TermPicker'
 import { LikeButton } from '../components/LikeButton'
 import { ProductCard } from '../components/ProductCard'
+import { ProductGallery } from '../components/ProductGallery'
 import { StoreRating } from '../components/StoreRating'
 import { VariationPicker } from '../components/VariationPicker'
 
@@ -110,11 +111,11 @@ function ProductDetails({ product }: { product: Product }) {
       />
 
       <div className="flex min-h-0 flex-1 flex-col gap-6 overflow-y-auto px-5 pb-4">
-        <ProductPicture
+        <ProductGallery
+          key={variantKey(picked)}
+          images={photosOf(product, picked)}
           category={product.category}
           color={color}
-          src={product.images[0]}
-          className="aspect-[1/0.8]! rounded-card"
         />
 
         <div className="flex flex-col items-start gap-2">
@@ -139,6 +140,7 @@ function ProductDetails({ product }: { product: Product }) {
                 value={picked[i]}
                 onChange={(valueId) => pick(i, valueId)}
                 isAvailable={(valueId) => isSold(swap(i, valueId))}
+                imageOf={(valueId) => product.valueImages[valueId]?.[0]}
               />
             )
           )

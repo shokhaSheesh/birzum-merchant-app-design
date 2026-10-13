@@ -3,6 +3,7 @@ import { useCallback, useState } from 'react'
 import { Navigate, useNavigate, useParams, useSearchParams } from 'react-router-dom'
 import { clientPath, ROUTES } from '@/shared/config/routes'
 import { useI18n } from '@/shared/i18n/useI18n'
+import { cn } from '@/shared/lib/cn'
 import { formatSum, groupDigits } from '@/shared/lib/format'
 import { Alert } from '@/shared/ui/Alert'
 import { Button } from '@/shared/ui/Button'
@@ -14,18 +15,29 @@ import { QuantityField } from '@/shared/ui/QuantityField'
 import { Section } from '@/shared/ui/Section'
 import { StatusBadge } from '@/shared/ui/StatusBadge'
 import { TermPicker } from '@/shared/ui/TermPicker'
-import { TextField } from '@/shared/ui/TextField'
+import { Select } from '@/shared/ui/Select'
 import { calculateTerms, createApplication, nextApplicationNumber } from '../api/mockClients'
 import { InstallmentTermsCard } from '@/shared/ui/InstallmentTermsCard'
 import { TERMS, type Term } from '@/entities/clients/clients'
 import { MIN_APPLICATION_TOTAL, type InstallmentTerms } from '@/entities/clients/installment'
 import { ProductsSummary } from '@/entities/clients/ui/ProductsSummary'
 import { useClient } from '@/entities/clients/useClients'
+import {
+  OWN_STORE_ID,
+  priceOf,
+  productsStore,
+  soldCombos,
+  stockOf,
+  variantIds,
+  variantKey,
+} from '@/entities/catalog/products'
+import { useVariantNames } from '@/entities/catalog/useVariantNames'
 
-type Product = { id: number; name: string; price: number | null; quantity: number }
+/** A row of the form: which catalogue product, which of its variants (by key), and how many. */
+type Line = { id: number; productId: string | null; variant: string | null; quantity: number }
 
 const PAYMENT_DAYS = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
-const emptyProduct = (id: number): Product => ({ id, name: '', price: null, quantity: 1 })
+const emptyProduct = (id: number): Line => ({ id, productId: null, variant: null, quantity: 1 })
 
 /**
  * New installment contract for a client. The form collects term, products, down payment
@@ -33,7 +45,8 @@ const emptyProduct = (id: number): Product => ({ id, name: '', price: null, quan
  * step, and confirming the review creates the application.
  */
 export function NewContractPage() {
-  const { t } = useI18n()
+  const { t, tl } = useI18n()
+  const { names } = useVariantNames()
   const navigate = useNavigate()
   const { id } = useParams()
   const [searchParams] = useSearchParams()
@@ -41,7 +54,10 @@ export function NewContractPage() {
 
   const requestedTerm = Number(searchParams.get('term')) as Term
   const [term, setTerm] = useState<Term>(TERMS.includes(requestedTerm) ? requestedTerm : 12)
-  const [products, setProducts] = useState<Product[]>([emptyProduct(1)])
+  const [products, setProducts] = useState<Line[]>([emptyProduct(1)])
+  const catalogue = productsStore
+    .useAll()
+    .filter((product) => product.storeId === OWN_STORE_ID && product.active)
   const [nextProductId, setNextProductId] = useState(2)
   const [downPayment, setDownPayment] = useState<number | null>(null)
   const [paymentDay, setPaymentDay] = useState<number | null>(null)
@@ -60,14 +76,48 @@ export function NewContractPage() {
   if (!client.limits) return <Navigate to={clientPath(client.id)} replace />
 
   const limit = client.limits[term]
-  const total = products.reduce((sum, product) => sum + (product.price ?? 0) * product.quantity, 0)
+  // Each row resolved against the catalogue: what it is called, what one costs, how many are left
+  const rows = products.map((line) => {
+    const product = catalogue.find((item) => item.id === line.productId)
+    const needsVariant = !!product && product.variations.length > 0
+    const valueIds = line.variant === null ? null : variantIds(line.variant)
+    const chosen = product && (needsVariant ? valueIds : [])
+    const variant = product && chosen ? names(product, chosen) : []
+    return {
+      line,
+      product,
+      needsVariant,
+      valueIds: chosen ?? null,
+      name: product
+        ? variant.length > 0
+          ? `${tl(product.name)} (${variant.join(', ')})`
+          : tl(product.name)
+        : '',
+      price: product && chosen ? priceOf(product, chosen) : 0,
+      stock: product && chosen ? stockOf(product, chosen) : 0,
+    }
+  })
+  const summary = rows.map((row) => ({
+    name: row.name,
+    price: row.price,
+    quantity: row.line.quantity,
+    productId: row.product?.id,
+    valueIds: row.valueIds ?? undefined,
+  }))
+  const total = rows.reduce((sum, row) => sum + row.price * row.line.quantity, 0)
   const financed = Math.max(0, total - (downPayment ?? 0))
 
   // Terms are only valid for the numbers they were calculated from
-  const inputs = JSON.stringify([term, products.map((p) => [p.price, p.quantity]), downPayment])
+  const inputs = JSON.stringify([
+    term,
+    products.map((p) => [p.productId, p.variant, p.quantity]),
+    downPayment,
+  ])
   const terms = calculated?.inputs === inputs ? calculated.terms : null
 
-  const productsValid = products.every((product) => product.name.trim() !== '' && product.price)
+  const productsValid = rows.every(
+    (row) => row.product && row.valueIds && row.line.quantity <= row.stock,
+  )
   // Shown as soon as the numbers stop adding up, without waiting for the button
   const liveError =
     total > 0 && (downPayment ?? 0) >= total
@@ -81,7 +131,7 @@ export function NewContractPage() {
       : undefined
   const formError = liveError ?? (submitted ? submitError : undefined)
 
-  const updateProduct = (productId: number, patch: Partial<Product>) =>
+  const updateProduct = (productId: number, patch: Partial<Line>) =>
     setProducts((list) =>
       list.map((product) => (product.id === productId ? { ...product, ...patch } : product)),
     )
@@ -113,11 +163,7 @@ export function NewContractPage() {
       goodsTotal: total,
       installmentTotal: terms.installmentTotal,
       details: {
-        products: products.map((p) => ({
-          name: p.name.trim(),
-          price: p.price ?? 0,
-          quantity: p.quantity,
-        })),
+        products: summary,
         downPayment: downPayment ?? 0,
         paymentDay: paymentDay ?? 1,
         term: terms.term,
@@ -153,13 +199,7 @@ export function NewContractPage() {
         </div>
 
         <Section title={t('contract.products')}>
-          <ProductsSummary
-            products={products.map((p) => ({
-              name: p.name,
-              price: p.price ?? 0,
-              quantity: p.quantity,
-            }))}
-          />
+          <ProductsSummary products={summary} />
         </Section>
 
         <Section title={t('contract.payment')}>
@@ -198,45 +238,66 @@ export function NewContractPage() {
       </Section>
 
       <Section title={t('contract.products')} hint={t('contract.products.hint')}>
-        {products.map((product, index) => (
-          <div key={product.id} className="flex flex-col gap-3 rounded-card bg-surface p-4">
+        {rows.map(({ line, product, needsVariant, valueIds, price, stock }, index) => (
+          <div key={line.id} className="flex flex-col gap-3 rounded-card bg-surface p-4">
             <div className="flex min-h-10 items-center justify-between">
               <p className="font-semibold">{t('contract.product', { n: String(index + 1) })}</p>
               {products.length > 1 && (
                 <button
                   type="button"
                   aria-label={t('contract.products.remove')}
-                  onClick={() => setProducts((list) => list.filter((p) => p.id !== product.id))}
+                  onClick={() => setProducts((list) => list.filter((p) => p.id !== line.id))}
                   className="-mr-2 grid size-10 place-items-center rounded-full text-danger active:bg-danger-soft"
                 >
                   <Trash2 size={20} />
                 </button>
               )}
             </div>
-            <TextField
-              label={t('field.productName')}
-              autoComplete="off"
-              value={product.name}
-              onChange={(e) => updateProduct(product.id, { name: e.target.value })}
-              error={submitted && product.name.trim() === '' ? t('error.required') : undefined}
+            <Select
+              label={t('contract.pickProduct')}
+              options={catalogue.map((item) => ({ value: item.id, label: tl(item.name) }))}
+              value={line.productId}
+              onChange={(productId) => updateProduct(line.id, { productId, variant: null })}
+              error={submitted && !product ? t('error.required') : undefined}
             />
-            <NumberField
-              label={t('field.unitPrice')}
-              value={product.price}
-              onChange={(price) => updateProduct(product.id, { price })}
-              suffix={t('common.currency')}
-              maxDigits={10}
-              error={submitted && !product.price ? t('error.price') : undefined}
-            />
-            <QuantityField
-              label={t('field.quantity')}
-              value={product.quantity}
-              onChange={(quantity) => updateProduct(product.id, { quantity })}
-            />
-            <div className="flex items-baseline justify-between border-t border-line pt-3">
-              <p className="text-sm text-ink-muted">{t('contract.lineTotal')}</p>
-              <p className="font-semibold">{formatSum((product.price ?? 0) * product.quantity)}</p>
-            </div>
+            {product && needsVariant && (
+              <Select
+                label={t('contract.pickVariant')}
+                options={soldCombos(product).map((combo) => ({
+                  value: variantKey(combo),
+                  label: names(product, combo).join(' · '),
+                }))}
+                value={line.variant}
+                onChange={(variant) => updateProduct(line.id, { variant })}
+                error={submitted && !valueIds ? t('error.required') : undefined}
+              />
+            )}
+            {product && valueIds && (
+              <>
+                <QuantityField
+                  label={t('field.quantity')}
+                  value={line.quantity}
+                  max={Math.max(1, stock)}
+                  onChange={(quantity) => updateProduct(line.id, { quantity })}
+                />
+                <p
+                  className={cn(
+                    'text-sm',
+                    stock < line.quantity ? 'text-danger' : 'text-ink-muted',
+                  )}
+                >
+                  {stock < line.quantity
+                    ? t('error.outOfStock')
+                    : t('contract.inStock', { count: String(stock) })}
+                </p>
+                <div className="flex items-baseline justify-between border-t border-line pt-3">
+                  <p className="text-sm text-ink-muted">
+                    {formatSum(price)} × {line.quantity}
+                  </p>
+                  <p className="font-semibold">{formatSum(price * line.quantity)}</p>
+                </div>
+              </>
+            )}
           </div>
         ))}
         <Button variant="secondary" block onClick={addProduct}>

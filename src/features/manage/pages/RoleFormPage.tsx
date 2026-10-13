@@ -2,6 +2,7 @@ import { ShieldCheck } from 'lucide-react'
 import { useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { PERMISSIONS, rolesStore, type Permission } from '@/entities/merchant/roles'
+import { staffStore } from '@/entities/merchant/staff'
 import { useI18n } from '@/shared/i18n/useI18n'
 import { newId } from '@/shared/lib/createStore'
 import { Button } from '@/shared/ui/Button'
@@ -11,6 +12,7 @@ import { IconBadge } from '@/shared/ui/IconBadge'
 import { ScreenIntro } from '@/shared/ui/ScreenIntro'
 import { Section } from '@/shared/ui/Section'
 import { TextField } from '@/shared/ui/TextField'
+import { DeleteRecord } from '../components/DeleteRecord'
 
 /** Create or edit a role: its name and what it is allowed to do. */
 export function RoleFormPage() {
@@ -22,6 +24,7 @@ export function RoleFormPage() {
   const [name, setName] = useState(existing?.name ?? '')
   const [permissions, setPermissions] = useState<Permission[]>(existing?.permissions ?? [])
   const [submitted, setSubmitted] = useState(false)
+  const holders = staffStore.useAll().filter((member) => member.roleId === existing?.id).length
 
   const toggle = (permission: Permission, on: boolean) =>
     setPermissions((list) => (on ? [...list, permission] : list.filter((p) => p !== permission)))
@@ -69,6 +72,15 @@ export function RoleFormPage() {
           </p>
         )}
       </Section>
+      {existing && (
+        <DeleteRecord
+          blocked={holders > 0 ? t('role.inUse', { count: String(holders) }) : undefined}
+          onDelete={() => {
+            rolesStore.remove(existing.id)
+            navigate(-1)
+          }}
+        />
+      )}
     </FormScreen>
   )
 }

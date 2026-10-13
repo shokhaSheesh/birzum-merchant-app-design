@@ -32,6 +32,7 @@ function createRandom(seed: number) {
 
 function pickStatus(roll: number, recent: boolean): ApplicationStatus {
   if (recent && roll > 0.8) return 'processing'
+  if (roll < 0.4) return 'handed'
   if (roll < 0.55) return 'closed'
   if (roll < 0.85) return 'rejected'
   return 'cancelled'
@@ -64,7 +65,7 @@ export function withGeneratedApplications(clients: Client[]): Client[] {
       const roll = random()
       const status = isToday && index === perDay - 1 ? 'processing' : pickStatus(roll, daysAgo <= 1)
       const terms = installmentTerms(product.price, pick(TERMS))
-      const formalised = status === 'closed' || status === 'processing'
+      const formalised = status === 'closed' || status === 'handed' || status === 'processing'
       number += 1 + Math.floor(random() * 4)
 
       const application: Application = formalised
@@ -75,7 +76,7 @@ export function withGeneratedApplications(clients: Client[]): Client[] {
             goodsTotal: product.price,
             installmentTotal: terms.installmentTotal,
             contractNumber:
-              status === 'closed'
+              status === 'closed' || status === 'handed'
                 ? `B-${number - FIRST_NUMBER + 37_100}/${String(date.getFullYear()).slice(2)}`
                 : undefined,
             details: {

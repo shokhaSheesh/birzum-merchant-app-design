@@ -8,7 +8,7 @@ import { ListRow, ListScreen } from '../components/ListScreen'
 
 /** Everyone who can sign in to the merchant app, with their role and shops. */
 export function StaffPage() {
-  const { t } = useI18n()
+  const { t, tl } = useI18n()
   const staff = staffStore.useAll()
   const roles = rolesStore.useAll()
   const locations = locationsStore.useAll()
@@ -35,7 +35,7 @@ export function StaffPage() {
               roles.find((role) => role.id === member.roleId)?.name ?? t('common.none'),
               locations
                 .filter((location) => member.locationIds.includes(location.id))
-                .map((location) => location.name)
+                .map((location) => tl(location.name))
                 .join(', '),
             ]}
             inactiveLabel={member.active ? undefined : t('common.inactive')}

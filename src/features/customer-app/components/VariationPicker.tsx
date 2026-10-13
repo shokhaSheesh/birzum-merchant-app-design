@@ -13,6 +13,8 @@ type Props = {
   onChange: (valueId: string) => void
   /** False for a value that is not sold together with the other current choices. */
   isAvailable: (valueId: string) => boolean
+  /** A photo of the product in that value, if the merchant added one. */
+  imageOf: (valueId: string) => string | undefined
   category: Category
 }
 
@@ -27,6 +29,7 @@ export function VariationPicker({
   value,
   onChange,
   isAvailable,
+  imageOf,
   category,
 }: Props) {
   const { tl } = useI18n()
@@ -56,7 +59,7 @@ export function VariationPicker({
               onClick={() => onChange(item.id)}
               className={cn('size-16 overflow-hidden rounded-control border-2', state)}
             >
-              <ProductPicture category={category} color={item.swatch} />
+              <ProductPicture category={category} color={item.swatch} src={imageOf(item.id)} />
             </button>
           ) : (
             <button

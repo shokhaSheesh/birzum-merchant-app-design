@@ -12,6 +12,7 @@ import { PageHeader } from '@/shared/ui/PageHeader'
 const looks: Record<ApplicationStatus, { icon: LucideIcon; tone: string; text: string }> = {
   pending: { icon: Send, tone: 'bg-warning-soft text-warning', text: 'cnotif.pending' },
   processing: { icon: ThumbsUp, tone: 'bg-green-200 text-brand', text: 'cnotif.processing' },
+  handed: { icon: CircleCheck, tone: 'bg-success-soft text-success', text: 'cnotif.processing' },
   closed: { icon: CircleCheck, tone: 'bg-success-soft text-success', text: 'notification.closed' },
   rejected: { icon: CircleX, tone: 'bg-danger-soft text-danger', text: 'notification.rejected' },
   cancelled: { icon: Ban, tone: 'bg-navy-100 text-ink-muted', text: 'notification.cancelled' },

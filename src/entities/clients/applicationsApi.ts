@@ -1,3 +1,4 @@
+import { takeStock } from '@/entities/catalog/products'
 import type { ApplicationProduct, Term } from './clients'
 import { clientsStore } from './clientsStore'
 import { installmentTerms } from './installment'
@@ -46,10 +47,30 @@ export async function submitApplication(
 /** Merchant side: accept a shopper's application. It moves on to being drawn up. */
 export async function approveApplication(number: number) {
   await delay(900)
+  takeStockFor(findProducts(number))
   clientsStore.updateApplication(number, { status: 'processing' })
 }
 
 export async function rejectApplication(number: number) {
   await delay(600)
   clientsStore.updateApplication(number, { status: 'rejected' })
+}
+
+/** Marks the goods as given to the client. Payments run from here. */
+export async function handOverApplication(number: number) {
+  await delay(700)
+  clientsStore.updateApplication(number, { status: 'handed' })
+}
+
+const findProducts = (number: number) =>
+  clientsStore
+    .getAll()
+    .flatMap((client) => client.applications)
+    .find((application) => application.id === number)?.details?.products ?? []
+
+/** Takes every catalogue line of an application out of stock. */
+export function takeStockFor(products: ApplicationProduct[]) {
+  for (const line of products) {
+    if (line.productId) takeStock(line.productId, line.valueIds ?? [], line.quantity)
+  }
 }

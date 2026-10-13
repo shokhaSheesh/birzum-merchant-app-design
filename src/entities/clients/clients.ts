@@ -7,7 +7,8 @@ export type MaritalStatus = (typeof MARITAL_STATUSES)[number]
 
 export type IncomeSource = 'salary' | 'business' | 'pension' | 'other'
 /** `pending` is an application a shopper sent from the client app, waiting for the merchant. */
-export type ApplicationStatus = 'pending' | 'processing' | 'rejected' | 'closed' | 'cancelled'
+export type ApplicationStatus =
+  'pending' | 'processing' | 'handed' | 'rejected' | 'closed' | 'cancelled'
 
 export const TERMS = [3, 6, 9, 12, 18, 24] as const
 /** Installment length in months. */
@@ -30,7 +31,14 @@ export type Contact = {
   comment: string
 }
 
-export type ApplicationProduct = { name: string; price: number; quantity: number }
+export type ApplicationProduct = {
+  name: string
+  price: number
+  quantity: number
+  /** Set when the line came from the catalogue, so its stock can be taken. */
+  productId?: string
+  valueIds?: string[]
+}
 
 /** What was entered when the contract was drawn up. Missing on applications rejected before that. */
 export type ApplicationDetails = {
@@ -142,6 +150,22 @@ export const seedClients: Client[] = [
         goodsTotal: 0,
         installmentTotal: 0,
         status: 'rejected',
+      },
+      {
+        id: 231050,
+        date: date([2026, 5, 20]),
+        goodsTotal: 4_200_000,
+        installmentTotal: 5_796_000,
+        status: 'handed',
+        contractNumber: 'B-33410/26',
+        details: {
+          products: [{ name: 'Televizor 43', price: 4_200_000, quantity: 1 }],
+          downPayment: 0,
+          paymentDay: 5,
+          term: 12,
+          markupPercent: 38,
+          monthlyPayment: 483_000,
+        },
       },
       {
         id: 252401,
@@ -322,6 +346,7 @@ export const seedClients: Client[] = [
 export const APPLICATION_STATUSES: ApplicationStatus[] = [
   'pending',
   'processing',
+  'handed',
   'closed',
   'rejected',
   'cancelled',

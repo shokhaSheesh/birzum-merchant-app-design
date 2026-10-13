@@ -41,6 +41,8 @@ export type Product = {
   specs: { label: LocalizedText; value: LocalizedText }[]
   /** Photo URLs, first one is the cover. Empty until the merchant adds some. */
   images: string[]
+  /** Extra photos for a variant value (usually a color), by value id. They replace `images` while it is chosen. */
+  valueImages: Record<string, string[]>
   /** Hidden products stay in the merchant's list but not in the client app. */
   active: boolean
 }
@@ -370,11 +372,35 @@ function fromSeed(seed: SeedProduct): Product {
         : { [`${seed.storeId}-main`]: stockFirst },
     specs: seed.specs.map(([label, value]) => ({ label: text(label), value: text(value) })),
     images: [],
+    valueImages: {},
     active: true,
   }
 }
 
 export const productsStore = createStore<Product>(seedProducts.map(fromSeed))
+
+/** Removes sold pieces from stock, emptying one location after another. */
+export function takeStock(productId: string, valueIds: string[], quantity: number) {
+  const product = productsStore.get(productId)
+  if (!product) return
+  const key = variantKey(valueIds)
+  let left = quantity
+  const stock = { ...product.stock }
+  for (const locationId of Object.keys(stock)) {
+    const take = Math.min(stock[locationId][key] ?? 0, left)
+    if (take > 0) {
+      stock[locationId] = { ...stock[locationId], [key]: stock[locationId][key] - take }
+      left -= take
+    }
+  }
+  productsStore.update(productId, { stock })
+}
+
+/** The photos to show for a chosen variant: its value's own, or else the product's. */
+export function photosOf(product: Product, valueIds: string[] = []) {
+  const own = valueIds.map((valueId) => product.valueImages[valueId]).find((list) => list?.length)
+  return own ?? product.images
+}
 
 /** What shoppers can see: visible products from every shop. */
 export const useCatalog = () => {

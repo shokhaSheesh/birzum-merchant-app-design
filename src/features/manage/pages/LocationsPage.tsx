@@ -5,7 +5,7 @@ import { ListRow, ListScreen } from '../components/ListScreen'
 
 /** The merchant's shops. */
 export function LocationsPage() {
-  const { t } = useI18n()
+  const { t, tl } = useI18n()
   const locations = locationsStore.useAll()
 
   return (
@@ -19,8 +19,8 @@ export function LocationsPage() {
           <ListRow
             key={location.id}
             to={managePath('locations', location.id)}
-            title={location.name}
-            lines={[location.address, location.hours]}
+            title={tl(location.name)}
+            lines={[tl(location.address), tl(location.hours)]}
             inactiveLabel={location.active ? undefined : t('common.inactive')}
           />
         ))}

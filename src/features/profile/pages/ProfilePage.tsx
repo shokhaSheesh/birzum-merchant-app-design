@@ -6,6 +6,7 @@ import {
   MapPin,
   Package,
   ShieldCheck,
+  Star,
   Tags,
   UsersRound,
 } from 'lucide-react'
@@ -94,6 +95,7 @@ export function ProfilePage() {
             {can('roles') && (
               <MenuRow icon={ShieldCheck} label={t('manage.roles')} to={ROUTES.manageRoles} />
             )}
+            <MenuRow icon={Star} label={t('manage.reviews')} to={ROUTES.manageReviews} />
           </MenuList>
         </Section>
       )}

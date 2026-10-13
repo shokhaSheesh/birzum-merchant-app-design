@@ -318,7 +318,9 @@ Menyu is the merchant's last tab. It holds the signed-in user, then everything t
 - Two groups of rows (`MenuList` / `MenuRow`: icon, label, chevron): **Katalog** with Mahsulotlar and Ombor, and **Doʻkon** with Filiallar, Xodimlar, Rollar va ruxsatlar. Settings follow below them.
 - **A row only shows if the user's role allows it** (`usePermissions().can(...)`). A group with no visible rows is hidden.
 - Every management list uses `ListScreen`: back arrow, title, the small "Qoʻshish" button at the top right, then rows in one `surface` card. A row (`ListRow`) is a title, up to two muted lines, and a chevron; it opens the record's form.
-- **Records are switched off, not deleted.** A form has a checkbox for it ("Filial ishlayapti", "Hisob faol", "Klient ilovasida koʻrsatish"), and a switched-off record shows a grey badge in its list.
+- **Switching off and deleting are different things.** A form has a checkbox to switch a record off ("Filial ishlayapti", "Hisob faol", "Klient ilovasida koʻrsatish"); a switched-off record shows a grey badge in its list.
+- **Filiallar, Xodimlar and Rollar can also be deleted.** The edit form ends with a quiet red "Oʻchirish" (`DeleteRecord`), which opens a `ConfirmSheet`: a ghost "Bekor qilish" above a red "Oʻchirish". No delete happens without that sheet. Products are hidden, never deleted.
+- When a record cannot be deleted, the button is replaced by an `Alert` saying why: a role that staff still hold, or your own account.
 - One form serves create and edit; its title changes ("Yangi filial" / "Filial"). The button is always "Saqlash".
 - Picking several of something (a staff member's shops, a role's permissions) is a list of `Checkbox`es, with a red line under it if none is chosen.
 - **Categories and brands are never created here.** They come from the Birzum admin panel, so in the product form they are `Select`s.
@@ -338,7 +340,8 @@ Anything a merchant writes that shoppers read is stored once per language (`Loca
 
 ### Product form
 - Top to bottom: photos, the text language switch, name, description, category, brand, price, variants, combinations, characteristics, visibility.
-- **Photos** are 96px square tiles in a wrapping row, each with a small remove button; the last tile is a dashed "Rasm qoʻshish". The first photo is the cover.
+- **Photos** (`PhotoTiles`) are 96px square tiles in a wrapping row, each with a small remove button; the last tile is a dashed "Rasm qoʻshish". The first photo is the cover.
+- **Rang rasmlari** appears once a color type is chosen: one card per color with its own, smaller row of photo tiles. While a shopper has that color chosen, its photos replace the product's.
 - **Variantlar:** one `surface` card per variant type: a `Select` of the type, then its values as outline chips that are ticked on and off (navy border when on, with the swatch for colors).
 - **Kombinatsiyalar** appears once values are chosen and lists every combination of them. The merchant ticks the ones that are actually sold; a ticked row opens a price field, pre-filled with the product's price. The title counts them ("4 / 6") and "Hammasini tanlash" ticks all. With two or more types the rows are grouped under the first type's values, each group with its own count.
 - A combination that is not ticked does not exist: it has no price, no stock row in Ombor, and in the client app that choice is faded and struck through.
@@ -349,6 +352,17 @@ Anything a merchant writes that shoppers read is stored once per language (`Loca
 - Shops across the top as `FilterChips`; the list below is that shop's stock.
 - One card per product, with one row per combination that is sold ("Qora · 128 GB") and a compact `QuantityStepper`. A product without variations has a single "Qoldiq" row.
 - Changes save as they are made; there is no save button.
+
+### Arizalar: from order to payments
+- Statuses in order: **Tasdiqlash kutilmoqda** (amber, a shopper's order) → **Rasmiylashtirilmoqda** (blue-grey) → **Topshirilgan** (green) → **Nasiya yopilgan** (grey). **Rad etilgan** is red and **Bekor qilingan** grey.
+- The ariza screen's bottom button is the next step: "Rad etish" and "Tasdiqlash" while waiting, then "Mahsulot topshirildi". After that there is none.
+- Stock goes down when an ariza is confirmed, whether a shopper sent it or the merchant filed it.
+- **Toʻlov jadvali** appears from Topshirilgan on: a red `Alert` with the overdue amount if there is one, a progress bar with "4 / 12 toʻlangan" and the remaining sum, then every payment with its date, amount and a badge: green "Toʻlangan", grey "Kutilmoqda", red "Muddati oʻtgan".
+- **In "Yangi shartnoma" products are picked, never typed:** a `Select` of the merchant's products, a second `Select` of that product's sold combinations, then quantity. The price comes from the catalogue, and the row shows how many are in stock or, in red, that there are not enough.
+
+### Sharhlar
+- The average in large type with five stars and the number of reviews, then each review: avatar, name, stars, date, the text, and the product it is about.
+- Stars are amber when filled and grey when empty, the same as `StoreRating` in the client app.
 
 ## Two apps, one system
 
@@ -369,6 +383,7 @@ The repo holds the merchant app and the client (shopper) app. They share every t
 - **The client never sees "Ustama".** `InstallmentTermsCard` is used with `showMarkup={false}`: monthly payment, term and the total only.
 - **Liking.** `LikeButton` is a heart: an outline in navy, filled red once liked. It sits on the top right corner of every `ProductCard` picture and in the product screen's top bar. Liked products are listed in Sevimlilar.
 - **Shop rating** (`StoreRating`): an amber star, the score to one decimal and the number of reviews, wherever a shop is named.
+- **Several photos** become a sideways-swiped gallery with dots under it (`ProductGallery`); one photo, or none, shows a single picture.
 - **Its bottom bar changes once the product is in the cart:** "Savatga qoʻshish" becomes a `QuantityStepper` on the left and "Savatga oʻtish" on the right. Stepping down to zero removes it and brings the first button back. The same product with different options is a separate cart line.
 - An out-of-stock product has a red "Tugagan" badge and a disabled button. Quantity can never exceed the stock.
 - The cart is also the checkout: product rows with the chosen options, a red `Trash2`, and the price with a compact `QuantityStepper` (`size="sm"`) on the same line; the `TermPicker`; the `InstallmentTermsCard`; one line with the limit for that term; then the button. Going over the limit shows the `Alert` above the button and disables it.

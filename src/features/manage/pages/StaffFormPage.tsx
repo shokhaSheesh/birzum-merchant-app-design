@@ -3,7 +3,7 @@ import { useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { locationsStore } from '@/entities/merchant/locations'
 import { rolesStore } from '@/entities/merchant/roles'
-import { staffStore } from '@/entities/merchant/staff'
+import { CURRENT_STAFF_ID, staffStore } from '@/entities/merchant/staff'
 import { useI18n } from '@/shared/i18n/useI18n'
 import { newId } from '@/shared/lib/createStore'
 import { PHONE_DIGITS } from '@/shared/lib/phone'
@@ -16,10 +16,11 @@ import { ScreenIntro } from '@/shared/ui/ScreenIntro'
 import { Section } from '@/shared/ui/Section'
 import { Select } from '@/shared/ui/Select'
 import { TextField } from '@/shared/ui/TextField'
+import { DeleteRecord } from '../components/DeleteRecord'
 
 /** Create or edit a staff member: who they are, their role, and the shops they work in. */
 export function StaffFormPage() {
-  const { t } = useI18n()
+  const { t, tl } = useI18n()
   const navigate = useNavigate()
   const { id } = useParams()
   const existing = staffStore.get(id)
@@ -113,8 +114,8 @@ export function StaffFormPage() {
           {locations.map((location) => (
             <Checkbox
               key={location.id}
-              label={location.name}
-              description={location.address}
+              label={tl(location.name)}
+              description={tl(location.address)}
               checked={locationIds.includes(location.id)}
               onChange={(on) => toggleLocation(location.id, on)}
             />
@@ -133,6 +134,15 @@ export function StaffFormPage() {
         checked={active}
         onChange={setActive}
       />
+      {existing && (
+        <DeleteRecord
+          blocked={existing.id === CURRENT_STAFF_ID ? t('staff.self') : undefined}
+          onDelete={() => {
+            staffStore.remove(existing.id)
+            navigate(-1)
+          }}
+        />
+      )}
     </FormScreen>
   )
 }

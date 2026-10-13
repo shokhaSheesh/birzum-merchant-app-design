@@ -1,5 +1,5 @@
-import { ImagePlus, Plus, Trash2, X } from 'lucide-react'
-import { useRef, useState, type FormEvent } from 'react'
+import { Plus, Trash2, X } from 'lucide-react'
+import { useState, type FormEvent } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { attributesStore, SWATCH_PRESETS, type Attribute } from '@/entities/catalog/attributes'
 import {
@@ -34,6 +34,7 @@ import { Sheet } from '@/shared/ui/Sheet'
 import { TextAreaField } from '@/shared/ui/TextAreaField'
 import { TextField } from '@/shared/ui/TextField'
 import { FormLanguage } from '../components/FormLanguage'
+import { PhotoTiles } from '../components/PhotoTiles'
 import { SwatchPicker } from '../components/SwatchPicker'
 
 type GroupDraft = { id: number; attributeId: string | null; valueIds: string[] }
@@ -60,10 +61,12 @@ export function ProductFormPage() {
   const { id } = useParams()
   const existing = productsStore.get(id)
   const attributes = attributesStore.useAll()
-  const fileInput = useRef<HTMLInputElement>(null)
 
   const [lang, setLang] = useState<Lang>(appLang)
   const [images, setImages] = useState<string[]>(existing?.images ?? [])
+  const [valueImages, setValueImages] = useState<Record<string, string[]>>(
+    existing?.valueImages ?? {},
+  )
   const [name, setName] = useState<LocalizedText>(existing?.name ?? emptyText())
   const [description, setDescription] = useState<LocalizedText>(
     existing?.description ?? emptyText(),
@@ -103,6 +106,13 @@ export function ProductFormPage() {
       : [],
   )
   const combos = variations.length > 0 ? allCombos(variations) : []
+  /** The color values this product comes in; each can carry its own photos. */
+  const colorValues = groups.flatMap((group) => {
+    const attribute = attributeOf(group)
+    return attribute?.color
+      ? attribute.values.filter((value) => group.valueIds.includes(value.id))
+      : []
+  })
   const comboOf = (combo: string[]): ComboDraft =>
     comboDrafts[variantKey(combo)] ?? { on: false, price: null }
   const setCombo = (combo: string[], patch: Partial<ComboDraft>) =>
@@ -158,6 +168,7 @@ export function ProductFormPage() {
       // Cards show the cheapest way to buy the product
       price: sold.length > 0 ? Math.min(...Object.values(variants).map((v) => v.price)) : price,
       images,
+      valueImages,
       active,
       variations,
       variants,
@@ -190,41 +201,7 @@ export function ProductFormPage() {
       <h1 className="text-2xl font-bold">{t(existing ? 'product.edit' : 'product.new')}</h1>
 
       <Section title={t('product.photos')} hint={t('product.photos.hint')}>
-        <div className="flex flex-wrap gap-3">
-          {images.map((src) => (
-            <div key={src} className="relative size-24 overflow-hidden rounded-control bg-surface">
-              <img src={src} alt="" className="size-full object-cover" />
-              <button
-                type="button"
-                aria-label={t('product.photos.remove')}
-                onClick={() => setImages((list) => list.filter((x) => x !== src))}
-                className="absolute top-1 right-1 grid size-7 place-items-center rounded-full bg-canvas/90 text-danger"
-              >
-                <X size={16} />
-              </button>
-            </div>
-          ))}
-          <button
-            type="button"
-            onClick={() => fileInput.current?.click()}
-            className="flex size-24 flex-col items-center justify-center gap-1 rounded-control border-[1.5px] border-dashed border-navy-400 px-1 text-center text-xs font-semibold text-brand active:bg-surface"
-          >
-            <ImagePlus size={24} />
-            {t('product.photos.add')}
-          </button>
-          <input
-            ref={fileInput}
-            type="file"
-            accept="image/*"
-            multiple
-            hidden
-            onChange={(e) => {
-              const files = Array.from(e.target.files ?? [])
-              setImages((list) => [...list, ...files.map((file) => URL.createObjectURL(file))])
-              e.target.value = ''
-            }}
-          />
-        </div>
+        <PhotoTiles images={images} onChange={setImages} />
       </Section>
 
       <FormLanguage value={lang} onChange={setLang} onFillEmpty={fillEmpty} />
@@ -366,6 +343,27 @@ export function ProductFormPage() {
         )}
         <p className="text-sm text-ink-muted">{t('attribute.note')}</p>
       </Section>
+
+      {colorValues.length > 0 && (
+        <Section title={t('product.variantPhotos')} hint={t('product.variantPhotos.hint')}>
+          {colorValues.map((value) => (
+            <div key={value.id} className="flex flex-col gap-2 rounded-card bg-surface p-4">
+              <p className="flex items-center gap-2 font-semibold">
+                <span
+                  className="size-4 rounded-full border border-line"
+                  style={{ background: value.swatch }}
+                />
+                {tl(value.name)}
+              </p>
+              <PhotoTiles
+                size="sm"
+                images={valueImages[value.id] ?? []}
+                onChange={(next) => setValueImages((all) => ({ ...all, [value.id]: next }))}
+              />
+            </div>
+          ))}
+        </Section>
+      )}
 
       {combos.length > 0 && (
         <Section
