@@ -1,5 +1,5 @@
 import { useMemo } from 'react'
-import type { LocalizedText } from '@/shared/i18n/dictionaries'
+import type { Lang, LocalizedText } from '@/shared/i18n/dictionaries'
 import { createStore } from '@/shared/lib/createStore'
 import { seedAttributes } from './attributes'
 
@@ -39,8 +39,8 @@ export type Product = {
   stock: Record<string, Record<string, number>>
   /** Characteristics, in display order. */
   specs: { label: LocalizedText; value: LocalizedText }[]
-  /** Photo URLs, first one is the cover. Empty until the merchant adds some. */
-  images: string[]
+  /** Photo URLs per language (a photo may carry text), first one is the cover. Empty until the merchant adds some. */
+  images: Record<Lang, string[]>
   /** Extra photos for a variant value (usually a color), by value id. They replace `images` while it is chosen. */
   valueImages: Record<string, string[]>
   /** Hidden products stay in the merchant's list but not in the client app. */
@@ -371,7 +371,7 @@ function fromSeed(seed: SeedProduct): Product {
         ? { l1: stockFirst, l2: stockSecond }
         : { [`${seed.storeId}-main`]: stockFirst },
     specs: seed.specs.map(([label, value]) => ({ label: text(label), value: text(value) })),
-    images: [],
+    images: { uz: [], ru: [] },
     valueImages: {},
     active: true,
   }
@@ -396,10 +396,15 @@ export function takeStock(productId: string, valueIds: string[], quantity: numbe
   productsStore.update(productId, { stock })
 }
 
-/** The photos to show for a chosen variant: its value's own, or else the product's. */
-export function photosOf(product: Product, valueIds: string[] = []) {
+/**
+ * The photos to show for a chosen variant: its value's own, or else the product's in the
+ * reader's language. A language without photos borrows the other one's.
+ */
+export function photosOf(product: Product, lang: Lang, valueIds: string[] = []) {
   const own = valueIds.map((valueId) => product.valueImages[valueId]).find((list) => list?.length)
-  return own ?? product.images
+  if (own) return own
+  const all = [product.images[lang], ...Object.values(product.images)]
+  return all.find((list) => list.length > 0) ?? []
 }
 
 /** What shoppers can see: visible products from every shop. */

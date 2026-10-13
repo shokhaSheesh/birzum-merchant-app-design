@@ -12,14 +12,7 @@ import {
   type Category,
 } from '@/entities/catalog/products'
 import type { Lang, LocalizedText } from '@/shared/i18n/dictionaries'
-import {
-  emptyText,
-  fillMissing,
-  isBlank,
-  isComplete,
-  missingLang,
-  withLang,
-} from '@/shared/i18n/localized'
+import { emptyText, fillMissing, isBlank, isComplete } from '@/shared/i18n/localized'
 import { useI18n } from '@/shared/i18n/useI18n'
 import { cn } from '@/shared/lib/cn'
 import { newId } from '@/shared/lib/createStore'
@@ -27,13 +20,12 @@ import { Alert } from '@/shared/ui/Alert'
 import { Button } from '@/shared/ui/Button'
 import { Checkbox } from '@/shared/ui/Checkbox'
 import { FormScreen } from '@/shared/ui/FormScreen'
+import { LangToggle } from '@/shared/ui/LangToggle'
+import { LocalizedTextField } from '@/shared/ui/LocalizedTextField'
 import { NumberField } from '@/shared/ui/NumberField'
 import { Section } from '@/shared/ui/Section'
 import { Select } from '@/shared/ui/Select'
 import { Sheet } from '@/shared/ui/Sheet'
-import { TextAreaField } from '@/shared/ui/TextAreaField'
-import { TextField } from '@/shared/ui/TextField'
-import { FormLanguage } from '../components/FormLanguage'
 import { PhotoTiles } from '../components/PhotoTiles'
 import { SwatchPicker } from '../components/SwatchPicker'
 
@@ -51,7 +43,8 @@ const iconButton =
 const chip = 'h-10 rounded-control border-2 px-3.5 text-sm font-semibold'
 
 /**
- * Create or edit a product. Text is written once per language. Variant types come from the
+ * Create or edit a product. Photos, name, description and characteristics are entered once
+ * per language, each with its own small toggle; the rest once. Variant types come from the
  * directory; the merchant then ticks which combinations of their values are actually sold
  * and prices each one.
  */
@@ -62,8 +55,11 @@ export function ProductFormPage() {
   const existing = productsStore.get(id)
   const attributes = attributesStore.useAll()
 
-  const [lang, setLang] = useState<Lang>(appLang)
-  const [images, setImages] = useState<string[]>(existing?.images ?? [])
+  const [photosLang, setPhotosLang] = useState<Lang>(appLang)
+  const [specsLang, setSpecsLang] = useState<Lang>(appLang)
+  const [images, setImages] = useState<Record<Lang, string[]>>(
+    existing?.images ?? { uz: [], ru: [] },
+  )
   const [valueImages, setValueImages] = useState<Record<string, string[]>>(
     existing?.valueImages ?? {},
   )
@@ -140,19 +136,9 @@ export function ProductFormPage() {
         }))
       : [{ heading: null, combos, from: 0 }]
 
-  const fillEmpty = () => {
-    setName(fillMissing(name))
-    setDescription(fillMissing(description))
-    setSpecs((list) =>
-      list.map((s) => ({ ...s, label: fillMissing(s.label), value: fillMissing(s.value) })),
-    )
-  }
-
   const save = () => {
     setSubmitted(true)
-    const missing = missingLang([name])
-    if (missing) setLang(missing)
-    if (missing || !category || !brand || !price || !groupsValid || !combosValid) return
+    if (!isComplete(name) || !category || !brand || !price || !groupsValid || !combosValid) return
 
     const variants = Object.fromEntries(
       sold.map((combo) => [variantKey(combo), { price: comboOf(combo).price ?? price }]),
@@ -200,24 +186,29 @@ export function ProductFormPage() {
     >
       <h1 className="text-2xl font-bold">{t(existing ? 'product.edit' : 'product.new')}</h1>
 
-      <Section title={t('product.photos')} hint={t('product.photos.hint')}>
-        <PhotoTiles images={images} onChange={setImages} />
+      <Section
+        title={t('product.photos')}
+        hint={t('product.photos.hint')}
+        action={<LangToggle value={photosLang} onChange={setPhotosLang} />}
+      >
+        <PhotoTiles
+          images={images[photosLang]}
+          onChange={(next) => setImages((all) => ({ ...all, [photosLang]: next }))}
+        />
       </Section>
 
-      <FormLanguage value={lang} onChange={setLang} onFillEmpty={fillEmpty} />
-
       <div className="flex flex-col gap-4">
-        <TextField
+        <LocalizedTextField
           label={t('field.name')}
-          autoComplete="off"
-          value={name[lang]}
-          onChange={(e) => setName(withLang(name, lang, e.target.value))}
-          error={submitted && !isComplete(name) ? t('error.bothLanguages') : undefined}
+          value={name}
+          onChange={setName}
+          requireBoth={submitted}
         />
-        <TextAreaField
+        <LocalizedTextField
           label={t('product.description')}
-          value={description[lang]}
-          onChange={(e) => setDescription(withLang(description, lang, e.target.value))}
+          value={description}
+          onChange={setDescription}
+          multiline
         />
         <Select
           label={t('filter.category')}
@@ -428,25 +419,26 @@ export function ProductFormPage() {
         </Section>
       )}
 
-      <Section title={t('product.specs')}>
+      <Section
+        title={t('product.specs')}
+        action={specs.length > 0 && <LangToggle value={specsLang} onChange={setSpecsLang} />}
+      >
         {specs.map((spec) => (
           <div key={spec.id} className="flex items-end gap-2">
             <div className="grid min-w-0 flex-1 grid-cols-2 gap-2">
-              <TextField
+              <LocalizedTextField
                 label={t('field.name')}
-                autoComplete="off"
-                value={spec.label[lang]}
-                onChange={(e) =>
-                  patchSpec(spec.id, { label: withLang(spec.label, lang, e.target.value) })
-                }
+                value={spec.label}
+                onChange={(label) => patchSpec(spec.id, { label })}
+                lang={specsLang}
+                hideToggle
               />
-              <TextField
+              <LocalizedTextField
                 label={t('spec.value')}
-                autoComplete="off"
-                value={spec.value[lang]}
-                onChange={(e) =>
-                  patchSpec(spec.id, { value: withLang(spec.value, lang, e.target.value) })
-                }
+                value={spec.value}
+                onChange={(value) => patchSpec(spec.id, { value })}
+                lang={specsLang}
+                hideToggle
               />
             </div>
             <button
@@ -530,19 +522,11 @@ function NewValueSheet({ attribute, onClose, onAdded }: NewValueProps) {
   return (
     <Sheet open onClose={onClose} title={`${tl(attribute.name)}: ${t('attribute.newValue')}`}>
       <form onSubmit={add} noValidate className="flex flex-col gap-4 pt-1 pb-1">
-        <TextField
-          label="Oʻzbekcha"
-          autoComplete="off"
-          value={name.uz}
-          onChange={(e) => setName(withLang(name, 'uz', e.target.value))}
-          error={submitted && name.uz.trim() === '' ? t('error.required') : undefined}
-        />
-        <TextField
-          label="Русский"
-          autoComplete="off"
-          value={name.ru}
-          onChange={(e) => setName(withLang(name, 'ru', e.target.value))}
-          error={submitted && name.ru.trim() === '' ? t('error.required') : undefined}
+        <LocalizedTextField
+          label={t('field.name')}
+          value={name}
+          onChange={setName}
+          requireBoth={submitted}
         />
         {attribute.color && <SwatchPicker value={swatch} onChange={setSwatch} />}
         <Button type="submit" block className="mt-2">

@@ -2,18 +2,18 @@ import { Plus, Tags, X } from 'lucide-react'
 import { useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { attributesStore, SWATCH_PRESETS } from '@/entities/catalog/attributes'
-import type { Lang, LocalizedText } from '@/shared/i18n/dictionaries'
-import { emptyText, fillMissing, isComplete, missingLang, withLang } from '@/shared/i18n/localized'
+import { LANGS, type Lang, type LocalizedText } from '@/shared/i18n/dictionaries'
+import { emptyText, fillMissing, isComplete } from '@/shared/i18n/localized'
 import { useI18n } from '@/shared/i18n/useI18n'
 import { newId } from '@/shared/lib/createStore'
 import { Button } from '@/shared/ui/Button'
 import { Checkbox } from '@/shared/ui/Checkbox'
 import { FormScreen } from '@/shared/ui/FormScreen'
 import { IconBadge } from '@/shared/ui/IconBadge'
+import { LangToggle } from '@/shared/ui/LangToggle'
+import { LocalizedTextField } from '@/shared/ui/LocalizedTextField'
 import { ScreenIntro } from '@/shared/ui/ScreenIntro'
 import { Section } from '@/shared/ui/Section'
-import { TextField } from '@/shared/ui/TextField'
-import { FormLanguage } from '../components/FormLanguage'
 import { SwatchPicker } from '../components/SwatchPicker'
 
 type ValueDraft = { id: string; name: LocalizedText; swatch?: string }
@@ -25,7 +25,8 @@ export function AttributeFormPage() {
   const { id } = useParams()
   const existing = attributesStore.get(id)
 
-  const [lang, setLang] = useState<Lang>(appLang)
+  /** One toggle switches every value row at once. */
+  const [valuesLang, setValuesLang] = useState<Lang>(appLang)
   const [name, setName] = useState<LocalizedText>(existing?.name ?? emptyText())
   const [color, setColor] = useState(existing?.color ?? false)
   const [values, setValues] = useState<ValueDraft[]>(
@@ -35,23 +36,10 @@ export function AttributeFormPage() {
 
   const patchValue = (valueId: string, patch: Partial<ValueDraft>) =>
     setValues((list) => list.map((v) => (v.id === valueId ? { ...v, ...patch } : v)))
-  const bothLanguages = (text: LocalizedText) =>
-    submitted && text[lang].trim() === '' ? t('error.bothLanguages') : undefined
-
-  const fillEmpty = () => {
-    setName(fillMissing(name))
-    setValues((list) => list.map((v) => ({ ...v, name: fillMissing(v.name) })))
-  }
-
   const save = () => {
     setSubmitted(true)
     const texts = [name, ...values.map((v) => v.name)]
-    const missing = missingLang(texts)
-    if (missing || values.length === 0) {
-      // Show the language that still has gaps
-      if (missing) setLang(missing)
-      return
-    }
+    if (!texts.every(isComplete) || values.length === 0) return
     attributesStore.save({
       id: existing?.id ?? newId(),
       name: fillMissing(name),
@@ -77,32 +65,41 @@ export function AttributeFormPage() {
     >
       <IconBadge icon={Tags} />
       <ScreenIntro title={t(existing ? 'attribute.edit' : 'attribute.new')} />
-      <FormLanguage value={lang} onChange={setLang} onFillEmpty={fillEmpty} />
-
       <div className="flex flex-col gap-4">
-        <TextField
+        <LocalizedTextField
           label={t('field.name')}
-          autoComplete="off"
-          value={name[lang]}
-          onChange={(e) => setName(withLang(name, lang, e.target.value))}
-          error={bothLanguages(name)}
+          value={name}
+          onChange={setName}
+          requireBoth={submitted}
         />
         <Checkbox label={t('variation.color')} checked={color} onChange={setColor} />
       </div>
 
-      <Section title={t('attribute.values')}>
+      <Section
+        title={t('attribute.values')}
+        action={
+          <LangToggle
+            value={valuesLang}
+            onChange={setValuesLang}
+            missing={
+              submitted
+                ? LANGS.filter((l) => values.some((v) => v.name[l].trim() === ''))
+                : undefined
+            }
+          />
+        }
+      >
         {values.map((value) => (
           <div key={value.id} className="flex flex-col gap-3 rounded-card bg-surface p-4">
             <div className="flex items-end gap-2">
               <div className="min-w-0 flex-1">
-                <TextField
+                <LocalizedTextField
                   label={t('attribute.value')}
-                  autoComplete="off"
-                  value={value.name[lang]}
-                  onChange={(e) =>
-                    patchValue(value.id, { name: withLang(value.name, lang, e.target.value) })
-                  }
-                  error={bothLanguages(value.name)}
+                  value={value.name}
+                  onChange={(next) => patchValue(value.id, { name: next })}
+                  requireBoth={submitted}
+                  lang={valuesLang}
+                  hideToggle
                 />
               </div>
               {values.length > 1 && (
@@ -132,11 +129,6 @@ export function AttributeFormPage() {
           <Plus size={20} />
           {t('attribute.addValue')}
         </Button>
-        {submitted && !values.every((v) => isComplete(v.name)) && (
-          <p role="alert" className="text-sm text-danger">
-            {t('error.bothLanguages')}
-          </p>
-        )}
       </Section>
     </FormScreen>
   )

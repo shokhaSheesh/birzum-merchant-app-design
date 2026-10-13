@@ -45,7 +45,7 @@ export function ProductPage() {
 }
 
 function ProductDetails({ product }: { product: Product }) {
-  const { t, tl } = useI18n()
+  const { t, tl, lang } = useI18n()
   const navigate = useNavigate()
   const customer = useCustomer()
   const { lines } = useCart()
@@ -113,7 +113,7 @@ function ProductDetails({ product }: { product: Product }) {
       <div className="flex min-h-0 flex-1 flex-col gap-6 overflow-y-auto px-5 pb-4">
         <ProductGallery
           key={variantKey(picked)}
-          images={photosOf(product, picked)}
+          images={photosOf(product, lang, picked)}
           category={product.category}
           color={color}
         />

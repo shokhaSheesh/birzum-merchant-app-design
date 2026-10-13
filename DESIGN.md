@@ -326,20 +326,20 @@ Menyu is the merchant's last tab. It holds the signed-in user, then everything t
 - **Categories and brands are never created here.** They come from the Birzum admin panel, so in the product form they are `Select`s.
 
 ### Text in two languages
-Anything a merchant writes that shoppers read is stored once per language (`LocalizedText`): product names and descriptions, characteristic names and values, variant types and their values. It is shown with `tl()`, which falls back to the other language if one is empty.
+Only what shoppers read and what really differs by language is stored once per language (`LocalizedText`): product photos, names and descriptions, characteristic names and values, variant types and their values, a shop's name and address. Text is shown with `tl()`, which falls back to the other language if one is empty; photos fall back the same way.
 
-- A form with such fields starts them with `FormLanguage`: a "Matn tili" switch between Oʻzbekcha and Русский. The text fields under it show the chosen language; switching it does not lose the other one.
-- Under the switch is a ghost "Boʻsh maydonlarni boshqa tildan toʻldirish", for text that is the same in both, such as "128 GB".
-- Names must be filled in both languages. On a failed save the form jumps to the language that has a gap and marks the field "Ikkala tilda ham kiriting". Optional text (description, characteristics) is copied from the other language when left empty.
-- Fields that are not text for shoppers (price, category, brand, phone) are not affected by the switch.
+- There is no form-wide language switch. Each two-language field carries its own small `LangToggle` (UZ / RU) at the right of its label; use `LocalizedTextField`. Switching it does not lose the other language.
+- A group of rows that belong together (photos, characteristics, a variant type's values) has one toggle at the right of the section title instead of one per row.
+- Everything else is entered once and has no toggle: price, working hours, phone, and anything picked from a list (category, brand, variant types). Lists already come in both languages from the backend.
+- Names must be filled in both languages. After a failed save the field shows "Ikkala tilda ham kiriting" and a red dot on the language that is still empty. Optional text (description, characteristics) is copied from the other language when left empty.
 
 ### Variant types (the directory)
 - Menyu → Katalog → Variant turlari lists what products can vary by (Rang, Xotira, …), each with its values. A type marked "Rang sifatida koʻrsatish" gives each value a color swatch.
 - Types and values are created here, in both languages, and reused on every product. A product never has free-typed variant names.
-- From the product form a missing value can be added on the spot ("Yangi qiymat" opens a sheet asking for both languages); a whole new type is created in the directory.
+- From the product form a missing value can be added on the spot ("Yangi qiymat" opens a sheet with one two-language name field); a whole new type is created in the directory.
 
 ### Product form
-- Top to bottom: photos, the text language switch, name, description, category, brand, price, variants, combinations, characteristics, visibility.
+- Top to bottom: photos, name, description, category, brand, price, variants, combinations, characteristics, visibility.
 - **Photos** (`PhotoTiles`) are 96px square tiles in a wrapping row, each with a small remove button; the last tile is a dashed "Rasm qoʻshish". The first photo is the cover.
 - **Rang rasmlari** appears once a color type is chosen: one card per color with its own, smaller row of photo tiles. While a shopper has that color chosen, its photos replace the product's.
 - **Variantlar:** one `surface` card per variant type: a `Select` of the type, then its values as outline chips that are ticked on and off (navy border when on, with the swatch for colors).

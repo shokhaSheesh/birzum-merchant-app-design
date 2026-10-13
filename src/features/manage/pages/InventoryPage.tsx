@@ -6,6 +6,7 @@ import {
   soldCombos,
   variantKey,
   type Product,
+  photosOf,
 } from '@/entities/catalog/products'
 import { useVariantNames } from '@/entities/catalog/useVariantNames'
 import { locationsStore } from '@/entities/merchant/locations'
@@ -25,7 +26,7 @@ function setStock(product: Product, locationId: string, key: string, quantity: n
 
 /** Stock on hand, one shop at a time: a count for every product and every variant of it. */
 export function InventoryPage() {
-  const { t, tl } = useI18n()
+  const { t, tl, lang } = useI18n()
   const { names } = useVariantNames()
   const locations = locationsStore.useAll()
   const products = productsStore.useAll().filter((product) => product.storeId === OWN_STORE_ID)
@@ -63,7 +64,7 @@ export function InventoryPage() {
                   <div className="flex items-center gap-3">
                     <ProductPicture
                       category={product.category}
-                      src={product.images[0]}
+                      src={photosOf(product, lang)[0]}
                       className="w-12 shrink-0 rounded-control"
                     />
                     <div className="flex min-w-0 flex-1 flex-col">

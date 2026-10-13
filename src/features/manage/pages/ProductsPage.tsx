@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { ProductPicture } from '@/entities/catalog/ProductPicture'
-import { OWN_STORE_ID, productsStore, stockOf } from '@/entities/catalog/products'
+import { OWN_STORE_ID, photosOf, productsStore, stockOf } from '@/entities/catalog/products'
 import { managePath } from '@/shared/config/routes'
 import { useI18n } from '@/shared/i18n/useI18n'
 import { formatSum } from '@/shared/lib/format'
@@ -9,7 +9,7 @@ import { ListRow, ListScreen } from '../components/ListScreen'
 
 /** The merchant's own products, visible or hidden. */
 export function ProductsPage() {
-  const { t, tl } = useI18n()
+  const { t, tl, lang } = useI18n()
   const [query, setQuery] = useState('')
   const needle = query.trim().toLowerCase()
   const products = productsStore
@@ -39,7 +39,7 @@ export function ProductsPage() {
             leading={
               <ProductPicture
                 category={product.category}
-                src={product.images[0]}
+                src={photosOf(product, lang)[0]}
                 className="w-14 shrink-0 rounded-control"
               />
             }

@@ -21,7 +21,7 @@ import { TermPicker } from '@/shared/ui/TermPicker'
 
 /** The cart doubles as checkout: products, the term, what it will cost, and one button to send. */
 export function CartPage() {
-  const { t, tl } = useI18n()
+  const { t, tl, lang } = useI18n()
   const { names, color } = useVariantNames()
   const navigate = useNavigate()
   const customer = useCustomer()
@@ -111,7 +111,7 @@ export function CartPage() {
               <ProductPicture
                 category={product.category}
                 color={color(product, valueIds)}
-                src={photosOf(product, valueIds)[0]}
+                src={photosOf(product, lang, valueIds)[0]}
                 className="w-20 shrink-0 rounded-control"
               />
               <div className="flex min-w-0 flex-1 flex-col gap-2">

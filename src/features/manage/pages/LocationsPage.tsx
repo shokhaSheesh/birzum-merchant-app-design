@@ -20,7 +20,7 @@ export function LocationsPage() {
             key={location.id}
             to={managePath('locations', location.id)}
             title={tl(location.name)}
-            lines={[tl(location.address), tl(location.hours)]}
+            lines={[tl(location.address), location.hours]}
             inactiveLabel={location.active ? undefined : t('common.inactive')}
           />
         ))}
