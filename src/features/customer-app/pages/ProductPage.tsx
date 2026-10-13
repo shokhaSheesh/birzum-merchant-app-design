@@ -32,6 +32,7 @@ import { TermPicker } from '@/shared/ui/TermPicker'
 import { LikeButton } from '../components/LikeButton'
 import { ProductCard } from '../components/ProductCard'
 import { ProductGallery } from '../components/ProductGallery'
+import { usePickupPoints } from '@/entities/merchant/usePickupPoints'
 import { StoreRating } from '../components/StoreRating'
 import { VariationPicker } from '../components/VariationPicker'
 
@@ -46,6 +47,7 @@ export function ProductPage() {
 
 function ProductDetails({ product }: { product: Product }) {
   const { t, tl, lang } = useI18n()
+  const pickupPoints = usePickupPoints()
   const navigate = useNavigate()
   const customer = useCustomer()
   const { lines } = useCart()
@@ -90,6 +92,7 @@ function ProductDetails({ product }: { product: Product }) {
   const hasLimit = !!customer?.limits
   const stock = stockOf(product, picked)
   const inStock = stock > 0
+  const points = pickupPoints(product.storeId)
   const similar = useCatalog().filter((p) => p.category === product.category && p.id !== product.id)
 
   return (
@@ -166,6 +169,32 @@ function ProductDetails({ product }: { product: Product }) {
               </div>
               <ChevronRight size={20} className="shrink-0 text-ink-subtle" />
             </Link>
+          </Section>
+        )}
+
+        {points.length > 1 && (
+          <Section title={t('product.availability')}>
+            <ul className="rounded-card bg-surface px-4">
+              {points.map((point) => {
+                const count = stockOf(product, picked, point.id)
+                return (
+                  <li
+                    key={point.id}
+                    className="flex items-center justify-between gap-3 border-b border-line py-3 last:border-b-0"
+                  >
+                    <div className="flex min-w-0 flex-col gap-0.5">
+                      <p className="font-semibold">{point.name}</p>
+                      <p className="text-sm text-ink-muted">{point.address}</p>
+                    </div>
+                    <StatusBadge tone={count > 0 ? 'success' : 'neutral'}>
+                      {count > 0
+                        ? t('common.pieces', { count: String(count) })
+                        : t('product.stock.out')}
+                    </StatusBadge>
+                  </li>
+                )
+              })}
+            </ul>
           </Section>
         )}
 

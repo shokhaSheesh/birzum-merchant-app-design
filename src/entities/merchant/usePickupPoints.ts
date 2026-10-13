@@ -2,7 +2,14 @@ import { getStore, OWN_STORE_ID } from '@/entities/catalog/products'
 import { useI18n } from '@/shared/i18n/useI18n'
 import { locationsStore } from './locations'
 
-export type PickupPoint = { id: string; name: string; address: string }
+export type PickupPoint = {
+  id: string
+  name: string
+  address: string
+  /** Known for the signed-in merchant's filials only. */
+  hours?: string
+  phone?: string
+}
 
 /**
  * Where a shop's goods can be collected. The signed-in merchant's shop has its working
@@ -20,6 +27,8 @@ export function usePickupPoints() {
           id: location.id,
           name: tl(location.name),
           address: tl(location.address),
+          hours: location.hours,
+          phone: location.phone,
         }))
     }
     const store = getStore(storeId)

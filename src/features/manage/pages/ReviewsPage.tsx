@@ -1,28 +1,12 @@
-import { Star, Trash2 } from 'lucide-react'
+import { Trash2 } from 'lucide-react'
 import { useState } from 'react'
 import { OWN_STORE_ID } from '@/entities/catalog/products'
 import { reviewsStore } from '@/entities/catalog/reviews'
+import { ReviewItem, Stars } from '@/entities/catalog/ui/ReviewItem'
 import { useI18n } from '@/shared/i18n/useI18n'
-import { cn } from '@/shared/lib/cn'
-import { formatDate } from '@/shared/lib/format'
-import { Avatar } from '@/shared/ui/Avatar'
 import { ConfirmSheet } from '@/shared/ui/ConfirmSheet'
 import { EmptyState } from '@/shared/ui/EmptyState'
 import { PageHeader } from '@/shared/ui/PageHeader'
-
-function Stars({ rating, size }: { rating: number; size: number }) {
-  return (
-    <span className="flex gap-0.5" role="img" aria-label={`${rating} / 5`}>
-      {[1, 2, 3, 4, 5].map((n) => (
-        <Star
-          key={n}
-          size={size}
-          className={cn(n <= Math.round(rating) ? 'fill-warning text-warning' : 'text-navy-200')}
-        />
-      ))}
-    </span>
-  )
-}
 
 /**
  * What shoppers wrote about the merchant's shop, with the average on top. A false or abusive
@@ -53,26 +37,10 @@ export function ReviewsPage() {
             </div>
             <ul className="rounded-card bg-surface px-4">
               {own.map((review) => (
-                <li
+                <ReviewItem
                   key={review.id}
-                  className="flex flex-col gap-2 border-b border-line py-3 last:border-b-0"
-                >
-                  <div className="flex items-center gap-3">
-                    <Avatar
-                      initials={review.author
-                        .split(' ')
-                        .map((part) => part[0])
-                        .join('')}
-                    />
-                    <div className="flex min-w-0 flex-1 flex-col gap-0.5">
-                      <p className="truncate font-semibold">{review.author}</p>
-                      <Stars rating={review.rating} size={14} />
-                    </div>
-                    <p className="shrink-0 text-sm text-ink-muted">{formatDate(review.date)}</p>
-                  </div>
-                  <p>{review.text}</p>
-                  <div className="flex items-center justify-between gap-3">
-                    <p className="min-w-0 truncate text-sm text-ink-muted">{review.productName}</p>
+                  review={review}
+                  action={
                     <button
                       type="button"
                       aria-label={t('common.delete')}
@@ -81,8 +49,8 @@ export function ReviewsPage() {
                     >
                       <Trash2 size={18} />
                     </button>
-                  </div>
-                </li>
+                  }
+                />
               ))}
             </ul>
           </>
