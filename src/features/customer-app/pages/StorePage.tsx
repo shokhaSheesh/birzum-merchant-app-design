@@ -1,4 +1,4 @@
-import { Clock, MapPin, Phone, Store as StoreIcon } from 'lucide-react'
+import { Clock, Map, MapPin, Phone, Store as StoreIcon } from 'lucide-react'
 import { Link, Navigate, useParams } from 'react-router-dom'
 import { getStore, useCatalog } from '@/entities/catalog/products'
 import { usePickupPoints } from '@/entities/merchant/usePickupPoints'
@@ -9,6 +9,9 @@ import { PageHeader } from '@/shared/ui/PageHeader'
 import { Section } from '@/shared/ui/Section'
 import { ProductCard } from '../components/ProductCard'
 import { StoreRating } from '../components/StoreRating'
+
+const pill =
+  'flex h-9 items-center gap-1.5 rounded-full bg-canvas px-3 text-sm font-semibold text-brand active:bg-navy-100'
 
 /** How many products the shop page shows before "Hammasi" opens the full listing. */
 const PREVIEW = 4
@@ -57,15 +60,23 @@ export function StorePage() {
                     {point.hours}
                   </p>
                 )}
-                {point.phone && (
+                <div className="mt-1 flex flex-wrap gap-2">
                   <a
-                    href={`tel:+998${point.phone}`}
-                    className="flex items-center gap-2 self-start text-sm font-semibold text-brand"
+                    href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(point.address)}`}
+                    target="_blank"
+                    rel="noreferrer"
+                    className={pill}
                   >
-                    <Phone size={16} className="shrink-0" />
-                    {formatPhone(point.phone)}
+                    <Map size={16} className="shrink-0" />
+                    {t('stores.map')}
                   </a>
-                )}
+                  {point.phone && (
+                    <a href={`tel:+998${point.phone}`} className={pill}>
+                      <Phone size={16} className="shrink-0" />
+                      {formatPhone(point.phone)}
+                    </a>
+                  )}
+                </div>
               </li>
             ))}
           </ul>

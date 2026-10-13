@@ -41,6 +41,7 @@ export const ROUTES = {
   customerProduct: '/customer/product/:id',
   customerPurchases: '/customer/purchases',
   customerPurchase: '/customer/purchases/:number',
+  customerCards: '/customer/cards',
   customerAddCard: '/customer/cards/new',
   customerProfile: '/customer/profile',
   kit: '/kit',

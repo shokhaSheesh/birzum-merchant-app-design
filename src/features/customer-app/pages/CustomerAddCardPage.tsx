@@ -12,7 +12,7 @@ export function CustomerAddCardPage() {
   return (
     <AddCardFlow
       client={customer}
-      onDone={() => navigate(ROUTES.customerProfile, { replace: true })}
+      onDone={() => navigate(ROUTES.customerCards, { replace: true })}
     />
   )
 }

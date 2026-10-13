@@ -402,16 +402,17 @@ The repo holds the merchant app and the client (shopper) app. They share every t
 ### Client app: from cart to payments
 - **Limit on Asosiy** (`LimitTile`): a navy tile with the six terms in a strip on top, the chosen one green and spelled "12 oy", and that term's limit in large type below. Before a limit exists the tile is the green "Limitni olish" card.
 - **Product page stock.** The badge above the name is the total for the chosen variant. When the shop has several filials, a "Filiallarda mavjudligi" section after Sotuvchi lists each filial with its address and a badge: green "8 dona" or grey "Tugagan".
-- **Shop page** (`StorePage`), top to bottom: a navy shop tile with name and rating; Filiallar (name, address, hours, a tappable phone); Mahsulotlar with the count, the first four products and a "Hammasi" link to the listing filtered by that shop. Reviews are not listed here.
+- **Shop page** (`StorePage`), top to bottom: a navy shop tile with name and rating; Filiallar (name, address, hours, then two small pills: "Xaritada koʻrish", which opens the address in a map, and the phone number, which calls it); Mahsulotlar with the count, the first four products and a "Hammasi" link to the listing filtered by that shop. Reviews are not listed here.
 - **Product listing filter** has four parts: Kategoriya, Brend, Doʻkon, Narx.
-- **Toʻlovlar tarixi** opens from Profil, under the cards: the total paid on top, then one row per payment (date, shop and ariza number, card, amount), newest first. A row opens its purchase.
+- **Toʻlov kartalari** (shopper): one navy row per card with a trash button, and the small navy "+ Qoʻshish" at the top right, as on every list screen.
+- **Toʻlovlar tarixi** opens from Profil: the total paid on top, then one row per payment (date, shop and ariza number, card, amount), newest first. A row opens its purchase.
 - **Savat only reviews the products:** grouped by shop, each with its picture, variant, quantity stepper and remove button, then a total row and a primary "Rasmiylashtirishga oʻtish". Nothing else is asked there.
 - **Rasmiylashtirish** (`CheckoutPage`, a pushed screen without the tab bar) asks the rest. Per shop: its lines as plain rows, then `FulfilmentFields` with "Doʻkondan olib ketish" (and an "Olib ketish filiali" select when the shop has several filials) or "Yetkazib berish" with an address. If the chosen filial does not have enough of a product, a red `Alert` under that shop names it and "Buyurtma berish" is disabled. Below the shops: Nasiya shartlari with the term, then the paying card (`CardSelect`). "Buyurtma berish" sits in the footer and files one ariza per shop.
-- **Xaridlar** lists the shopper's arizalar as cards with the shop name; each opens the purchase screen.
+- **Xaridlar** lists the shopper's arizalar as cards with the shop name; each opens the purchase screen. A rejected card shows only the red badge; the reason is on the purchase screen.
 - **Purchase screen** (`PurchasePage`): status badge and number, the reject reason if any, an `InfoList` with date, shop, receiving method, card and pickup filial, then products and Nasiya shartlari (no Ustama).
 - Its bottom button depends on the status: a red ghost "Buyurtmani bekor qilish" while the merchant has not answered (confirmation with "Yoʻq, qoldirish"); "Toʻlash: 483 000 UZS" from Topshirilgan on, which opens a sheet with the due date, amount and card. Paying the last installment closes the nasiya.
 - From Topshirilgan on the screen also has secondary "Shartnomani yuklab olish" and "Sharh qoldirish" (five tappable stars and a text). A sent review shows in the merchant's Sharhlar; the button then becomes "Sharhingiz uchun rahmat!".
-- **Profil**: photo, name and phone; Shaxsiy maʼlumotlar; Toʻlov kartalari; Sozlamalar (language, theme); back to the merchant app; sign out.
+- **Profil**: photo, name and phone; Shaxsiy maʼlumotlar; a menu card with Toʻlov kartalari and Toʻlovlar tarixi, each its own screen; Sozlamalar (language, theme); back to the merchant app; sign out.
 - **Cards** (`PaymentCards`, both apps): a small × on each card removes it after a confirmation. The last remaining card has no ×.
 
 ## Home screen

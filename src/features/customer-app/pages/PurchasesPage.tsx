@@ -1,7 +1,6 @@
 import { Link } from 'react-router-dom'
 import { getStore, OWN_STORE_ID } from '@/entities/catalog/products'
 import { applicationStatusTone } from '@/entities/clients/applicationStatus'
-import { RejectionNote } from '@/entities/clients/ui/RejectionNote'
 import { useCustomer } from '@/entities/session/customer'
 import { customerPurchasePath } from '@/shared/config/routes'
 import { useI18n } from '@/shared/i18n/useI18n'
@@ -46,7 +45,6 @@ export function PurchasesPage() {
                     {t(`application.status.${application.status}`)}
                   </StatusBadge>
                 </div>
-                {application.rejection && <RejectionNote rejection={application.rejection} />}
                 {application.details && (
                   <>
                     <p className="text-sm text-ink-muted">

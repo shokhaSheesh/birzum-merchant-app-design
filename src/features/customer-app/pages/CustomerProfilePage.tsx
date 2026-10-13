@@ -1,7 +1,6 @@
-import { ArrowLeftRight, LogOut, Receipt } from 'lucide-react'
+import { ArrowLeftRight, CreditCard, LogOut, Receipt } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 import { fullName, initials } from '@/entities/clients/clientName'
-import { PaymentCards } from '@/entities/clients/ui/PaymentCards'
 import { useCustomer } from '@/entities/session/customer'
 import { ROUTES } from '@/shared/config/routes'
 import { LANG_NAMES, LANGS } from '@/shared/i18n/dictionaries'
@@ -49,12 +48,10 @@ export function CustomerProfilePage() {
             </InfoList>
           </Section>
 
-          <Section title={t('client.cards')}>
-            <PaymentCards client={customer} addTo={ROUTES.customerAddCard} />
-            <MenuList>
-              <MenuRow icon={Receipt} label={t('payhistory.title')} to={ROUTES.customerPayments} />
-            </MenuList>
-          </Section>
+          <MenuList>
+            <MenuRow icon={CreditCard} label={t('client.cards')} to={ROUTES.customerCards} />
+            <MenuRow icon={Receipt} label={t('payhistory.title')} to={ROUTES.customerPayments} />
+          </MenuList>
         </>
       )}
 
