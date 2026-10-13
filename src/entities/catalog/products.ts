@@ -11,6 +11,8 @@ import photo10 from '@/shared/assets/products/product-10.jpg'
 import photo11 from '@/shared/assets/products/product-11.jpg'
 import photo12 from '@/shared/assets/products/product-12.jpg'
 import photo13 from '@/shared/assets/products/product-13.jpg'
+import photo14 from '@/shared/assets/products/product-14.jpg'
+import photo15 from '@/shared/assets/products/product-15.jpg'
 import type { Lang, LocalizedText } from '@/shared/i18n/dictionaries'
 import { createStore } from '@/shared/lib/createStore'
 import { seedAttributes } from './attributes'
@@ -275,7 +277,8 @@ const seedProducts: SeedProduct[] = [
       ['SSD', '256 GB'],
       ['Kafolat', '12 oy'],
     ],
-    photos: [photo12],
+    photos: [photo12, photo15],
+    colorPhotos: { Kumush: [photo12, photo15], Qora: [photo14] },
   },
   {
     id: 'p9',
