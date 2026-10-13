@@ -8,6 +8,9 @@ import photo6 from '@/shared/assets/products/product-6.jpg'
 import photo7 from '@/shared/assets/products/product-7.jpg'
 import photo9 from '@/shared/assets/products/product-9.jpg'
 import photo10 from '@/shared/assets/products/product-10.jpg'
+import photo11 from '@/shared/assets/products/product-11.jpg'
+import photo12 from '@/shared/assets/products/product-12.jpg'
+import photo13 from '@/shared/assets/products/product-13.jpg'
 import type { Lang, LocalizedText } from '@/shared/i18n/dictionaries'
 import { createStore } from '@/shared/lib/createStore'
 import { seedAttributes } from './attributes'
@@ -183,6 +186,7 @@ const seedProducts: SeedProduct[] = [
       ['SSD', '512 GB'],
       ['Kafolat', '12 oy'],
     ],
+    photos: [photo11, photo13],
   },
   {
     id: 'p5',
@@ -271,6 +275,7 @@ const seedProducts: SeedProduct[] = [
       ['SSD', '256 GB'],
       ['Kafolat', '12 oy'],
     ],
+    photos: [photo12],
   },
   {
     id: 'p9',
