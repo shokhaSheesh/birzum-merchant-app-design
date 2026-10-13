@@ -104,7 +104,12 @@ export function ProductPicture({ category, color, src, className }: Props) {
   if (src) {
     return (
       <div className={cn('aspect-square overflow-hidden bg-surface', className)}>
-        <img src={src} alt="" className="size-full object-cover" />
+        {/* Multiply turns a photo's white backdrop into the tile's grey, so the tile keeps its shape */}
+        <img
+          src={src}
+          alt=""
+          className="size-full object-cover mix-blend-multiply dark:mix-blend-normal"
+        />
       </div>
     )
   }

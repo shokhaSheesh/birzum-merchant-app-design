@@ -1,4 +1,13 @@
 import { useMemo } from 'react'
+import photo1 from '@/shared/assets/products/product-1.jpg'
+import photo2 from '@/shared/assets/products/product-2.jpg'
+import photo3 from '@/shared/assets/products/product-3.jpg'
+import photo4 from '@/shared/assets/products/product-4.jpg'
+import photo5 from '@/shared/assets/products/product-5.jpg'
+import photo6 from '@/shared/assets/products/product-6.jpg'
+import photo7 from '@/shared/assets/products/product-7.jpg'
+import photo9 from '@/shared/assets/products/product-9.jpg'
+import photo10 from '@/shared/assets/products/product-10.jpg'
 import type { Lang, LocalizedText } from '@/shared/i18n/dictionaries'
 import { createStore } from '@/shared/lib/createStore'
 import { seedAttributes } from './attributes'
@@ -65,6 +74,10 @@ type SeedProduct = {
   description: string
   variations: SeedVariation[]
   specs: [string, string][]
+  /** The product's own photos, cover first. Without any, a drawn stand-in is shown. */
+  photos?: string[]
+  /** Photos of one color, by the color's name. They replace `photos` while it is chosen. */
+  colorPhotos?: Record<string, string[]>
 }
 
 const colors = (...labels: string[]): SeedVariation => ({
@@ -77,31 +90,36 @@ const RUSSIAN_NAMES: Record<string, string> = {
   p3: 'Стиральная машина LG',
   p4: 'Ноутбук Lenovo IdeaPad',
   p6: 'Телевизор 55 Smart',
-  p7: 'Кондиционер Artel',
+  p7: 'Стиральная машина Artel',
   p8: 'Ноутбук HP 15',
 }
 
 const seedProducts: SeedProduct[] = [
   {
     id: 'p1',
-    name: 'Samsung Galaxy A55',
+    name: 'iPhone 18 Pro',
     category: 'phones',
-    brand: 'Samsung',
-    price: 5_500_000,
+    brand: 'Apple',
+    price: 16_900_000,
     storeId: 's1',
     stock: 12,
     description:
-      'Katta AMOLED ekranli, suvga chidamli smartfon. 50 MP asosiy kamera va bir kunga yetadigan batareya.',
+      'Titan korpusli flagman smartfon. 48 MP uch kamerali tizim, yorqin OLED ekran va bir kunga yetadigan batareya.',
     variations: [
-      colors('Qora', 'Koʻk', 'Binafsha'),
-      { name: 'Xotira', options: [{ label: '128 GB' }, { label: '256 GB', priceDelta: 600_000 }] },
+      colors('Oq', 'Qora'),
+      {
+        name: 'Xotira',
+        options: [{ label: '256 GB' }, { label: '512 GB', priceDelta: 2_500_000 }],
+      },
     ],
     specs: [
-      ['Ekran', '6,6 dyuym, AMOLED'],
-      ['Kamera', '50 MP'],
-      ['Batareya', '5000 mA·soat'],
+      ['Ekran', '6,3 dyuym, OLED'],
+      ['Kamera', '48 MP'],
+      ['Protsessor', 'A19 Pro'],
       ['Kafolat', '12 oy'],
     ],
+    photos: [photo1, photo4],
+    colorPhotos: { Oq: [photo1], Qora: [photo4] },
   },
   {
     id: 'p2',
@@ -119,6 +137,7 @@ const seedProducts: SeedProduct[] = [
       ['HDMI', '2 ta'],
       ['Kafolat', '24 oy'],
     ],
+    photos: [photo9],
   },
   {
     id: 'p3',
@@ -140,6 +159,8 @@ const seedProducts: SeedProduct[] = [
       ['Dasturlar', '14 ta'],
       ['Kafolat', '36 oy'],
     ],
+    photos: [photo7, photo5],
+    colorPhotos: { Oq: [photo7], Kumush: [photo5] },
   },
   {
     id: 'p4',
@@ -165,23 +186,28 @@ const seedProducts: SeedProduct[] = [
   },
   {
     id: 'p5',
-    name: 'Xiaomi Redmi Note 13',
+    name: 'iPhone 18',
     category: 'phones',
-    brand: 'Xiaomi',
-    price: 3_300_000,
+    brand: 'Apple',
+    price: 12_900_000,
     storeId: 's3',
     stock: 20,
-    description: 'Hamyonbop smartfon: 120 Gts ekran, tez quvvatlash va 108 MP kamera.',
+    description:
+      'Alyuminiy korpusli yengil smartfon: 120 Gts ekran, ikki kamerali tizim va tez quvvatlash.',
     variations: [
-      colors('Qora', 'Yashil'),
-      { name: 'Xotira', options: [{ label: '128 GB' }, { label: '256 GB', priceDelta: 400_000 }] },
+      colors('Binafsha'),
+      {
+        name: 'Xotira',
+        options: [{ label: '128 GB' }, { label: '256 GB', priceDelta: 1_400_000 }],
+      },
     ],
     specs: [
-      ['Ekran', '6,67 dyuym, AMOLED'],
-      ['Kamera', '108 MP'],
-      ['Batareya', '5000 mA·soat'],
+      ['Ekran', '6,1 dyuym, OLED'],
+      ['Kamera', '48 MP'],
+      ['Protsessor', 'A19'],
       ['Kafolat', '12 oy'],
     ],
+    photos: [photo3],
   },
   {
     id: 'p6',
@@ -199,28 +225,29 @@ const seedProducts: SeedProduct[] = [
       ['Smart TV', 'Bor'],
       ['Kafolat', '24 oy'],
     ],
+    photos: [photo10],
   },
   {
     id: 'p7',
-    name: 'Artel konditsioner',
+    name: 'Artel kir yuvish mashinasi',
     category: 'appliances',
     brand: 'Artel',
     price: 6_000_000,
     storeId: 's1',
     stock: 9,
-    description: 'Invertorli konditsioner. Xonani tez sovitadi va qishda isitadi.',
+    description:
+      'Invertor motorli avtomat kir yuvish mashinasi. Tez yuvish rejimi va bolalardan himoya bor.',
     variations: [
-      {
-        name: 'Quvvati',
-        options: [{ label: '12 000 BTU' }, { label: '18 000 BTU', priceDelta: 1_800_000 }],
-      },
+      colors('Qora'),
+      { name: 'Sigʻimi', options: [{ label: '7 kg' }, { label: '9 kg', priceDelta: 1_800_000 }] },
     ],
     specs: [
-      ['Maydon', '35 m² gacha'],
-      ['Turi', 'Invertor'],
-      ['Isitish', 'Bor'],
+      ['Aylanish', '1400 ayl/daq'],
+      ['Energiya sinfi', 'A+++'],
+      ['Dasturlar', '16 ta'],
       ['Kafolat', '36 oy'],
     ],
+    photos: [photo6],
   },
   {
     id: 'p8',
@@ -247,44 +274,47 @@ const seedProducts: SeedProduct[] = [
   },
   {
     id: 'p9',
-    name: 'Samsung Galaxy S24',
+    name: 'iPhone 18 Pro Max',
     category: 'phones',
-    brand: 'Samsung',
-    price: 11_900_000,
+    brand: 'Apple',
+    price: 19_900_000,
     storeId: 's2',
     stock: 6,
-    description: 'Flagman smartfon: yorqin ekran, kuchli protsessor va tungi suratga olish.',
+    description:
+      'Eng katta ekranli flagman: kuchli protsessor, uzoq ishlaydigan batareya va tungi suratga olish.',
     variations: [
-      colors('Qora', 'Kumush'),
+      colors('Qizil'),
       {
         name: 'Xotira',
-        options: [{ label: '256 GB' }, { label: '512 GB', priceDelta: 1_500_000 }],
+        options: [{ label: '256 GB' }, { label: '512 GB', priceDelta: 2_500_000 }],
       },
     ],
     specs: [
-      ['Ekran', '6,2 dyuym, AMOLED'],
-      ['Kamera', '50 MP'],
-      ['Batareya', '4000 mA·soat'],
+      ['Ekran', '6,9 dyuym, OLED'],
+      ['Kamera', '48 MP'],
+      ['Protsessor', 'A19 Pro'],
       ['Kafolat', '12 oy'],
     ],
+    photos: [photo2],
   },
   {
     id: 'p10',
-    name: 'Samsung Galaxy A35',
+    name: 'iPhone 18 Pro',
     category: 'phones',
-    brand: 'Samsung',
-    price: 4_300_000,
+    brand: 'Apple',
+    price: 17_200_000,
     storeId: 's3',
     stock: 15,
-    description:
-      'Ishonchli oʻrta toifa smartfon: suvga chidamli korpus va uzoq ishlaydigan batareya.',
-    variations: [colors('Koʻk', 'Qora')],
+    description: 'Titan korpusli flagman smartfon. 48 MP uch kamerali tizim va yorqin OLED ekran.',
+    variations: [colors('Qora', 'Oq')],
     specs: [
-      ['Ekran', '6,6 dyuym, AMOLED'],
-      ['Kamera', '50 MP'],
-      ['Batareya', '5000 mA·soat'],
+      ['Ekran', '6,3 dyuym, OLED'],
+      ['Kamera', '48 MP'],
+      ['Xotira', '256 GB'],
       ['Kafolat', '12 oy'],
     ],
+    photos: [photo4, photo1],
+    colorPhotos: { Qora: [photo4], Oq: [photo1] },
   },
 ]
 
@@ -366,8 +396,14 @@ function fromSeed(seed: SeedProduct): Product {
         ? { l1: stockFirst, l2: stockSecond }
         : { [`${seed.storeId}-main`]: stockFirst },
     specs: seed.specs.map(([label, value]) => ({ label: text(label), value: text(value) })),
-    images: { uz: [], ru: [] },
-    valueImages: {},
+    images: { uz: seed.photos ?? [], ru: [] },
+    // Each color's photos, keyed by the id of that color in the directory
+    valueImages: Object.fromEntries(
+      Object.entries(seed.colorPhotos ?? {}).map(([label, photos]) => [
+        seedAttributes.flatMap((a) => a.values).find((value) => value.name.uz === label)!.id,
+        photos,
+      ]),
+    ),
     active: true,
   }
 }

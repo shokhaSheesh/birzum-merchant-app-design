@@ -478,6 +478,11 @@ A detail screen with more than about four sections is split with `SegmentedTabs`
 - Merchant client: Maʼlumot · Karta va kontakt · Arizalar.
 The status, title and reject reason stay above the tabs, and the footer button stays on every tab.
 
+## Product photos
+- Photos are square, 800px, with the product centered on its plain backdrop and a little margin. Sample ones live in `src/shared/assets/products`.
+- `ProductPicture` draws a photo on a grey tile with `mix-blend-multiply`, so a white backdrop takes the tile's colour and every card keeps the same shape. In the dark theme the photo is shown as it is.
+- A product without a photo falls back to the drawn stand-in for its category.
+
 ## Shops
 A shop is always shown with `StoreLogo`, a navy rounded square with the shop icon, at 44px in rows and 64px on the shop page. Its rating (`StoreRating`) is the average of its reviews with their count; a shop without reviews says "Hali sharh yoʻq".
 

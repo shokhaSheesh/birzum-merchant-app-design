@@ -10,11 +10,11 @@ const FIRST_NUMBER = 260_000
 
 // What the merchant's own shop sells
 const CATALOG = [
-  { name: 'Samsung Galaxy A55 (Qora, 128 GB)', price: 5_500_000, productId: 'p1' },
-  { name: 'Samsung Galaxy A55 (Koʻk, 256 GB)', price: 6_100_000, productId: 'p1' },
+  { name: 'iPhone 18 Pro (Oq, 256 GB)', price: 16_900_000, productId: 'p1' },
+  { name: 'iPhone 18 Pro (Qora, 512 GB)', price: 19_400_000, productId: 'p1' },
   { name: 'Televizor 43', price: 4_200_000, productId: 'p2' },
-  { name: 'Artel konditsioner (12 000 BTU)', price: 6_000_000, productId: 'p7' },
-  { name: 'Artel konditsioner (18 000 BTU)', price: 7_800_000, productId: 'p7' },
+  { name: 'Artel kir yuvish mashinasi (Qora, 7 kg)', price: 6_000_000, productId: 'p7' },
+  { name: 'Artel kir yuvish mashinasi (Qora, 9 kg)', price: 7_800_000, productId: 'p7' },
 ]
 
 // Which shop and which reject reason a generated application gets, by its number

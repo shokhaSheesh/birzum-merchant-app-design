@@ -205,20 +205,20 @@ export const seedClients: Client[] = [
       {
         id: 252401,
         date: date([2026, 8, 6]),
-        goodsTotal: 11_500_000,
-        installmentTotal: 15_870_000,
+        goodsTotal: 10_200_000,
+        installmentTotal: 14_076_000,
         status: 'closed',
         contractNumber: 'B-37067/26',
         details: {
           products: [
             {
-              name: 'Samsung Galaxy A55 (Koʻk, 256 GB)',
-              price: 5_500_000,
+              name: 'Televizor 43',
+              price: 4_200_000,
               quantity: 1,
-              productId: 'p1',
+              productId: 'p2',
             },
             {
-              name: 'Artel konditsioner (12 000 BTU)',
+              name: 'Artel kir yuvish mashinasi (Qora, 7 kg)',
               price: 6_000_000,
               quantity: 1,
               productId: 'p7',
@@ -228,7 +228,7 @@ export const seedClients: Client[] = [
           paymentDay: 5,
           term: 12,
           markupPercent: 38,
-          monthlyPayment: 1_322_500,
+          monthlyPayment: 1_173_000,
         },
       },
       {
@@ -280,7 +280,7 @@ export const seedClients: Client[] = [
         details: {
           products: [
             {
-              name: 'Artel konditsioner (18 000 BTU)',
+              name: 'Artel kir yuvish mashinasi (Qora, 9 kg)',
               price: 6_900_000,
               quantity: 1,
               productId: 'p7',

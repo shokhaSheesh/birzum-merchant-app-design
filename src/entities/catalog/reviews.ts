@@ -21,7 +21,7 @@ export const reviewsStore = createStore<Review>([
     rating: 5,
     text: 'Telefonni oʻsha kuniyoq oldim, sotuvchi hammasini tushuntirib berdi.',
     date: new Date(2026, 9, 9),
-    productName: 'Samsung Galaxy A55',
+    productName: 'iPhone 18 Pro',
   },
   {
     id: 'rv2',
@@ -37,9 +37,9 @@ export const reviewsStore = createStore<Review>([
     storeId: 's1',
     author: 'Malika Y.',
     rating: 5,
-    text: 'Konditsionerni oʻrnatishda ham yordam berishdi. Rahmat!',
+    text: 'Kir yuvish mashinasini oʻrnatishda ham yordam berishdi. Rahmat!',
     date: new Date(2026, 8, 27),
-    productName: 'Artel konditsioner',
+    productName: 'Artel kir yuvish mashinasi',
   },
   {
     id: 'rv4',
@@ -48,7 +48,7 @@ export const reviewsStore = createStore<Review>([
     rating: 3,
     text: 'Mahsulot yaxshi, ammo kerakli rang omborda yoʻq edi.',
     date: new Date(2026, 8, 15),
-    productName: 'Samsung Galaxy A55',
+    productName: 'iPhone 18 Pro',
   },
   {
     id: 'rv5',
@@ -75,7 +75,7 @@ export const reviewsStore = createStore<Review>([
     rating: 5,
     text: 'Samarqandda eng yaxshi narx shu yerda ekan.',
     date: new Date(2026, 8, 30),
-    productName: 'Xiaomi Redmi Note 13',
+    productName: 'iPhone 18',
   },
   {
     id: 'rv8',
