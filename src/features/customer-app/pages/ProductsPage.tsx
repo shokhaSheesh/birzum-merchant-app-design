@@ -4,7 +4,7 @@ import { useSearchParams } from 'react-router-dom'
 import {
   BRANDS,
   CATEGORIES,
-  products,
+  useCatalog,
   type Category,
   type Product,
 } from '@/entities/catalog/products'
@@ -16,14 +16,11 @@ import { NumberField } from '@/shared/ui/NumberField'
 import { RangeSlider } from '@/shared/ui/RangeSlider'
 import { Select } from '@/shared/ui/Select'
 import { Sheet } from '@/shared/ui/Sheet'
-import { PageHeader } from '../components/PageHeader'
+import { PageHeader } from '@/shared/ui/PageHeader'
 import { ProductCard } from '../components/ProductCard'
 
 const ALL = 'all'
 const PRICE_STEP = 100_000
-// The slider runs from the cheapest to the dearest product, rounded out to whole steps
-const PRICE_MIN = Math.floor(Math.min(...products.map((p) => p.price)) / PRICE_STEP) * PRICE_STEP
-const PRICE_MAX = Math.ceil(Math.max(...products.map((p) => p.price)) / PRICE_STEP) * PRICE_STEP
 
 type Filters = {
   category: 'all' | Category
@@ -41,13 +38,17 @@ const matches = (product: Product, needle: string, filters: Filters) =>
   product.price >= filters.priceFrom &&
   product.price <= filters.priceTo
 
-const clampPrice = (value: number | null, fallback: number) =>
-  Math.min(PRICE_MAX, Math.max(PRICE_MIN, value ?? fallback))
-
 /** The product listing. It opens from a category, a search result or "Hammasi", and can be filtered. */
 export function ProductsPage() {
   const { t } = useI18n()
   const [searchParams] = useSearchParams()
+  const products = useCatalog()
+  // The slider runs from the cheapest to the dearest product, rounded out to whole steps
+  const prices = products.map((p) => p.price)
+  const PRICE_MIN = Math.floor(Math.min(...prices) / PRICE_STEP) * PRICE_STEP
+  const PRICE_MAX = Math.ceil(Math.max(...prices) / PRICE_STEP) * PRICE_STEP
+  const clampPrice = (value: number | null, fallback: number) =>
+    Math.min(PRICE_MAX, Math.max(PRICE_MIN, value ?? fallback))
   const query = searchParams.get('q')?.trim() ?? ''
   const requestedCategory = searchParams.get('category') as Category
   const requestedBrand = searchParams.get('brand') ?? ''

@@ -1,13 +1,14 @@
 import { ChevronRight } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import { ProductPicture } from '@/entities/catalog/ProductPicture'
-import { CATEGORIES, products } from '@/entities/catalog/products'
+import { CATEGORIES, useCatalog } from '@/entities/catalog/products'
 import { customerProductsPath } from '@/shared/config/routes'
 import { useI18n } from '@/shared/i18n/useI18n'
 
 /** Every category, one per row with its picture. A row opens that category's products. */
 export function CategoryList() {
   const { t } = useI18n()
+  const products = useCatalog()
 
   return (
     <ul className="rounded-card bg-surface px-3">

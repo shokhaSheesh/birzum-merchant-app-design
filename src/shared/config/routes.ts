@@ -13,6 +13,15 @@ export const ROUTES = {
   calculator: '/calculator',
   profile: '/profile',
   notifications: '/notifications',
+  manageProducts: '/manage/products',
+  manageProduct: '/manage/products/:id',
+  manageInventory: '/manage/inventory',
+  manageLocations: '/manage/locations',
+  manageLocation: '/manage/locations/:id',
+  manageStaff: '/manage/staff',
+  manageStaffMember: '/manage/staff/:id',
+  manageRoles: '/manage/roles',
+  manageRole: '/manage/roles/:id',
   /** The separate app for shoppers. Its screens will live under this path. */
   customerApp: '/customer',
   customerHome: '/customer/home',
@@ -46,3 +55,6 @@ export function customerProductsPath(
   ).toString()
   return query ? `/customer/products?${query}` : '/customer/products'
 }
+/** A management record's form. Pass "new" as the id to create one. */
+export const managePath = (section: 'products' | 'locations' | 'staff' | 'roles', id: string) =>
+  `/manage/${section}/${id}`

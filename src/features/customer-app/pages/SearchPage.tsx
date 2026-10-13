@@ -1,13 +1,13 @@
 import { ArrowUpRight, Search } from 'lucide-react'
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-import { BRANDS, CATEGORIES, products } from '@/entities/catalog/products'
+import { BRANDS, CATEGORIES, useCatalog } from '@/entities/catalog/products'
 import { customerProductsPath } from '@/shared/config/routes'
 import { useI18n } from '@/shared/i18n/useI18n'
 import { EmptyState } from '@/shared/ui/EmptyState'
 import { SearchField } from '@/shared/ui/SearchField'
 import { CategoryList } from '../components/CategoryList'
-import { PageHeader } from '../components/PageHeader'
+import { PageHeader } from '@/shared/ui/PageHeader'
 
 type Suggestion = { text: string; kind?: string; to: string }
 
@@ -17,6 +17,7 @@ type Suggestion = { text: string; kind?: string; to: string }
  */
 export function SearchPage() {
   const { t } = useI18n()
+  const products = useCatalog()
   const navigate = useNavigate()
   const [query, setQuery] = useState('')
 

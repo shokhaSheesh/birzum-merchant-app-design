@@ -3,7 +3,13 @@ import { useState } from 'react'
 import { Link, Navigate, useNavigate, useParams } from 'react-router-dom'
 import { cartKey, cartStore, useCart } from '@/entities/cart/cartStore'
 import { ProductPicture } from '@/entities/catalog/ProductPicture'
-import { getProduct, getStore, products, type Product } from '@/entities/catalog/products'
+import {
+  getProduct,
+  getStore,
+  stockOf,
+  useCatalog,
+  type Product,
+} from '@/entities/catalog/products'
 import { TERMS, type Term } from '@/entities/clients/clients'
 import { installmentTerms } from '@/entities/clients/installment'
 import { useCustomer } from '@/entities/session/customer'
@@ -19,7 +25,7 @@ import { Section } from '@/shared/ui/Section'
 import { StatusBadge } from '@/shared/ui/StatusBadge'
 import { TermPicker } from '@/shared/ui/TermPicker'
 import { LikeButton } from '../components/LikeButton'
-import { PageHeader } from '../components/PageHeader'
+import { PageHeader } from '@/shared/ui/PageHeader'
 import { ProductCard } from '../components/ProductCard'
 import { StoreRating } from '../components/StoreRating'
 import { VariationPicker } from '../components/VariationPicker'
@@ -66,8 +72,9 @@ function ProductDetails({ product }: { product: Product }) {
   const unitPrice = product.price + options.reduce((sum, o) => sum + (o.priceDelta ?? 0), 0)
   const line = lines.find((l) => l.key === cartKey(product.id, variant))
   const hasLimit = !!customer?.limits
-  const inStock = product.stock > 0
-  const similar = products.filter((p) => p.category === product.category && p.id !== product.id)
+  const stock = stockOf(product, variant)
+  const inStock = stock > 0
+  const similar = useCatalog().filter((p) => p.category === product.category && p.id !== product.id)
 
   return (
     <div className="flex h-full flex-col">
@@ -91,14 +98,13 @@ function ProductDetails({ product }: { product: Product }) {
         <ProductPicture
           category={product.category}
           color={color}
+          src={product.images[0]}
           className="aspect-[1/0.8]! rounded-card"
         />
 
         <div className="flex flex-col items-start gap-2">
           <StatusBadge tone={inStock ? 'success' : 'danger'}>
-            {inStock
-              ? t('product.stock.in', { count: String(product.stock) })
-              : t('product.stock.out')}
+            {inStock ? t('product.stock.in', { count: String(stock) }) : t('product.stock.out')}
           </StatusBadge>
           <h1 className="text-xl leading-tight font-bold">{product.name}</h1>
           <p className="text-2xl font-bold">{formatSum(unitPrice)}</p>
@@ -172,7 +178,7 @@ function ProductDetails({ product }: { product: Product }) {
                 label={t('field.quantity')}
                 value={line.quantity}
                 min={0}
-                max={product.stock}
+                max={stock}
                 onChange={(quantity) => cartStore.setQuantity(line.key, quantity)}
               />
             </div>

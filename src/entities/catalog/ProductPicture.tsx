@@ -94,11 +94,21 @@ type Props = {
   category: Category
   /** Body color of the product, e.g. the chosen color option. */
   color?: string
+  /** A photo of the product. When given, it replaces the drawing. */
+  src?: string
   className?: string
 }
 
 /** A square product picture on a soft tinted tile. */
-export function ProductPicture({ category, color, className }: Props) {
+export function ProductPicture({ category, color, src, className }: Props) {
+  if (src) {
+    return (
+      <div className={cn('aspect-square overflow-hidden bg-surface', className)}>
+        <img src={src} alt="" className="size-full object-cover" />
+      </div>
+    )
+  }
+
   return (
     <div className={cn('grid aspect-square place-items-center', tints[category], className)}>
       <svg viewBox="0 0 100 100" aria-hidden="true" className="size-[62%]">

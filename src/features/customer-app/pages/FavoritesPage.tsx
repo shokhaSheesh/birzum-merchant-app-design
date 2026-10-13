@@ -2,7 +2,7 @@ import { getProduct } from '@/entities/catalog/products'
 import { useFavorites } from '@/entities/favorites/favoritesStore'
 import { useI18n } from '@/shared/i18n/useI18n'
 import { EmptyState } from '@/shared/ui/EmptyState'
-import { PageHeader } from '../components/PageHeader'
+import { PageHeader } from '@/shared/ui/PageHeader'
 import { ProductCard } from '../components/ProductCard'
 
 /** Products the shopper liked. */

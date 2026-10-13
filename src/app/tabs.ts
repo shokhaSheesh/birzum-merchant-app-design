@@ -2,6 +2,7 @@ import {
   Calculator,
   FileText,
   House,
+  Menu,
   ShoppingBag,
   ShoppingCart,
   Store,
@@ -16,7 +17,7 @@ export const merchantTabs: Tab[] = [
   { to: ROUTES.clients, label: 'nav.clients', icon: Users },
   { to: ROUTES.calculator, label: 'nav.calculator', icon: Calculator, center: true },
   { to: ROUTES.applications, label: 'nav.applications', icon: FileText },
-  { to: ROUTES.profile, label: 'nav.profile', icon: UserRound },
+  { to: ROUTES.profile, label: 'nav.menu', icon: Menu },
 ]
 
 export const customerTabs: Tab[] = [

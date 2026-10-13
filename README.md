@@ -32,8 +32,9 @@ src/
     layouts/           DeviceLayout (phone-width frame), TabLayout (bottom tabs)
   entities/            Business data shared by several features
     clients/           Client and application types, mock store, hooks, shared rows
-    catalog/           Shops, products and their pictures
+    catalog/           Shops and the product store, read by the client app and edited by the merchant
     cart/              The shopper's cart
+    merchant/          The merchant's shops (locations), staff, roles and permissions
   features/            One folder per product area
     auth/
     home/
@@ -41,7 +42,8 @@ src/
     applications/
     calculator/
     notifications/
-    profile/
+    profile/           The Menyu tab
+    manage/            Products, inventory, locations, staff, roles
     customer-auth/     Client app: sign-in and sign-up
     customer-app/      Client app: home, search, shops, product, cart, purchases
       pages/           Routed screens

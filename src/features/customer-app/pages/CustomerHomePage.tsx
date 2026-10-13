@@ -1,7 +1,7 @@
 import { Bell, Heart, Search, Sparkles } from 'lucide-react'
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
-import { CATEGORIES, products } from '@/entities/catalog/products'
+import { CATEGORIES, useCatalog } from '@/entities/catalog/products'
 import { initials } from '@/entities/clients/clientName'
 import { calculateLimit } from '@/entities/clients/limitsApi'
 import { useCustomer } from '@/entities/session/customer'
@@ -20,6 +20,7 @@ const roundButton =
 /** Shopper home, top to bottom: search and notifications, the limit, categories, products. */
 export function CustomerHomePage() {
   const { t } = useI18n()
+  const products = useCatalog()
   const customer = useCustomer()
   const [loading, setLoading] = useState(false)
 

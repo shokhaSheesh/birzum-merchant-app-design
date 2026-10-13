@@ -25,6 +25,15 @@ import { StoresPage } from '@/features/customer-app/pages/StoresPage'
 import { CustomerAuthPage } from '@/features/customer-auth/pages/CustomerAuthPage'
 import { HomePage } from '@/features/home/pages/HomePage'
 import { KitPage } from '@/features/kit/pages/KitPage'
+import { InventoryPage } from '@/features/manage/pages/InventoryPage'
+import { LocationFormPage } from '@/features/manage/pages/LocationFormPage'
+import { LocationsPage } from '@/features/manage/pages/LocationsPage'
+import { ProductFormPage } from '@/features/manage/pages/ProductFormPage'
+import { ProductsPage as ManageProductsPage } from '@/features/manage/pages/ProductsPage'
+import { RoleFormPage } from '@/features/manage/pages/RoleFormPage'
+import { RolesPage } from '@/features/manage/pages/RolesPage'
+import { StaffFormPage } from '@/features/manage/pages/StaffFormPage'
+import { StaffPage } from '@/features/manage/pages/StaffPage'
 import { NotificationsPage } from '@/features/notifications/pages/NotificationsPage'
 import { ProfilePage } from '@/features/profile/pages/ProfilePage'
 import { ROUTES } from '@/shared/config/routes'
@@ -47,6 +56,15 @@ export const router = createBrowserRouter([
       { path: ROUTES.clientContract, element: <NewContractPage /> },
       { path: ROUTES.applicationDetail, element: <ApplicationDetailPage /> },
       { path: ROUTES.notifications, element: <NotificationsPage /> },
+      { path: ROUTES.manageProducts, element: <ManageProductsPage /> },
+      { path: ROUTES.manageProduct, element: <ProductFormPage /> },
+      { path: ROUTES.manageInventory, element: <InventoryPage /> },
+      { path: ROUTES.manageLocations, element: <LocationsPage /> },
+      { path: ROUTES.manageLocation, element: <LocationFormPage /> },
+      { path: ROUTES.manageStaff, element: <StaffPage /> },
+      { path: ROUTES.manageStaffMember, element: <StaffFormPage /> },
+      { path: ROUTES.manageRoles, element: <RolesPage /> },
+      { path: ROUTES.manageRole, element: <RoleFormPage /> },
       { path: ROUTES.customerApp, element: <CustomerAuthPage /> },
       {
         element: <CustomerTabLayout />,

@@ -126,7 +126,7 @@ Every form uses `FormScreen`: back arrow at the top left, scrolling body, primar
 
 ### Tab bar
 
-Five tabs, always in this order, on every main screen: **Asosiy**, **Klientlar**, **Kalkulyator**, **Arizalar**, **Profil**. Five is the maximum; anything else is reached from inside a tab. Auth screens and step-by-step flows have no tab bar.
+Five tabs, always in this order, on every main screen: **Asosiy**, **Klientlar**, **Kalkulyator**, **Arizalar**, **Menyu**. Five is the maximum; anything else is reached from inside a tab. Auth screens and step-by-step flows have no tab bar.
 
 - **Liquid glass.** The bar is a floating pill, 16px from the screen edges: translucent, blurred, with a bright rim (the `.glass` class). Content scrolls underneath it. This is the only glass surface in the app; do not use the effect on cards, sheets or buttons.
 - **Kalkulyator is the middle item**, a raised round button in the primary color with the icon only. It gets a green ring while it is the current tab.
@@ -310,6 +310,30 @@ A detail screen (a client, later an application) is read top to bottom, so it is
 - An empty section says so in one muted line ("Hali kontakt kiritilmagan."). It is never hidden.
 - A link to another screen from a settings-like page (Profile to notifications) is an `ActionCard`, with the count or state as its description.
 - Notification rows: a tinted round icon for the kind of event, a bold title, one line of detail, the date and time in small text, and a green dot on the right while unread.
+
+## Menyu and management screens
+
+Menyu is the merchant's last tab. It holds the signed-in user, then everything that is managed rather than done daily.
+
+- Two groups of rows (`MenuList` / `MenuRow`: icon, label, chevron): **Katalog** with Mahsulotlar and Ombor, and **Doʻkon** with Filiallar, Xodimlar, Rollar va ruxsatlar. Settings follow below them.
+- **A row only shows if the user's role allows it** (`usePermissions().can(...)`). A group with no visible rows is hidden.
+- Every management list uses `ListScreen`: back arrow, title, the small "Qoʻshish" button at the top right, then rows in one `surface` card. A row (`ListRow`) is a title, up to two muted lines, and a chevron; it opens the record's form.
+- **Records are switched off, not deleted.** A form has a checkbox for it ("Filial ishlayapti", "Hisob faol", "Klient ilovasida koʻrsatish"), and a switched-off record shows a grey badge in its list.
+- One form serves create and edit; its title changes ("Yangi filial" / "Filial"). The button is always "Saqlash".
+- Picking several of something (a staff member's shops, a role's permissions) is a list of `Checkbox`es, with a red line under it if none is chosen.
+- **Categories and brands are never created here.** They come from the Birzum admin panel, so in the product form they are `Select`s.
+
+### Product form
+- Top to bottom: photos, name, category, brand, price, description, variations, characteristics, visibility.
+- **Photos** are 96px square tiles in a wrapping row, each with a small remove button; the last tile is a dashed "Rasm qoʻshish". The first photo is the cover.
+- **A variation group** is a `surface` card: group name, a "Rang sifatida koʻrsatish" checkbox, then its options. Each option has a name and a "Qoʻshimcha narx"; a color option also gets a row of round swatches. A ghost "Variant qoʻshish" ends the card and a secondary "Guruh qoʻshish" ends the section.
+- **Characteristics** are rows of two fields, name and value, each with a remove button.
+- Stock is not in the product form. It is entered in Ombor.
+
+### Ombor
+- Shops across the top as `FilterChips`; the list below is that shop's stock.
+- One card per product, with one row per variant combination ("Qora · 128 GB") and a compact `QuantityStepper`. A product without variations has a single "Qoldiq" row.
+- Changes save as they are made; there is no save button.
 
 ## Two apps, one system
 

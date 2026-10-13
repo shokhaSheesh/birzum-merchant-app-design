@@ -1,14 +1,15 @@
 import { Navigate, useParams } from 'react-router-dom'
-import { getStore, products } from '@/entities/catalog/products'
+import { getStore, useCatalog } from '@/entities/catalog/products'
 import { ROUTES } from '@/shared/config/routes'
 import { useI18n } from '@/shared/i18n/useI18n'
-import { PageHeader } from '../components/PageHeader'
+import { PageHeader } from '@/shared/ui/PageHeader'
 import { ProductCard } from '../components/ProductCard'
 import { StoreRating } from '../components/StoreRating'
 
 /** One shop and everything it sells. */
 export function StorePage() {
   const { t } = useI18n()
+  const products = useCatalog()
   const { id } = useParams()
   const store = getStore(id)
 

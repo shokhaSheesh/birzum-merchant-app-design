@@ -7,7 +7,7 @@ import { ROUTES } from '@/shared/config/routes'
 import { useI18n } from '@/shared/i18n/useI18n'
 import { groupDigits } from '@/shared/lib/format'
 import { EmptyState } from '@/shared/ui/EmptyState'
-import { PageHeader } from '../components/PageHeader'
+import { PageHeader } from '@/shared/ui/PageHeader'
 
 const looks: Record<ApplicationStatus, { icon: LucideIcon; tone: string; text: string }> = {
   pending: { icon: Send, tone: 'bg-warning-soft text-warning', text: 'cnotif.pending' },

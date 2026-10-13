@@ -1,3 +1,6 @@
+import { useMemo } from 'react'
+import { createStore } from '@/shared/lib/createStore'
+
 export const CATEGORIES = ['phones', 'tvs', 'appliances', 'laptops'] as const
 export type Category = (typeof CATEGORIES)[number]
 
@@ -27,8 +30,15 @@ export type Product = {
   /** Base price in UZS, before variation price changes. */
   price: number
   storeId: string
-  /** Pieces available. Zero means out of stock. */
-  stock: number
+  /**
+   * Pieces on hand: location id, then variant key (see `variantKey`), then the count.
+   * A missing entry means zero.
+   */
+  stock: Record<string, Record<string, number>>
+  /** Photo URLs, first one is the cover. Empty until the merchant adds some. */
+  images: string[]
+  /** Hidden products stay in the merchant's list but not in the client app. */
+  active: boolean
   description: string
   variations: Variation[]
   /** Label and value pairs, in display order. */
@@ -62,7 +72,9 @@ const colors = (...labels: string[]): Variation => ({
   options: labels.map((label) => ({ label, swatch: SWATCHES[label] })),
 })
 
-export const products: Product[] = [
+type SeedProduct = Omit<Product, 'stock' | 'images' | 'active'> & { stock: number }
+
+const seedProducts: SeedProduct[] = [
   {
     id: 'p1',
     name: 'Samsung Galaxy A55',
@@ -266,7 +278,62 @@ export const products: Product[] = [
   },
 ]
 
-export const BRANDS = [...new Set(products.map((product) => product.brand))].sort()
+/** Brands come from the Birzum admin panel; a merchant picks from them and cannot add one. */
+export const BRANDS = ['Apple', 'Artel', 'HP', 'Huawei', 'Lenovo', 'LG', 'Samsung', 'Xiaomi']
 
-export const getProduct = (id: string | undefined) => products.find((p) => p.id === id)
+/** The shop the signed-in merchant belongs to. Its products are the ones it can manage. */
+export const OWN_STORE_ID = 's1'
+
+/** Identifies one combination of options, e.g. "Qora|256 GB". Empty for a product without variations. */
+export const variantKey = (labels: string[]) => labels.join('|')
+
+/** Every combination of a product's options, as lists of labels. One empty list if it has none. */
+export function variantCombos(variations: Variation[]): string[][] {
+  return variations.reduce<string[][]>(
+    (combos, variation) =>
+      combos.flatMap((combo) => variation.options.map((option) => [...combo, option.label])),
+    [[]],
+  )
+}
+
+/** Pieces on hand across all locations: of one variant, or of the whole product. */
+export function stockOf(product: Product, labels?: string[]) {
+  return Object.values(product.stock).reduce(
+    (sum, byVariant) =>
+      sum +
+      (labels
+        ? (byVariant[variantKey(labels)] ?? 0)
+        : Object.values(byVariant).reduce((a, b) => a + b, 0)),
+    0,
+  )
+}
+
+// Sample stock: the seed count for every variant, split over the shop's first two locations
+function seedStock(product: SeedProduct): Product['stock'] {
+  const own = product.storeId === OWN_STORE_ID
+  const first: Record<string, number> = {}
+  const second: Record<string, number> = {}
+  for (const combo of variantCombos(product.variations)) {
+    first[variantKey(combo)] = Math.ceil(product.stock * 0.6)
+    second[variantKey(combo)] = Math.floor(product.stock * 0.4)
+  }
+  return own ? { l1: first, l2: second } : { [`${product.storeId}-main`]: first }
+}
+
+export const productsStore = createStore<Product>(
+  seedProducts.map((product) => ({
+    ...product,
+    stock: seedStock(product),
+    images: [],
+    active: true,
+  })),
+)
+
+/** What shoppers can see: visible products from every shop. */
+export const useCatalog = () => {
+  const all = productsStore.useAll()
+  return useMemo(() => all.filter((product) => product.active), [all])
+}
+
+export const getProduct = (id: string | undefined) => productsStore.get(id)
 export const getStore = (id: string | undefined) => stores.find((s) => s.id === id)

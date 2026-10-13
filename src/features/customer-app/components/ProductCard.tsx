@@ -15,7 +15,11 @@ export function ProductCard({ product }: { product: Product }) {
   return (
     <div className="relative min-w-0">
       <Link to={customerProductPath(product.id)} className="flex min-w-0 flex-col gap-1.5">
-        <ProductPicture category={product.category} className="rounded-card" />
+        <ProductPicture
+          category={product.category}
+          src={product.images[0]}
+          className="rounded-card"
+        />
         <p className="line-clamp-2 leading-tight font-semibold">{product.name}</p>
         <p className="font-bold">{formatSum(product.price)}</p>
         <p className="self-start rounded-full bg-green-200 px-2.5 py-0.5 text-xs font-semibold whitespace-nowrap">

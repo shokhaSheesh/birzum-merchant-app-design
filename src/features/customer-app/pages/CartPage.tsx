@@ -3,6 +3,7 @@ import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { cartStore, useCart } from '@/entities/cart/cartStore'
 import { ProductPicture } from '@/entities/catalog/ProductPicture'
+import { stockOf } from '@/entities/catalog/products'
 import { submitApplication } from '@/entities/clients/applicationsApi'
 import { TERMS, type Term } from '@/entities/clients/clients'
 import { installmentTerms } from '@/entities/clients/installment'
@@ -100,6 +101,7 @@ export function CartPage() {
             <ProductPicture
               category={product.category}
               color={color}
+              src={product.images[0]}
               className="w-20 shrink-0 rounded-control"
             />
             <div className="flex min-w-0 flex-1 flex-col gap-2">
@@ -125,7 +127,7 @@ export function CartPage() {
                   size="sm"
                   label={t('field.quantity')}
                   value={quantity}
-                  max={product.stock}
+                  max={stockOf(product, variant)}
                   onChange={(value) => cartStore.setQuantity(key, value)}
                 />
               </div>

@@ -1,6 +1,16 @@
-import { ArrowLeftRight, Bell, LogOut } from 'lucide-react'
+import {
+  ArrowLeftRight,
+  Bell,
+  Boxes,
+  LogOut,
+  MapPin,
+  Package,
+  ShieldCheck,
+  UsersRound,
+} from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 import { unreadCount } from '@/entities/notifications/notifications'
+import { usePermissions } from '@/entities/merchant/usePermissions'
 import { currentUser } from '@/entities/session/user'
 import { logout } from '@/features/auth/api/mockAuth'
 import { ROUTES } from '@/shared/config/routes'
@@ -14,6 +24,7 @@ import { Avatar } from '@/shared/ui/Avatar'
 import { Button } from '@/shared/ui/Button'
 import { ChoiceGrid } from '@/shared/ui/ChoiceGrid'
 import { InfoList, InfoRow } from '@/shared/ui/InfoList'
+import { MenuList, MenuRow } from '@/shared/ui/MenuList'
 import { Section } from '@/shared/ui/Section'
 import { Select } from '@/shared/ui/Select'
 
@@ -22,6 +33,7 @@ export function ProfilePage() {
   const { theme, setTheme } = useTheme()
   const navigate = useNavigate()
   const user = currentUser
+  const { can, role } = usePermissions()
 
   const handleLogout = () => {
     logout()
@@ -30,7 +42,7 @@ export function ProfilePage() {
 
   return (
     <div className="flex min-h-full flex-col gap-7 px-5 pt-[max(1.5rem,env(safe-area-inset-top))] pb-tabbar">
-      <h1 className="flex min-h-10 items-center text-2xl font-bold">{t('nav.profile')}</h1>
+      <h1 className="flex min-h-10 items-center text-2xl font-bold">{t('nav.menu')}</h1>
 
       <div className="flex items-center gap-4">
         <Avatar
@@ -42,7 +54,7 @@ export function ProfilePage() {
           <p className="text-xl leading-tight font-bold">
             {user.firstName} {user.lastName}
           </p>
-          <p className="text-ink-muted">{t('profile.role')}</p>
+          <p className="text-ink-muted">{role?.name ?? t('profile.role')}</p>
         </div>
       </div>
 
@@ -52,6 +64,35 @@ export function ProfilePage() {
         <InfoRow label={t('profile.store')} value={user.store} />
         <InfoRow label={t('profile.branch')} value={user.branch} />
       </InfoList>
+
+      {(can('products') || can('inventory')) && (
+        <Section title={t('menu.catalog')}>
+          <MenuList>
+            {can('products') && (
+              <MenuRow icon={Package} label={t('manage.products')} to={ROUTES.manageProducts} />
+            )}
+            {can('inventory') && (
+              <MenuRow icon={Boxes} label={t('manage.inventory')} to={ROUTES.manageInventory} />
+            )}
+          </MenuList>
+        </Section>
+      )}
+
+      {(can('locations') || can('staff') || can('roles')) && (
+        <Section title={t('menu.shop')}>
+          <MenuList>
+            {can('locations') && (
+              <MenuRow icon={MapPin} label={t('manage.locations')} to={ROUTES.manageLocations} />
+            )}
+            {can('staff') && (
+              <MenuRow icon={UsersRound} label={t('manage.staff')} to={ROUTES.manageStaff} />
+            )}
+            {can('roles') && (
+              <MenuRow icon={ShieldCheck} label={t('manage.roles')} to={ROUTES.manageRoles} />
+            )}
+          </MenuList>
+        </Section>
+      )}
 
       <ActionCard
         icon={Bell}

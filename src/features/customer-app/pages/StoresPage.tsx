@@ -1,6 +1,6 @@
 import { ChevronRight, Store as StoreIcon } from 'lucide-react'
 import { Link } from 'react-router-dom'
-import { products, stores } from '@/entities/catalog/products'
+import { useCatalog, stores } from '@/entities/catalog/products'
 import { customerStorePath } from '@/shared/config/routes'
 import { useI18n } from '@/shared/i18n/useI18n'
 import { StoreRating } from '../components/StoreRating'
@@ -8,6 +8,7 @@ import { StoreRating } from '../components/StoreRating'
 /** The shops whose products can be bought on nasiya. */
 export function StoresPage() {
   const { t } = useI18n()
+  const products = useCatalog()
 
   return (
     <div className="flex min-h-full flex-col gap-4 px-5 pt-[max(1.5rem,env(safe-area-inset-top))] pb-tabbar">
