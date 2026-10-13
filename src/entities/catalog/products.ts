@@ -454,6 +454,20 @@ export function photosOf(product: Product, lang: Lang, valueIds: string[] = []) 
   return all.find((list) => list.length > 0) ?? []
 }
 
+/**
+ * Every photo of a product for swiping through: the chosen variant's first, then the
+ * product's own and the other variants', each photo once.
+ */
+export function galleryOf(product: Product, lang: Lang, valueIds: string[] = []) {
+  return [
+    ...new Set([
+      ...photosOf(product, lang, valueIds),
+      ...photosOf(product, lang),
+      ...Object.values(product.valueImages).flat(),
+    ]),
+  ]
+}
+
 /** What shoppers can see: visible products from every shop. */
 export const useCatalog = () => {
   const all = productsStore.useAll()

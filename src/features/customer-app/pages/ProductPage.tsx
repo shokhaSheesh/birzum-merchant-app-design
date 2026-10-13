@@ -5,7 +5,7 @@ import { cartKey, cartStore, useCart } from '@/entities/cart/cartStore'
 import {
   getProduct,
   getStore,
-  photosOf,
+  galleryOf,
   priceOf,
   soldCombos,
   stockOf,
@@ -117,7 +117,7 @@ function ProductDetails({ product }: { product: Product }) {
       <div className="flex min-h-0 flex-1 flex-col gap-6 overflow-y-auto px-5 pb-4">
         <ProductGallery
           key={variantKey(picked)}
-          images={photosOf(product, lang, picked)}
+          images={galleryOf(product, lang, picked)}
           category={product.category}
           color={color}
         />
