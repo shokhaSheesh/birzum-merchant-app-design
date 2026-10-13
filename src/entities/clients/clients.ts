@@ -90,6 +90,8 @@ export type Application = {
   locationId?: string
   /** Payments the shopper has made in the app on top of the ones already settled. */
   extraPaid?: number
+  /** When each of those was made, in order. */
+  paidDates?: Date[]
   /** True once the shopper has left a review for this purchase. */
   reviewed?: boolean
   /** Set when the status is `rejected`. */

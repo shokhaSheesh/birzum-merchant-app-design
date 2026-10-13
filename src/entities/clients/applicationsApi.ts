@@ -95,5 +95,9 @@ export async function payInstallment(number: number) {
   const extraPaid = (application.extraPaid ?? 0) + 1
   const paid = { ...application, extraPaid }
   const done = paymentSchedule(paid).every((payment) => payment.state === 'paid')
-  clientsStore.updateApplication(number, { extraPaid, status: done ? 'closed' : 'handed' })
+  clientsStore.updateApplication(number, {
+    extraPaid,
+    paidDates: [...(application.paidDates ?? []), new Date()],
+    status: done ? 'closed' : 'handed',
+  })
 }

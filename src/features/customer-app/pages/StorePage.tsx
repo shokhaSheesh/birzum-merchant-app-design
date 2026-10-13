@@ -1,10 +1,8 @@
 import { Clock, MapPin, Phone, Store as StoreIcon } from 'lucide-react'
-import { Navigate, useParams } from 'react-router-dom'
+import { Link, Navigate, useParams } from 'react-router-dom'
 import { getStore, useCatalog } from '@/entities/catalog/products'
-import { reviewsStore } from '@/entities/catalog/reviews'
-import { ReviewItem } from '@/entities/catalog/ui/ReviewItem'
 import { usePickupPoints } from '@/entities/merchant/usePickupPoints'
-import { ROUTES } from '@/shared/config/routes'
+import { customerProductsPath, ROUTES } from '@/shared/config/routes'
 import { useI18n } from '@/shared/i18n/useI18n'
 import { formatPhone } from '@/shared/lib/phone'
 import { PageHeader } from '@/shared/ui/PageHeader'
@@ -12,21 +10,20 @@ import { Section } from '@/shared/ui/Section'
 import { ProductCard } from '../components/ProductCard'
 import { StoreRating } from '../components/StoreRating'
 
-/** One shop: who it is, where its filials are, what shoppers say, and everything it sells. */
+/** How many products the shop page shows before "Hammasi" opens the full listing. */
+const PREVIEW = 4
+
+/** One shop: who it is, where its filials are, and a first look at what it sells. */
 export function StorePage() {
   const { t } = useI18n()
   const products = useCatalog()
   const pickupPoints = usePickupPoints()
-  const allReviews = reviewsStore.useAll()
   const { id } = useParams()
   const store = getStore(id)
 
   if (!store) return <Navigate to={ROUTES.customerStores} replace />
   const items = products.filter((product) => product.storeId === store.id)
   const points = pickupPoints(store.id)
-  const reviews = allReviews
-    .filter((review) => review.storeId === store.id)
-    .sort((a, b) => b.date.getTime() - a.date.getTime())
 
   return (
     <div className="flex h-full flex-col">
@@ -74,19 +71,19 @@ export function StorePage() {
           </ul>
         </Section>
 
-        {reviews.length > 0 && (
-          <Section title={t('manage.reviews')}>
-            <ul className="rounded-card bg-surface px-4">
-              {reviews.map((review) => (
-                <ReviewItem key={review.id} review={review} />
-              ))}
-            </ul>
-          </Section>
-        )}
-
-        <Section title={`${t('manage.products')} · ${items.length}`}>
+        <Section
+          title={`${t('manage.products')} · ${items.length}`}
+          action={
+            <Link
+              to={customerProductsPath({ store: store.id })}
+              className="text-sm font-semibold text-brand"
+            >
+              {t('catalog.all')}
+            </Link>
+          }
+        >
           <div className="grid grid-cols-2 gap-x-3 gap-y-5">
-            {items.map((product) => (
+            {items.slice(0, PREVIEW).map((product) => (
               <ProductCard key={product.id} product={product} />
             ))}
           </div>

@@ -4,6 +4,8 @@ import { useSearchParams } from 'react-router-dom'
 import {
   BRANDS,
   CATEGORIES,
+  getStore,
+  stores,
   useCatalog,
   type Category,
   type Product,
@@ -25,6 +27,8 @@ const PRICE_STEP = 100_000
 type Filters = {
   category: 'all' | Category
   brand: string
+  /** A shop id, or "all". */
+  store: string
   priceFrom: number
   priceTo: number
 }
@@ -35,6 +39,7 @@ const matches = (product: Product, name: string, needle: string, filters: Filter
     product.brand.toLowerCase().includes(needle)) &&
   (filters.category === ALL || product.category === filters.category) &&
   (filters.brand === ALL || product.brand === filters.brand) &&
+  (filters.store === ALL || product.storeId === filters.store) &&
   product.price >= filters.priceFrom &&
   product.price <= filters.priceTo
 
@@ -52,10 +57,12 @@ export function ProductsPage() {
   const query = searchParams.get('q')?.trim() ?? ''
   const requestedCategory = searchParams.get('category') as Category
   const requestedBrand = searchParams.get('brand') ?? ''
+  const requestedStore = searchParams.get('store') ?? ''
 
   const [filters, setFilters] = useState<Filters>({
     category: CATEGORIES.includes(requestedCategory) ? requestedCategory : ALL,
     brand: BRANDS.includes(requestedBrand) ? requestedBrand : ALL,
+    store: getStore(requestedStore) ? requestedStore : ALL,
     priceFrom: PRICE_MIN,
     priceTo: PRICE_MAX,
   })
@@ -71,6 +78,7 @@ export function ProductsPage() {
   const activeCount = [
     filters.category !== ALL,
     filters.brand !== ALL,
+    filters.store !== ALL,
     filters.priceFrom > PRICE_MIN || filters.priceTo < PRICE_MAX,
   ].filter(Boolean).length
 
@@ -80,7 +88,9 @@ export function ProductsPage() {
       ? t(`catalog.category.${filters.category}`)
       : filters.brand !== ALL
         ? filters.brand
-        : t('catalog.popular')
+        : filters.store !== ALL
+          ? (getStore(filters.store)?.name ?? '')
+          : t('catalog.popular')
 
   const apply = (e: FormEvent) => {
     e.preventDefault()
@@ -89,7 +99,7 @@ export function ProductsPage() {
   }
 
   const clear = () => {
-    setFilters({ category: ALL, brand: ALL, priceFrom: PRICE_MIN, priceTo: PRICE_MAX })
+    setFilters({ category: ALL, brand: ALL, store: ALL, priceFrom: PRICE_MIN, priceTo: PRICE_MAX })
     setOpen(false)
   }
 
@@ -154,6 +164,15 @@ export function ProductsPage() {
             ]}
             value={draft.brand}
             onChange={(brand) => setDraft({ ...draft, brand })}
+          />
+          <Select
+            label={t('profile.store')}
+            options={[
+              { value: ALL, label: t('catalog.all') },
+              ...stores.map((store) => ({ value: store.id, label: store.name })),
+            ]}
+            value={draft.store}
+            onChange={(store) => setDraft({ ...draft, store })}
           />
 
           <fieldset className="flex flex-col gap-3">

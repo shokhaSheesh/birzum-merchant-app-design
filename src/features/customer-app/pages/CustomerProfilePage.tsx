@@ -1,4 +1,4 @@
-import { ArrowLeftRight, LogOut } from 'lucide-react'
+import { ArrowLeftRight, LogOut, Receipt } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 import { fullName, initials } from '@/entities/clients/clientName'
 import { PaymentCards } from '@/entities/clients/ui/PaymentCards'
@@ -16,6 +16,7 @@ import { Avatar } from '@/shared/ui/Avatar'
 import { Button } from '@/shared/ui/Button'
 import { ChoiceGrid } from '@/shared/ui/ChoiceGrid'
 import { InfoList, InfoRow } from '@/shared/ui/InfoList'
+import { MenuList, MenuRow } from '@/shared/ui/MenuList'
 import { Section } from '@/shared/ui/Section'
 import { Select } from '@/shared/ui/Select'
 
@@ -50,6 +51,9 @@ export function CustomerProfilePage() {
 
           <Section title={t('client.cards')}>
             <PaymentCards client={customer} addTo={ROUTES.customerAddCard} />
+            <MenuList>
+              <MenuRow icon={Receipt} label={t('payhistory.title')} to={ROUTES.customerPayments} />
+            </MenuList>
           </Section>
         </>
       )}

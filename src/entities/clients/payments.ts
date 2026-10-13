@@ -1,7 +1,14 @@
 import type { Application } from './clients'
 
 export type PaymentState = 'paid' | 'due' | 'overdue'
-export type Payment = { number: number; dueDate: Date; amount: number; state: PaymentState }
+export type Payment = {
+  number: number
+  dueDate: Date
+  amount: number
+  state: PaymentState
+  /** When it was paid. Payments settled outside the app count as paid on their due date. */
+  paidOn?: Date
+}
 
 /**
  * The monthly payments of an application, one per month of its term, starting the month
@@ -36,9 +43,15 @@ export function paymentSchedule(application: Application, today = new Date()): P
   payments
     .filter((payment) => payment.state !== 'paid')
     .slice(0, application.extraPaid ?? 0)
-    .forEach((payment) => {
+    .forEach((payment, i) => {
       payment.state = 'paid'
+      payment.paidOn = application.paidDates?.[i] ?? today
     })
+  for (const payment of payments) {
+    // A nasiya closed early has its remaining payments made by today at the latest
+    if (payment.state === 'paid')
+      payment.paidOn ??= payment.dueDate < today ? payment.dueDate : today
+  }
   return payments
 }
 
