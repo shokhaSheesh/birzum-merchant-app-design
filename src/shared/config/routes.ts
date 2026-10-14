@@ -48,6 +48,8 @@ export const ROUTES = {
   customerAddCard: '/customer/cards/new',
   customerProfile: '/customer/profile',
   kit: '/kit',
+  theme: '/theme',
+  customerTheme: '/customer/theme',
   /** Gallery of loading, error and empty states, for developers. */
   states: '/states',
   stateDemo: '/states/:kind',

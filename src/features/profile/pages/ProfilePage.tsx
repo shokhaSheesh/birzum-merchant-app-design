@@ -11,6 +11,7 @@ import {
   Star,
   Tags,
   UsersRound,
+  Palette,
 } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 import { unreadCount } from '@/entities/notifications/notifications'
@@ -22,12 +23,10 @@ import { ROUTES } from '@/shared/config/routes'
 import { LANG_NAMES, LANGS } from '@/shared/i18n/dictionaries'
 import { useI18n } from '@/shared/i18n/useI18n'
 import { formatPhone } from '@/shared/lib/phone'
-import { THEMES } from '@/shared/theme/context'
 import { useTheme } from '@/shared/theme/useTheme'
 import { ActionCard } from '@/shared/ui/ActionCard'
 import { Avatar } from '@/shared/ui/Avatar'
 import { Button } from '@/shared/ui/Button'
-import { ChoiceGrid } from '@/shared/ui/ChoiceGrid'
 import { InfoList, InfoRow } from '@/shared/ui/InfoList'
 import { MenuList, MenuRow } from '@/shared/ui/MenuList'
 import { Section } from '@/shared/ui/Section'
@@ -35,7 +34,7 @@ import { Select } from '@/shared/ui/Select'
 
 export function ProfilePage() {
   const { t, tl, lang, setLang } = useI18n()
-  const { theme, setTheme } = useTheme()
+  const { theme } = useTheme()
   const navigate = useNavigate()
   const user = currentUser
   const { can, role } = usePermissions()
@@ -124,18 +123,19 @@ export function ProfilePage() {
       />
 
       <Section title={t('profile.settings')}>
+        <MenuList>
+          <MenuRow
+            icon={Palette}
+            label={t('profile.theme')}
+            to={ROUTES.theme}
+            value={t(`theme.${theme}`)}
+          />
+        </MenuList>
         <Select
           label={t('profile.language')}
           options={LANGS.map((value) => ({ value, label: LANG_NAMES[value] }))}
           value={lang}
           onChange={setLang}
-        />
-        <ChoiceGrid
-          label={t('profile.theme')}
-          columns={3}
-          options={THEMES.map((value) => ({ value, label: t(`theme.${value}`) }))}
-          value={theme}
-          onChange={setTheme}
         />
       </Section>
 
