@@ -50,7 +50,7 @@ export type NewClient = {
   cardExpiry: string
 }
 
-export async function createClient({ cardNumber, cardExpiry: _expiry, ...data }: NewClient) {
+export async function createClient({ cardNumber, cardExpiry, ...data }: NewClient) {
   await delay(700)
   const client: Client = {
     ...data,
@@ -62,7 +62,7 @@ export async function createClient({ cardNumber, cardExpiry: _expiry, ...data }:
     passportIssuedOn: new Date(2021, 4, 18),
     passportExpiresOn: new Date(2031, 4, 18),
     limits: null,
-    cards: [toCard(cardNumber)],
+    cards: [toCard(cardNumber, cardExpiry)],
     contacts: [],
     applications: [],
   }

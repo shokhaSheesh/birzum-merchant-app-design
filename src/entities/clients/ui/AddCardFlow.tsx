@@ -38,7 +38,7 @@ export function AddCardFlow({ client, onDone, own }: Props) {
       resend={() => sendCardCode(card.number, card.expiry)}
       verify={(code) => verifyCardCode(card.number, code)}
       onVerified={async () => {
-        await addCard(client.id, card.number)
+        await addCard(client.id, card.number, card.expiry)
         toast(t('toast.saved'))
         onDone()
       }}

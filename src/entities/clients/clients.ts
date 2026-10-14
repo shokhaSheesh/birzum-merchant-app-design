@@ -21,6 +21,8 @@ export type PaymentCard = {
   id: string
   first4: string
   last4: string
+  /** Four digits, month then year, as typed: "0828" is 08/28. */
+  expiry?: string
 }
 
 export type Contact = {
@@ -161,7 +163,13 @@ function fromSeed({ born, issued, cards = [], applications = [], ...rest }: Seed
       issuedOn.getDate(),
     ),
     limits: null,
-    cards: cards.map(([first4, last4], i) => ({ id: `${rest.id}-${i}`, first4, last4 })),
+    // Sample expiry dates, spread over the next few years
+    cards: cards.map(([first4, last4], i) => ({
+      id: `${rest.id}-${i}`,
+      first4,
+      last4,
+      expiry: `${String(((Number(last4) + i * 5) % 12) + 1).padStart(2, '0')}${28 + ((Number(last4) + i) % 3)}`,
+    })),
     contacts: [],
     applications,
   }
