@@ -36,11 +36,7 @@ export function CustomerCardsPage() {
               <p className="font-semibold tracking-wider">
                 {card.first4} •••• •••• {card.last4}
               </p>
-              {card.expiry && (
-                <p className="text-sm opacity-75">
-                  {t('card.expires', { date: formatExpiry(card.expiry) })}
-                </p>
-              )}
+              {card.expiry && <p className="text-sm opacity-75">{formatExpiry(card.expiry)}</p>}
             </div>
             {cards.length > 1 && (
               <button

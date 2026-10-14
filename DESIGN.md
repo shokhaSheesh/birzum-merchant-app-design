@@ -426,7 +426,7 @@ The repo holds the merchant app and the client (shopper) app. They share every t
 - **Product page stock.** The badge above the name is the total for the chosen variant. When the shop has several filials, a "Filiallarda mavjudligi" section after Sotuvchi lists each filial with its address and a badge: green "8 dona" or grey "Tugagan".
 - **Shop page** (`StorePage`), top to bottom: a navy shop tile with name and rating; Filiallar (name, address, hours, then two small pills: "Xaritada koʻrish", which opens the address in a map, and the phone number, which calls it); Mahsulotlar with the count, the first four products and a "Hammasi" link to the listing filtered by that shop. Reviews are not listed here.
 - **Product listing filter** has four parts: Kategoriya, Brend, Doʻkon, Narx.
-- **Toʻlov kartalari** (shopper): one navy row per card (scheme logo, masked number, "Amal qilish muddati: 04/28" under it) with a trash button, ending in a dashed tile with "+ Yangi karta", the same add tile as the merchant's card row.
+- **Toʻlov kartalari** (shopper): one navy row per card (scheme logo, masked number, the expiry "04/28" under it, with no label) with a trash button, ending in a dashed tile with "+ Yangi karta", the same add tile as the merchant's card row.
 - **Toʻlovlar tarixi** opens from Profil: a chip row with the date range and "Barcha doʻkonlar" (`SelectChip`), the total paid, then one row per payment (date, shop and ariza number, card, amount), newest first. A row opens its purchase.
 - **Savat only reviews the products:** grouped by shop, each with its picture, variant, quantity stepper, remove button and a small "oyiga 301 000 dan" (the lowest monthly payment, at 24 months). Under them, "Oʻxshash mahsulotlar" as a sideways row.
 - **On a tab screen the main action is a bar fixed above the tab bar** (Savat, Kalkulyator): `sticky bottom-0` with a top border and `pb-tabbar`, so content scrolls under it.
@@ -522,6 +522,9 @@ Open `/states` (Menyu → Dizayn → Holatlar namunasi) to see every one of thes
 
 ## Who is reading
 Shared pieces that speak about the client must know which app they are in. In the merchant app the client is "klient"; in the client app the same text says "siz" and "sizning": the card form ("Klient kartasi" becomes "Karta qoʻshish"), reject reasons, and who cancelled. These components take an `own` flag for the client app.
+
+## Fewer words
+When a value explains itself, show it without a label: a card's "04/28" needs no "Amal qilish muddati". Labels stay where the value alone could be misread.
 
 ## One primary button per screen
 A screen has at most one solid navy button: its main action, in the footer. Everything else on the page (download a contract, leave a review, change status, add a row) is `secondary`.

@@ -1,6 +1,5 @@
 import {
   ArrowLeftRight,
-  Bell,
   Boxes,
   LoaderCircle,
   LogOut,
@@ -15,7 +14,6 @@ import {
   Palette,
 } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
-import { unreadCount } from '@/entities/notifications/notifications'
 import { useMyLocations } from '@/entities/merchant/useMyLocations'
 import { usePermissions } from '@/entities/merchant/usePermissions'
 import { currentUser } from '@/entities/session/user'
@@ -105,15 +103,6 @@ export function ProfilePage() {
           </MenuList>
         </Section>
       )}
-
-      <ActionCard
-        icon={Bell}
-        title={t('notifications.title')}
-        description={
-          unreadCount > 0 ? t('notifications.unread', { count: String(unreadCount) }) : undefined
-        }
-        onClick={() => navigate(ROUTES.notifications)}
-      />
 
       <ActionCard
         icon={ArrowLeftRight}
