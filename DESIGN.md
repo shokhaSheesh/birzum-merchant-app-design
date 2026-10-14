@@ -439,6 +439,7 @@ The repo holds the merchant app and the client (shopper) app. They share every t
 - Its bottom button depends on the status: a red ghost "Buyurtmani bekor qilish" while the merchant has not answered (confirmation with "Yoʻq, qoldirish"); "Toʻlash: 483 000 UZS" from Topshirilgan on, which opens a sheet with the due date, amount and card. Paying the last installment closes the nasiya.
 - From Topshirilgan on the screen also has secondary "Shartnomani yuklab olish" and "Sharh qoldirish" (five tappable stars and a text). A sent review shows in the merchant's Sharhlar; the button then becomes "Sharhingiz uchun rahmat!".
 - **Profil**: photo, name and phone; Shaxsiy maʼlumotlar; a menu card with Toʻlov kartalari and Toʻlovlar tarixi, each its own screen; Sozlamalar (language, theme); back to the merchant app; sign out.
+- **Card scheme logos** (`CardLogo`): Humo and Uzcard logos on a small white plate (48 × 32), so they read on navy tiles and in the dark theme. Uzcard uses only its "U" mark; its wordmark is unreadable at this size. The scheme comes from the first four digits. Text places (selects, rows, the PDF) keep the written name, "Humo •••• 1671".
 - **Cards** (`PaymentCards`, both apps): a small × on each card removes it after a confirmation. The last remaining card has no ×.
 
 ## Home screen

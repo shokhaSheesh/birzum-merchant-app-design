@@ -185,7 +185,7 @@ export const seedClients: Client[] = [
     incomeSource: 'other',
     cards: [
       ['9860', '1671'],
-      ['9860', '8859'],
+      ['8600', '8859'],
     ],
     applications: [
       {

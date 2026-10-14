@@ -4,9 +4,10 @@ import { Link } from 'react-router-dom'
 import { useI18n } from '@/shared/i18n/useI18n'
 import { toast } from '@/shared/lib/toast'
 import { ConfirmSheet } from '@/shared/ui/ConfirmSheet'
-import { cardBrand, cardLabel } from '../cardBrand'
+import { cardLabel } from '../cardBrand'
 import { removeCard } from '../cardsApi'
 import type { Client, PaymentCard } from '../clients'
+import { CardLogo } from './CardLogo'
 
 const tile = 'flex h-28 w-52 shrink-0 snap-start flex-col justify-between rounded-card p-4'
 
@@ -34,7 +35,7 @@ export function PaymentCards({ client, addTo }: Props) {
             </p>
             <div className="flex items-end justify-between text-sm">
               <span className="opacity-60">••/••</span>
-              <span className="font-semibold">{cardBrand(card)}</span>
+              <CardLogo card={card} />
             </div>
             {client.cards.length > 1 && (
               <button

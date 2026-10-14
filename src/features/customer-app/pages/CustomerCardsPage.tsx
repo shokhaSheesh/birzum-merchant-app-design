@@ -1,9 +1,10 @@
-import { CreditCard, Plus, Trash2 } from 'lucide-react'
+import { Plus, Trash2 } from 'lucide-react'
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
-import { cardBrand, cardLabel } from '@/entities/clients/cardBrand'
+import { cardLabel } from '@/entities/clients/cardBrand'
 import { removeCard } from '@/entities/clients/cardsApi'
 import type { PaymentCard } from '@/entities/clients/clients'
+import { CardLogo } from '@/entities/clients/ui/CardLogo'
 import { useCustomer } from '@/entities/session/customer'
 import { ROUTES } from '@/shared/config/routes'
 import { useI18n } from '@/shared/i18n/useI18n'
@@ -30,12 +31,11 @@ export function CustomerCardsPage() {
             key={card.id}
             className="flex items-center gap-3 rounded-card bg-tile p-4 text-on-tile"
           >
-            <CreditCard size={24} className="shrink-0 opacity-75" />
+            <CardLogo card={card} />
             <div className="flex min-w-0 flex-1 flex-col gap-0.5">
               <p className="font-semibold tracking-wider">
                 {card.first4} •••• •••• {card.last4}
               </p>
-              <p className="text-sm opacity-75">{cardBrand(card)}</p>
             </div>
             {cards.length > 1 && (
               <button
