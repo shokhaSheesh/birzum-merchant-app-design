@@ -1,8 +1,12 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { getStore, OWN_STORE_ID } from '@/entities/catalog/products'
-import { applicationStatusTone } from '@/entities/clients/applicationStatus'
-import { APPLICATION_STATUSES, type ApplicationStatus } from '@/entities/clients/clients'
+import {
+  CUSTOMER_STATUSES,
+  customerStatus,
+  customerStatusTone,
+  type CustomerStatus,
+} from '@/entities/clients/customerStatus'
 import { useCustomer } from '@/entities/session/customer'
 import { customerPurchasePath } from '@/shared/config/routes'
 import { useI18n } from '@/shared/i18n/useI18n'
@@ -19,14 +23,14 @@ export function PurchasesPage() {
   const { t } = useI18n()
   const loaded = useLoaded()
   const all = useCustomer()?.applications ?? []
-  const [status, setStatus] = useState<'all' | ApplicationStatus>('all')
+  const [status, setStatus] = useState<'all' | CustomerStatus>('all')
   const [range, setRange] = useState<DateRange>({ from: null, to: null })
 
   const dayStart = range.from ? new Date(range.from).setHours(0, 0, 0, 0) : -Infinity
   const dayEnd = range.to ? new Date(range.to).setHours(23, 59, 59, 999) : Infinity
   const applications = all.filter(
     (application) =>
-      (status === 'all' || application.status === status) &&
+      (status === 'all' || customerStatus(application) === status) &&
       application.date.getTime() >= dayStart &&
       application.date.getTime() <= dayEnd,
   )
@@ -49,9 +53,9 @@ export function PurchasesPage() {
           }
           options={[
             { value: 'all', label: t('applications.filter.all') },
-            ...APPLICATION_STATUSES.map((value) => ({
+            ...CUSTOMER_STATUSES.map((value) => ({
               value,
-              label: t(`application.status.${value}`),
+              label: t(`cstatus.${value}`),
             })),
           ]}
           value={status}
@@ -87,8 +91,8 @@ export function PurchasesPage() {
                       {formatDateTime(application.date)}
                     </p>
                   </div>
-                  <StatusBadge tone={applicationStatusTone[application.status]}>
-                    {t(`application.status.${application.status}`)}
+                  <StatusBadge tone={customerStatusTone[customerStatus(application)]}>
+                    {t(`cstatus.${customerStatus(application)}`)}
                   </StatusBadge>
                 </div>
                 {application.details && (

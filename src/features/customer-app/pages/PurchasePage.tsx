@@ -3,7 +3,7 @@ import { useState } from 'react'
 import { useParams } from 'react-router-dom'
 import { getStore, OWN_STORE_ID } from '@/entities/catalog/products'
 import { reviewsStore, type Review } from '@/entities/catalog/reviews'
-import { applicationStatusTone } from '@/entities/clients/applicationStatus'
+import { customerStatus, customerStatusTone } from '@/entities/clients/customerStatus'
 import { cancelApplication } from '@/entities/clients/applicationsApi'
 import { shortName } from '@/entities/clients/clientName'
 import type { Application } from '@/entities/clients/clients'
@@ -94,8 +94,8 @@ export function PurchasePage() {
 
       <div className="flex min-h-0 flex-1 flex-col gap-7 overflow-y-auto px-5 pt-3 pb-8">
         <div className="flex flex-col items-start gap-2">
-          <StatusBadge tone={applicationStatusTone[status]}>
-            {t(`application.status.${status}`)}
+          <StatusBadge tone={customerStatusTone[customerStatus(application)]}>
+            {t(`cstatus.${customerStatus(application)}`)}
           </StatusBadge>
           <h1 className="text-2xl font-bold">
             {t('review.number', { number: groupDigits(application.id) })}
