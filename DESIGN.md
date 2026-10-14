@@ -32,9 +32,7 @@ All colors are tokens in `src/shared/styles/index.css`. No hex values in compone
 Components use the role tokens above (`bg-primary`, `text-brand`), never `navy-900` directly. That is what lets the dark theme swap them.
 
 ### Dark theme
-- **Every setting in Sozlamalar is a row that opens its own screen,** showing the current value on the right: Mavzu and Til. The language screen is a list with a tick; tapping a language switches the app at once and goes back.
-- **Choosing the theme** is its own screen in both apps (Menyu or Profil → Sozlamalar → "Mavzu", the row showing the current one). Tabs for Yorugʻ, Qorongʻi and Tizim; under them a swipeable preview of two of the app's screens drawn in the chosen theme; "Qoʻllash" in the footer applies it. Nothing changes before "Qoʻllash".
-- Theme tokens apply to any element with `data-theme`, not only the page, so a part of the screen (the preview) can be drawn light inside a dark page and the other way round. The light role values are repeated under `[data-theme='light']`; keep them in step with `@theme`.
+- **Every setting in Sozlamalar is a row that opens its own screen,** showing the current value on the right: Mavzu and Til. Both screens are a list with a tick on the current option; tapping one applies it at once and goes back. Tizim carries a line saying it follows the phone.
 
 The user picks Yorugʻ, Qorongʻi or Tizim in Profile. `ThemeProvider` sets `data-theme` on `<html>` and the dark block in `index.css` gives every token a dark value. Components need no dark-specific classes.
 

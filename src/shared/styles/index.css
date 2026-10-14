@@ -51,40 +51,8 @@
   --radius-card: 20px;
 }
 
-/*
- * Light theme roles again, for an element that must look light inside a dark page (the
- * theme preview). Keep in step with the @theme values above.
- */
-[data-theme='light'] {
-  color-scheme: light;
-
-  --color-canvas: #ffffff;
-  --color-surface: #f2f5f6;
-  --color-line: #dfe6e9;
-  --color-ink: #072a3c;
-  --color-ink-muted: #56707f;
-  --color-ink-subtle: #8499a4;
-  --color-primary: #0b3d57;
-  --color-primary-pressed: #072a3c;
-  --color-on-primary: #ffffff;
-  --color-brand: #0b3d57;
-  --color-tile: #0b3d57;
-  --color-navy-700: #3c6479;
-  --color-navy-400: #9db1bc;
-  --color-navy-200: #ced8dd;
-  --color-navy-100: #e7ecee;
-  --color-green-200: #e7f4cd;
-  --color-success: #1e8e4a;
-  --color-success-soft: #e2f5e9;
-  --color-warning: #b26a00;
-  --color-warning-soft: #fdf0d8;
-  --color-danger: #c93b3b;
-  --color-danger-soft: #fbe6e6;
-}
-
-/* Dark theme: the same tokens with dark values. Set by ThemeProvider on <html>, or on any
-   element (the theme preview) to draw just that part dark. */
-[data-theme='dark'] {
+/* Dark theme: the same tokens with dark values. Set by ThemeProvider on <html>. */
+:root[data-theme='dark'] {
   color-scheme: dark;
 
   --color-canvas: #0c1e28;
