@@ -32,6 +32,7 @@ All colors are tokens in `src/shared/styles/index.css`. No hex values in compone
 Components use the role tokens above (`bg-primary`, `text-brand`), never `navy-900` directly. That is what lets the dark theme swap them.
 
 ### Dark theme
+- **Every setting in Sozlamalar is a row that opens its own screen,** showing the current value on the right: Mavzu and Til. The language screen is a list with a tick; tapping a language switches the app at once and goes back.
 - **Choosing the theme** is its own screen in both apps (Menyu or Profil → Sozlamalar → "Mavzu", the row showing the current one). Tabs for Yorugʻ, Qorongʻi and Tizim; under them a swipeable preview of two of the app's screens drawn in the chosen theme; "Qoʻllash" in the footer applies it. Nothing changes before "Qoʻllash".
 - Theme tokens apply to any element with `data-theme`, not only the page, so a part of the screen (the preview) can be drawn light inside a dark page and the other way round. The light role values are repeated under `[data-theme='light']`; keep them in step with `@theme`.
 
@@ -418,7 +419,7 @@ The repo holds the merchant app and the client (shopper) app. They share every t
 - **First sign-in:** phone and code (or sign-up) → "PIN-kod oʻrnating" → "PIN-kodni takrorlang" → "Face ID bilan kirasizmi?" (enable, or "Hozir emas") → the intro slides → Asosiy.
 - **Every later start** opens the lock screen, modelled on Payme: a sign-out icon at the top left ("Boshqa hisobga kirish") and "PIN-kodni unutdingizmi?" at the top right, then the logo, "PIN-kodni kiriting", four filled dots and the number pad (`PinPad`): 80px round keys with a thin outline, the Face ID key bare at the bottom left (only when Face ID is on) and delete bare at the bottom right. With Face ID on, the system prompt opens by itself.
 - The real app shows the phone's own prompt and its own name for it (Face ID, Touch ID, fingerprint); the design uses "Face ID" and a face icon.
-- **Profil → Xavfsizlik** is its own screen: a menu card with "PIN-kodni oʻzgartirish" and a "Face ID bilan kirish" switch (`SwitchRow`), and one line explaining the switch. Changing the PIN asks for the current one first, then the new one twice. The pad has no Face ID key there: a PIN is being chosen, not checked. Signing out forgets the PIN and Face ID.
+- **Profil → Xavfsizlik** is its own screen: a menu card with "PIN-kodni oʻzgartirish" and a "Face ID bilan kirish" switch (`SwitchRow`). Changing the PIN asks for the current one first, then the new one twice. The pad has no Face ID key there: a PIN is being chosen, not checked. Signing out forgets the PIN and Face ID.
 - **Switch vs checkbox:** a setting that takes effect at once is a `SwitchRow` in a menu card; a choice that is saved with a form is a `Checkbox`.
 - **Intro slides** (`OnboardingPage`), shown once after the first sign-in: three full screens, each a large picture in the empty-state style, a title and two lines. Swipe or "Keyingi"; "Oʻtkazib yuborish" at the top right; the last button is "Boshlash". Limit → shopping → paying.
 
@@ -427,7 +428,7 @@ The repo holds the merchant app and the client (shopper) app. They share every t
 - **Product page stock.** The badge above the name is the total for the chosen variant. When the shop has several filials, a "Filiallarda mavjudligi" section after Sotuvchi lists each filial with its address and a badge: green "8 dona" or grey "Tugagan".
 - **Shop page** (`StorePage`), top to bottom: a navy shop tile with name and rating; Filiallar (name, address, hours, then two small pills: "Xaritada koʻrish", which opens the address in a map, and the phone number, which calls it); Mahsulotlar with the count, the first four products and a "Hammasi" link to the listing filtered by that shop. Reviews are not listed here.
 - **Product listing filter** has four parts: Kategoriya, Brend, Doʻkon, Narx.
-- **Toʻlov kartalari** (shopper): one navy row per card with a trash button, and the small navy "+ Qoʻshish" at the top right, as on every list screen.
+- **Toʻlov kartalari** (shopper): one navy row per card with a trash button, ending in a dashed tile with "+ Yangi karta", the same add tile as the merchant's card row.
 - **Toʻlovlar tarixi** opens from Profil: a chip row with the date range and "Barcha doʻkonlar" (`SelectChip`), the total paid, then one row per payment (date, shop and ariza number, card, amount), newest first. A row opens its purchase.
 - **Savat only reviews the products:** grouped by shop, each with its picture, variant, quantity stepper, remove button and a small "oyiga 301 000 dan" (the lowest monthly payment, at 24 months). Under them, "Oʻxshash mahsulotlar" as a sideways row.
 - **On a tab screen the main action is a bar fixed above the tab bar** (Savat, Kalkulyator): `sticky bottom-0` with a top border and `pb-tabbar`, so content scrolls under it.

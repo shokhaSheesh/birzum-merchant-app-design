@@ -1,10 +1,18 @@
-import { ArrowLeftRight, CreditCard, LogOut, Receipt, ShieldCheck, Palette } from 'lucide-react'
+import {
+  ArrowLeftRight,
+  CreditCard,
+  LogOut,
+  Receipt,
+  ShieldCheck,
+  Globe,
+  Palette,
+} from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 import { fullName, initials } from '@/entities/clients/clientName'
 import { useCustomer } from '@/entities/session/customer'
 import { security } from '@/entities/session/security'
 import { ROUTES } from '@/shared/config/routes'
-import { LANG_NAMES, LANGS } from '@/shared/i18n/dictionaries'
+import { LANG_NAMES } from '@/shared/i18n/dictionaries'
 import { useI18n } from '@/shared/i18n/useI18n'
 import { formatDate } from '@/shared/lib/format'
 import { formatPassport } from '@/shared/lib/passport'
@@ -16,11 +24,10 @@ import { Button } from '@/shared/ui/Button'
 import { InfoList, InfoRow } from '@/shared/ui/InfoList'
 import { MenuList, MenuRow } from '@/shared/ui/MenuList'
 import { Section } from '@/shared/ui/Section'
-import { Select } from '@/shared/ui/Select'
 
 /** Shopper profile: who they are, their cards, app settings, and the way back to the merchant app. */
 export function CustomerProfilePage() {
-  const { t, lang, setLang } = useI18n()
+  const { t, lang } = useI18n()
   const { theme } = useTheme()
   const navigate = useNavigate()
   const customer = useCustomer()
@@ -63,13 +70,13 @@ export function CustomerProfilePage() {
             to={ROUTES.customerTheme}
             value={t(`theme.${theme}`)}
           />
+          <MenuRow
+            icon={Globe}
+            label={t('profile.language')}
+            to={ROUTES.customerLanguage}
+            value={LANG_NAMES[lang]}
+          />
         </MenuList>
-        <Select
-          label={t('profile.language')}
-          options={LANGS.map((value) => ({ value, label: LANG_NAMES[value] }))}
-          value={lang}
-          onChange={setLang}
-        />
       </Section>
 
       <ActionCard

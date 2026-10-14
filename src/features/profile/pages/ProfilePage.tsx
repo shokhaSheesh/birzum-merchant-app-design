@@ -11,6 +11,7 @@ import {
   Star,
   Tags,
   UsersRound,
+  Globe,
   Palette,
 } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
@@ -20,7 +21,7 @@ import { usePermissions } from '@/entities/merchant/usePermissions'
 import { currentUser } from '@/entities/session/user'
 import { logout } from '@/features/auth/api/mockAuth'
 import { ROUTES } from '@/shared/config/routes'
-import { LANG_NAMES, LANGS } from '@/shared/i18n/dictionaries'
+import { LANG_NAMES } from '@/shared/i18n/dictionaries'
 import { useI18n } from '@/shared/i18n/useI18n'
 import { formatPhone } from '@/shared/lib/phone'
 import { useTheme } from '@/shared/theme/useTheme'
@@ -30,10 +31,9 @@ import { Button } from '@/shared/ui/Button'
 import { InfoList, InfoRow } from '@/shared/ui/InfoList'
 import { MenuList, MenuRow } from '@/shared/ui/MenuList'
 import { Section } from '@/shared/ui/Section'
-import { Select } from '@/shared/ui/Select'
 
 export function ProfilePage() {
-  const { t, tl, lang, setLang } = useI18n()
+  const { t, tl, lang } = useI18n()
   const { theme } = useTheme()
   const navigate = useNavigate()
   const user = currentUser
@@ -130,13 +130,13 @@ export function ProfilePage() {
             to={ROUTES.theme}
             value={t(`theme.${theme}`)}
           />
+          <MenuRow
+            icon={Globe}
+            label={t('profile.language')}
+            to={ROUTES.language}
+            value={LANG_NAMES[lang]}
+          />
         </MenuList>
-        <Select
-          label={t('profile.language')}
-          options={LANGS.map((value) => ({ value, label: LANG_NAMES[value] }))}
-          value={lang}
-          onChange={setLang}
-        />
       </Section>
 
       <Section title={t('states.design')}>

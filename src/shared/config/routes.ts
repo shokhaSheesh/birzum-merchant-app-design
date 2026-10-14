@@ -49,6 +49,8 @@ export const ROUTES = {
   customerProfile: '/customer/profile',
   kit: '/kit',
   theme: '/theme',
+  language: '/language',
+  customerLanguage: '/customer/language',
   customerTheme: '/customer/theme',
   /** Gallery of loading, error and empty states, for developers. */
   states: '/states',

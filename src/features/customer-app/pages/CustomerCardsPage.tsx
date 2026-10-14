@@ -1,6 +1,6 @@
 import { CreditCard, Plus, Trash2 } from 'lucide-react'
 import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { Link } from 'react-router-dom'
 import { cardBrand, cardLabel } from '@/entities/clients/cardBrand'
 import { removeCard } from '@/entities/clients/cardsApi'
 import type { PaymentCard } from '@/entities/clients/clients'
@@ -8,32 +8,22 @@ import { useCustomer } from '@/entities/session/customer'
 import { ROUTES } from '@/shared/config/routes'
 import { useI18n } from '@/shared/i18n/useI18n'
 import { toast } from '@/shared/lib/toast'
-import { Button } from '@/shared/ui/Button'
 import { ConfirmSheet } from '@/shared/ui/ConfirmSheet'
 import { PageHeader } from '@/shared/ui/PageHeader'
 
 /**
- * The shopper's cards, one per row, with the add button at the top right. A card can be
+ * The shopper's cards, one per row, ending in a dashed tile that adds another. A card can be
  * removed while another one remains: installments always need a card to be paid from.
  */
 export function CustomerCardsPage() {
   const { t } = useI18n()
-  const navigate = useNavigate()
   const customer = useCustomer()
   const [removing, setRemoving] = useState<PaymentCard | null>(null)
   const cards = customer?.cards ?? []
 
   return (
     <div className="flex h-full flex-col">
-      <PageHeader
-        title={t('client.cards')}
-        end={
-          <Button size="sm" className="mr-2" onClick={() => navigate(ROUTES.customerAddCard)}>
-            <Plus size={18} />
-            {t('clients.create')}
-          </Button>
-        }
-      />
+      <PageHeader title={t('client.cards')} />
       <ul className="flex min-h-0 flex-1 flex-col gap-3 overflow-y-auto px-5 pt-2 pb-6">
         {cards.map((card) => (
           <li
@@ -59,6 +49,15 @@ export function CustomerCardsPage() {
             )}
           </li>
         ))}
+        <li>
+          <Link
+            to={ROUTES.customerAddCard}
+            className="flex h-[76px] items-center justify-center gap-2 rounded-card border-[1.5px] border-dashed border-navy-400 font-semibold text-brand active:bg-surface"
+          >
+            <Plus size={22} />
+            {t('client.cards.add')}
+          </Link>
+        </li>
       </ul>
       <ConfirmSheet
         open={removing !== null}

@@ -48,6 +48,7 @@ import { StaffPage } from '@/features/manage/pages/StaffPage'
 import { NotificationsPage } from '@/features/notifications/pages/NotificationsPage'
 import { NotFoundPage, StateDemoPage } from '@/features/states/pages/StateDemoPage'
 import { StatesPage } from '@/features/states/pages/StatesPage'
+import { LanguagePage } from '@/features/settings/pages/LanguagePage'
 import { ThemePage } from '@/features/settings/pages/ThemePage'
 import { ProfilePage } from '@/features/profile/pages/ProfilePage'
 import { ROUTES } from '@/shared/config/routes'
@@ -65,6 +66,8 @@ export const router = createBrowserRouter([
       { path: ROUTES.confirmLogin, element: <ConfirmLoginPage /> },
       { path: ROUTES.kit, element: <KitPage /> },
       { path: ROUTES.theme, element: <ThemePage app="merchant" /> },
+      { path: ROUTES.language, element: <LanguagePage /> },
+      { path: ROUTES.customerLanguage, element: <LanguagePage /> },
       { path: ROUTES.customerTheme, element: <ThemePage app="customer" /> },
       { path: ROUTES.states, element: <StatesPage /> },
       { path: ROUTES.stateDemo, element: <StateDemoPage /> },

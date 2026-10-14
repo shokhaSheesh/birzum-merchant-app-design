@@ -14,7 +14,7 @@ export function SecurityPage() {
   return (
     <div className="flex h-full flex-col">
       <PageHeader title={t('pin.section')} />
-      <div className="flex flex-col gap-3 px-5 pt-2 pb-6">
+      <div className="px-5 pt-2 pb-6">
         <MenuList>
           <MenuRow
             icon={KeyRound}
@@ -28,7 +28,6 @@ export function SecurityPage() {
             onChange={security.setBiometric}
           />
         </MenuList>
-        <p className="px-1 text-sm text-ink-muted">{t('pin.biometric.toggle.hint')}</p>
       </div>
     </div>
   )
