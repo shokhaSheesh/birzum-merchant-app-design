@@ -14,9 +14,14 @@ type Props = {
 }
 
 const key =
-  'grid h-16 place-items-center rounded-full text-2xl font-semibold transition-colors active:bg-surface'
+  'grid size-20 place-items-center justify-self-center rounded-full text-[28px] transition-colors active:bg-surface'
+// Digits sit in an outlined circle; the Face ID and delete keys stand bare
+const digit = `${key} border-[1.5px] border-line`
 
-/** Dots for the digits typed so far, and a phone-style number pad. Works with a keyboard too. */
+/**
+ * Dots for the digits typed so far, and a number pad of outlined round keys. The Face ID key
+ * (bottom left) appears only where it can be used: on the lock screen. Works with a keyboard too.
+ */
 export function PinPad({ value, onChange, length, error, onBiometric }: Props) {
   const { t } = useI18n()
   // Keys can arrive faster than re-renders: track the latest value outside React state
@@ -28,8 +33,8 @@ export function PinPad({ value, onChange, length, error, onBiometric }: Props) {
     latest.current = next
     onChange(next)
   }
-  const press = (digit: string) => {
-    if (latest.current.length < length) set(latest.current + digit)
+  const press = (n: string) => {
+    if (latest.current.length < length) set(latest.current + n)
   }
 
   useEffect(() => {
@@ -43,7 +48,7 @@ export function PinPad({ value, onChange, length, error, onBiometric }: Props) {
   })
 
   return (
-    <div className="flex flex-col items-center gap-10">
+    <div className="flex flex-col items-center gap-14">
       <div
         role="status"
         aria-label={t('pin.entered', { count: String(value.length), total: String(length) })}
@@ -53,21 +58,17 @@ export function PinPad({ value, onChange, length, error, onBiometric }: Props) {
           <span
             key={i}
             className={cn(
-              'size-4 rounded-full border-2 transition-colors',
-              error
-                ? 'border-danger bg-danger'
-                : i < value.length
-                  ? 'border-primary bg-primary'
-                  : 'border-navy-400',
+              'size-3.5 rounded-full transition-colors',
+              error ? 'bg-danger' : i < value.length ? 'bg-primary' : 'bg-navy-100',
             )}
           />
         ))}
       </div>
 
-      <div className="grid w-full max-w-72 grid-cols-3 gap-x-6 gap-y-3">
-        {['1', '2', '3', '4', '5', '6', '7', '8', '9'].map((digit) => (
-          <button key={digit} type="button" onClick={() => press(digit)} className={key}>
-            {digit}
+      <div className="grid grid-cols-[repeat(3,5rem)] gap-x-7 gap-y-4">
+        {['1', '2', '3', '4', '5', '6', '7', '8', '9'].map((n) => (
+          <button key={n} type="button" onClick={() => press(n)} className={digit}>
+            {n}
           </button>
         ))}
         {onBiometric ? (
@@ -77,12 +78,12 @@ export function PinPad({ value, onChange, length, error, onBiometric }: Props) {
             onClick={onBiometric}
             className={cn(key, 'text-brand')}
           >
-            <ScanFace size={30} />
+            <ScanFace size={32} />
           </button>
         ) : (
           <span />
         )}
-        <button type="button" onClick={() => press('0')} className={key}>
+        <button type="button" onClick={() => press('0')} className={digit}>
           0
         </button>
         <button

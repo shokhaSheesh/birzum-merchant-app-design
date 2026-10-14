@@ -414,9 +414,10 @@ The repo holds the merchant app and the client (shopper) app. They share every t
   - Sign-in: Foydalanish shartlari and Maxfiylik siyosati. It also guards the QR route.
   - Checkout: Ommaviy oferta and Maxfiylik siyosati, above "Buyurtma berish".
 - **First sign-in:** phone and code (or sign-up) → "PIN-kod oʻrnating" → "PIN-kodni takrorlang" → "Face ID bilan kirasizmi?" (enable, or "Hozir emas") → the intro slides → Asosiy.
-- **Every later start** opens the lock screen: photo, "Salom, Dilnoza", four dots and a phone-style number pad (`PinPad`), with a Face ID key at the bottom left when it is on. With Face ID on, the system prompt opens by itself. A wrong PIN shakes the dots red and says how many tries are left; after five, or "PIN-kodni unutdingizmi?", the app asks for the phone number again.
+- **Every later start** opens the lock screen, modelled on Payme: a sign-out icon at the top left ("Boshqa hisobga kirish") and "PIN-kodni unutdingizmi?" at the top right, then the logo, "PIN-kodni kiriting", four filled dots and the number pad (`PinPad`): 80px round keys with a thin outline, the Face ID key bare at the bottom left (only when Face ID is on) and delete bare at the bottom right. With Face ID on, the system prompt opens by itself.
 - The real app shows the phone's own prompt and its own name for it (Face ID, Touch ID, fingerprint); the design uses "Face ID" and a face icon.
-- **Profil → Xavfsizlik:** "PIN-kodni oʻzgartirish" (the same two PIN screens with a back arrow) and a "Face ID bilan kirish" checkbox. Signing out forgets the PIN and Face ID.
+- **Profil → Xavfsizlik** is its own screen: a menu card with "PIN-kodni oʻzgartirish" and a "Face ID bilan kirish" switch (`SwitchRow`), and one line explaining the switch. Changing the PIN asks for the current one first, then the new one twice. The pad has no Face ID key there: a PIN is being chosen, not checked. Signing out forgets the PIN and Face ID.
+- **Switch vs checkbox:** a setting that takes effect at once is a `SwitchRow` in a menu card; a choice that is saved with a form is a `Checkbox`.
 - **Intro slides** (`OnboardingPage`), shown once after the first sign-in: three full screens, each a large picture in the empty-state style, a title and two lines. Swipe or "Keyingi"; "Oʻtkazib yuborish" at the top right; the last button is "Boshlash". Limit → shopping → paying.
 
 ### Client app: from cart to payments

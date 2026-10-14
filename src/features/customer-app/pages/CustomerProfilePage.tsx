@@ -1,8 +1,8 @@
-import { ArrowLeftRight, CreditCard, KeyRound, LogOut, Receipt } from 'lucide-react'
+import { ArrowLeftRight, CreditCard, LogOut, Receipt, ShieldCheck } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 import { fullName, initials } from '@/entities/clients/clientName'
 import { useCustomer } from '@/entities/session/customer'
-import { security, useBiometric } from '@/entities/session/security'
+import { security } from '@/entities/session/security'
 import { ROUTES } from '@/shared/config/routes'
 import { LANG_NAMES, LANGS } from '@/shared/i18n/dictionaries'
 import { useI18n } from '@/shared/i18n/useI18n'
@@ -14,7 +14,6 @@ import { useTheme } from '@/shared/theme/useTheme'
 import { ActionCard } from '@/shared/ui/ActionCard'
 import { Avatar } from '@/shared/ui/Avatar'
 import { Button } from '@/shared/ui/Button'
-import { Checkbox } from '@/shared/ui/Checkbox'
 import { ChoiceGrid } from '@/shared/ui/ChoiceGrid'
 import { InfoList, InfoRow } from '@/shared/ui/InfoList'
 import { MenuList, MenuRow } from '@/shared/ui/MenuList'
@@ -27,7 +26,6 @@ export function CustomerProfilePage() {
   const { theme, setTheme } = useTheme()
   const navigate = useNavigate()
   const customer = useCustomer()
-  const biometric = useBiometric()
 
   return (
     <div className="flex min-h-full flex-col gap-7 px-5 pt-[max(1.5rem,env(safe-area-inset-top))] pb-tabbar">
@@ -54,25 +52,10 @@ export function CustomerProfilePage() {
           <MenuList>
             <MenuRow icon={CreditCard} label={t('client.cards')} to={ROUTES.customerCards} />
             <MenuRow icon={Receipt} label={t('payhistory.title')} to={ROUTES.customerPayments} />
+            <MenuRow icon={ShieldCheck} label={t('pin.section')} to={ROUTES.customerSecurity} />
           </MenuList>
         </>
       )}
-
-      <Section title={t('pin.section')}>
-        <MenuList>
-          <MenuRow
-            icon={KeyRound}
-            label={t('pin.change')}
-            to={`${ROUTES.customerPinSetup}?change=1`}
-          />
-        </MenuList>
-        <Checkbox
-          label={t('pin.biometric.toggle')}
-          description={t('pin.biometric.toggle.hint')}
-          checked={biometric}
-          onChange={security.setBiometric}
-        />
-      </Section>
 
       <Section title={t('profile.settings')}>
         <Select

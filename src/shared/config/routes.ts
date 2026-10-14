@@ -29,6 +29,7 @@ export const ROUTES = {
   customerApp: '/customer',
   customerHome: '/customer/home',
   customerPinSetup: '/customer/pin/new',
+  customerSecurity: '/customer/security',
   customerWelcome: '/customer/welcome',
   customerStores: '/customer/stores',
   customerStore: '/customer/stores/:id',

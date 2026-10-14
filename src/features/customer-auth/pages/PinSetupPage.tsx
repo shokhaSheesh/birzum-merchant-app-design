@@ -2,7 +2,6 @@ import { ScanFace } from 'lucide-react'
 import { useCallback, useEffect, useState } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import { afterSignIn, PIN_LENGTH, security } from '@/entities/session/security'
-import { ROUTES } from '@/shared/config/routes'
 import { useI18n } from '@/shared/i18n/useI18n'
 import { toast } from '@/shared/lib/toast'
 import { Button } from '@/shared/ui/Button'
@@ -10,17 +9,18 @@ import { PageHeader } from '@/shared/ui/PageHeader'
 import { PinPad } from '@/shared/ui/PinPad'
 import { BiometricPrompt } from '../components/BiometricPrompt'
 
-type Step = 'create' | 'confirm' | 'biometric'
+type Step = 'current' | 'create' | 'confirm' | 'biometric'
 
 /**
  * Right after the first sign-in: choose a PIN, type it again, then decide on Face ID.
- * From Profil (`?change=1`) it only replaces the PIN and goes back.
+ * From Xavfsizlik (`?change=1`) it asks for the current PIN first, then replaces it and goes back.
  */
 export function PinSetupPage() {
   const { t } = useI18n()
   const navigate = useNavigate()
   const changing = useSearchParams()[0].has('change')
-  const [step, setStep] = useState<Step>('create')
+  const [step, setStep] = useState<Step>(changing ? 'current' : 'create')
+  const [wrongCurrent, setWrongCurrent] = useState(false)
   const [first, setFirst] = useState('')
   const [pin, setPin] = useState('')
   const [mismatch, setMismatch] = useState(false)
@@ -31,7 +31,12 @@ export function PinSetupPage() {
   useEffect(() => {
     if (pin.length < PIN_LENGTH) return
     const timer = setTimeout(() => {
-      if (step === 'create') {
+      if (step === 'current') {
+        const ok = security.checkPin(pin)
+        setWrongCurrent(!ok)
+        setPin('')
+        if (ok) setStep('create')
+      } else if (step === 'create') {
         setFirst(pin)
         setPin('')
         setMismatch(false)
@@ -40,7 +45,7 @@ export function PinSetupPage() {
         security.setPin(pin)
         if (changing) {
           toast(t('toast.saved'))
-          navigate(ROUTES.customerProfile, { replace: true })
+          navigate(-1)
         } else setStep('biometric')
       } else {
         // Start over: the two did not match
@@ -88,23 +93,34 @@ export function PinSetupPage() {
     )
   }
 
+  const title =
+    step === 'current'
+      ? 'pin.current.title'
+      : step === 'create'
+        ? 'pin.create.title'
+        : 'pin.confirm.title'
+  const hint =
+    step === 'current'
+      ? wrongCurrent
+        ? 'pin.current.wrong'
+        : 'pin.current.hint'
+      : step === 'create'
+        ? mismatch
+          ? 'pin.mismatch'
+          : 'pin.create.hint'
+        : 'pin.confirm.hint'
+  const isError = (step === 'current' && wrongCurrent) || (step === 'create' && mismatch)
+
   return (
     <div className="flex h-full flex-col">
       {changing ? <PageHeader /> : <div className="h-[max(3rem,env(safe-area-inset-top))]" />}
-      <div className="flex flex-1 flex-col items-center px-5 pb-[max(1.25rem,env(safe-area-inset-bottom))]">
-        <div className="flex flex-col items-center gap-2 text-center">
-          <h1 className="text-2xl font-bold">
-            {t(step === 'create' ? 'pin.create.title' : 'pin.confirm.title')}
-          </h1>
-          <p className={mismatch && step === 'create' ? 'text-danger' : 'text-ink-muted'}>
-            {mismatch && step === 'create'
-              ? t('pin.mismatch')
-              : t(step === 'create' ? 'pin.create.hint' : 'pin.confirm.hint')}
-          </p>
+      <div className="flex flex-1 flex-col items-center justify-center gap-6 px-5 pb-[max(1.25rem,env(safe-area-inset-bottom))]">
+        <div className="flex flex-col items-center gap-1.5 text-center">
+          <h1 className="text-2xl font-bold">{t(title)}</h1>
+          <p className={isError ? 'text-danger' : 'text-ink-muted'}>{t(hint)}</p>
         </div>
-        <div className="flex flex-1 flex-col justify-center py-8">
-          <PinPad value={pin} onChange={setPin} length={PIN_LENGTH} />
-        </div>
+        {/* No Face ID key here: a PIN is being chosen, not checked */}
+        <PinPad value={pin} onChange={setPin} length={PIN_LENGTH} error={isError && pin === ''} />
       </div>
     </div>
   )

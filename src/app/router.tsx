@@ -22,6 +22,7 @@ import { CustomerHomePage } from '@/features/customer-app/pages/CustomerHomePage
 import { ProductPage } from '@/features/customer-app/pages/ProductPage'
 import { ProductsPage } from '@/features/customer-app/pages/ProductsPage'
 import { PaymentHistoryPage } from '@/features/customer-app/pages/PaymentHistoryPage'
+import { SecurityPage } from '@/features/customer-app/pages/SecurityPage'
 import { PurchasePage } from '@/features/customer-app/pages/PurchasePage'
 import { PurchasesPage } from '@/features/customer-app/pages/PurchasesPage'
 import { SearchPage } from '@/features/customer-app/pages/SearchPage'
@@ -84,6 +85,7 @@ export const router = createBrowserRouter([
       { path: ROUTES.manageRole, element: <RoleFormPage /> },
       { path: ROUTES.customerApp, element: <CustomerAuthPage /> },
       { path: ROUTES.customerPinSetup, element: <PinSetupPage /> },
+      { path: ROUTES.customerSecurity, element: <SecurityPage /> },
       { path: ROUTES.customerWelcome, element: <OnboardingPage /> },
       {
         element: <CustomerTabLayout />,

@@ -1,9 +1,9 @@
 import { useCallback, useEffect, useState } from 'react'
-import { initials } from '@/entities/clients/clientName'
-import { useCustomer } from '@/entities/session/customer'
+import { LogOut } from 'lucide-react'
 import { PIN_ATTEMPTS, PIN_LENGTH, security } from '@/entities/session/security'
 import { useI18n } from '@/shared/i18n/useI18n'
-import { Avatar } from '@/shared/ui/Avatar'
+import logoOnDark from '@/shared/assets/logo-on-dark.svg'
+import logo from '@/shared/assets/logo.svg'
 import { PinPad } from '@/shared/ui/PinPad'
 import { BiometricPrompt } from './BiometricPrompt'
 
@@ -16,7 +16,6 @@ type Props = {
 /** What a returning shopper sees when the app opens: Face ID if it is on, otherwise the PIN. */
 export function PinLock({ onUnlock, onSignIn }: Props) {
   const { t } = useI18n()
-  const customer = useCustomer()
   const [pin, setPin] = useState('')
   const [wrong, setWrong] = useState(false)
   const [attemptsLeft, setAttemptsLeft] = useState(PIN_ATTEMPTS)
@@ -45,23 +44,39 @@ export function PinLock({ onUnlock, onSignIn }: Props) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pin])
 
+  const signIn = () => {
+    security.signOut()
+    onSignIn()
+  }
+
   return (
-    <div className="flex h-full flex-col items-center px-5 pt-[max(3rem,env(safe-area-inset-top))] pb-[max(1.25rem,env(safe-area-inset-bottom))]">
-      <div className="flex flex-col items-center gap-3 text-center">
-        {customer && (
-          <Avatar initials={initials(customer)} photoUrl={customer.photoUrl} size="lg" />
-        )}
-        <h1 className="text-xl font-bold">
-          {t('chome.greeting', { name: customer?.firstName ?? '' })}
-        </h1>
-        <p className={wrong || attemptsLeft < PIN_ATTEMPTS ? 'text-danger' : 'text-ink-muted'}>
+    <div className="flex h-full flex-col px-5 pt-[max(0.75rem,env(safe-area-inset-top))] pb-[max(1.25rem,env(safe-area-inset-bottom))]">
+      <header className="flex h-11 shrink-0 items-center justify-between">
+        <button
+          type="button"
+          aria-label={t('pin.otherAccount')}
+          onClick={signIn}
+          className="-ml-2 grid size-11 place-items-center rounded-full text-ink-muted active:bg-surface"
+        >
+          <LogOut size={24} />
+        </button>
+        <button
+          type="button"
+          onClick={signIn}
+          className="-mr-2 h-11 rounded-full px-2 font-semibold text-brand active:bg-surface"
+        >
+          {t('pin.forgot')}
+        </button>
+      </header>
+
+      <div className="flex flex-1 flex-col items-center justify-center gap-6">
+        <img src={logo} alt="Birzum nasiya" className="h-12 dark:hidden" />
+        <img src={logoOnDark} alt="Birzum nasiya" className="hidden h-12 dark:block" />
+        <p className={wrong || attemptsLeft < PIN_ATTEMPTS ? 'text-danger' : 'text-ink'}>
           {attemptsLeft < PIN_ATTEMPTS
             ? t('pin.wrong', { count: String(attemptsLeft) })
             : t('pin.enter')}
         </p>
-      </div>
-
-      <div className="flex flex-1 flex-col justify-center py-8">
         <PinPad
           value={pin}
           onChange={setPin}
@@ -70,17 +85,6 @@ export function PinLock({ onUnlock, onSignIn }: Props) {
           onBiometric={security.biometric() ? () => setScanning(true) : undefined}
         />
       </div>
-
-      <button
-        type="button"
-        onClick={() => {
-          security.signOut()
-          onSignIn()
-        }}
-        className="h-11 rounded-full px-4 text-sm font-semibold text-brand active:bg-surface"
-      >
-        {t('pin.forgot')}
-      </button>
 
       {scanning && <BiometricPrompt onSuccess={onUnlock} onCancel={stopScanning} />}
     </div>
