@@ -409,6 +409,16 @@ The repo holds the merchant app and the client (shopper) app. They share every t
 - Without a limit the shopper can browse but not add to the cart; the product screen says so in an `Alert`.
 - Every camera screen uses `CameraView`: an oval guide and the front camera for a face, a square guide and the back camera for a QR code.
 
+### Client app: consent, PIN and the first run
+- **Agreeing to documents** (`LegalConsent`): a checkbox above the main button whose sentence names the documents as underlined links. A link opens the document in a sheet (title, edition date, short sections, "Tushunarli") and does not tick the box. Pressing the button unticked shows "Davom etish uchun rozilik bering" in red under it.
+  - Sign-in: Foydalanish shartlari and Maxfiylik siyosati. It also guards the QR route.
+  - Checkout: Ommaviy oferta and Maxfiylik siyosati, above "Buyurtma berish".
+- **First sign-in:** phone and code (or sign-up) → "PIN-kod oʻrnating" → "PIN-kodni takrorlang" → "Face ID bilan kirasizmi?" (enable, or "Hozir emas") → the intro slides → Asosiy.
+- **Every later start** opens the lock screen: photo, "Salom, Dilnoza", four dots and a phone-style number pad (`PinPad`), with a Face ID key at the bottom left when it is on. With Face ID on, the system prompt opens by itself. A wrong PIN shakes the dots red and says how many tries are left; after five, or "PIN-kodni unutdingizmi?", the app asks for the phone number again.
+- The real app shows the phone's own prompt and its own name for it (Face ID, Touch ID, fingerprint); the design uses "Face ID" and a face icon.
+- **Profil → Xavfsizlik:** "PIN-kodni oʻzgartirish" (the same two PIN screens with a back arrow) and a "Face ID bilan kirish" checkbox. Signing out forgets the PIN and Face ID.
+- **Intro slides** (`OnboardingPage`), shown once after the first sign-in: three full screens, each a large picture in the empty-state style, a title and two lines. Swipe or "Keyingi"; "Oʻtkazib yuborish" at the top right; the last button is "Boshlash". Limit → shopping → paying.
+
 ### Client app: from cart to payments
 - **Limit on Asosiy** (`LimitTile`): a navy tile with the six terms in a strip on top, the chosen one green and spelled "12 oy", and that term's limit in large type below. Before a limit exists the tile is the green "Limitni olish" card.
 - **Product page stock.** The badge above the name is the total for the chosen variant. When the shop has several filials, a "Filiallarda mavjudligi" section after Sotuvchi lists each filial with its address and a badge: green "8 dona" or grey "Tugagan".

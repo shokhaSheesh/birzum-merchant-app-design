@@ -28,6 +28,8 @@ export const ROUTES = {
   /** The separate app for shoppers. Its screens will live under this path. */
   customerApp: '/customer',
   customerHome: '/customer/home',
+  customerPinSetup: '/customer/pin/new',
+  customerWelcome: '/customer/welcome',
   customerStores: '/customer/stores',
   customerStore: '/customer/stores/:id',
   customerSearch: '/customer/search',

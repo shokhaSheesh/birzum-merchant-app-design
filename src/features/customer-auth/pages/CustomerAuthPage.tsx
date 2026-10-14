@@ -2,10 +2,11 @@ import { Check, IdCard, LoaderCircle, ScanLine } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { MARITAL_STATUSES, type MaritalStatus } from '@/entities/clients/clients'
+import { LegalConsent } from '@/entities/legal/ui/LegalConsent'
 import { setCustomerId } from '@/entities/session/customer'
+import { afterSignIn, security } from '@/entities/session/security'
 import logoOnDark from '@/shared/assets/logo-on-dark.svg'
 import logo from '@/shared/assets/logo.svg'
-import { ROUTES } from '@/shared/config/routes'
 import { useI18n } from '@/shared/i18n/useI18n'
 import { isPassport } from '@/shared/lib/passport'
 import { formatPhone, PHONE_DIGITS } from '@/shared/lib/phone'
@@ -29,13 +30,15 @@ import {
   verifyCustomerCode,
   verifyCustomerFace,
 } from '../api/mockCustomerAuth'
+import { PinLock } from '../components/PinLock'
 
 /**
  * phone -> code -> home                      already registered
  * phone -> code -> details -> face -> done   signing up by themselves
  * phone -> qr -> face -> done                registered by a merchant, who showed a QR code
+ * lock -> home                               returning, with a PIN set on this phone
  */
-type Step = 'phone' | 'code' | 'details' | 'qr' | 'face' | 'done'
+type Step = 'lock' | 'phone' | 'code' | 'details' | 'qr' | 'face' | 'done'
 
 const MIN_AGE = 18
 
@@ -43,7 +46,9 @@ const MIN_AGE = 18
 export function CustomerAuthPage() {
   const { t } = useI18n()
   const navigate = useNavigate()
-  const [step, setStep] = useState<Step>('phone')
+  const [step, setStep] = useState<Step>(() => (security.hasPin() ? 'lock' : 'phone'))
+  const [agreed, setAgreed] = useState(false)
+  const [consentError, setConsentError] = useState(false)
   /** Where the face step goes back to: the details form or the QR scanner. */
   const [cameFromQr, setCameFromQr] = useState(false)
   const [submitted, setSubmitted] = useState(false)
@@ -65,7 +70,8 @@ export function CustomerAuthPage() {
     setLoading(false)
     setStep(next)
   }
-  const enterApp = () => navigate(ROUTES.customerHome, { replace: true })
+  // A first sign-in sets up the PIN and shows the intro; later ones go straight home
+  const enterApp = () => navigate(afterSignIn(), { replace: true })
 
   useEffect(() => {
     if (step !== 'qr') return
@@ -76,7 +82,8 @@ export function CustomerAuthPage() {
 
   const submitPhone = async () => {
     setSubmitted(true)
-    if (phone.length < PHONE_DIGITS) return
+    setConsentError(!agreed)
+    if (phone.length < PHONE_DIGITS || !agreed) return
     setLoading(true)
     await sendCustomerCode(phone)
     goTo('code')
@@ -96,6 +103,10 @@ export function CustomerAuthPage() {
     const result = await verifyCustomerFace()
     setFullName(result.fullName)
     goTo('done')
+  }
+
+  if (step === 'lock') {
+    return <PinLock onUnlock={enterApp} onSignIn={() => goTo('phone')} />
   }
 
   if (step === 'code') {
@@ -233,9 +244,21 @@ export function CustomerAuthPage() {
       onSubmit={() => void submitPhone()}
       headerEnd={<LanguageSwitcher />}
       footer={
-        <Button type="submit" block loading={loading}>
-          {t('auth.confirm.send')}
-        </Button>
+        <div className="flex flex-col gap-4">
+          <LegalConsent
+            text="consent.signIn"
+            documents={['terms', 'privacy']}
+            checked={agreed}
+            onChange={(on) => {
+              setAgreed(on)
+              if (on) setConsentError(false)
+            }}
+            error={consentError ? t('consent.required') : undefined}
+          />
+          <Button type="submit" block loading={loading}>
+            {t('auth.confirm.send')}
+          </Button>
+        </div>
       }
     >
       <img src={logo} alt="Birzum nasiya" className="h-12 self-start dark:hidden" />
@@ -257,6 +280,11 @@ export function CustomerAuthPage() {
         title={t('customer.qr.card.title')}
         description={t('customer.qr.card.hint')}
         onClick={() => {
+          // The QR route skips the phone, but not the agreement
+          if (!agreed) {
+            setConsentError(true)
+            return
+          }
           setCameFromQr(true)
           goTo('qr')
         }}

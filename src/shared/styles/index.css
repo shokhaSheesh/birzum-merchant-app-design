@@ -144,6 +144,19 @@ body {
 .toast {
   animation: toast-in 200ms cubic-bezier(0.2, 0.8, 0.2, 1);
 }
+@keyframes pin-shake {
+  20%,
+  60% {
+    transform: translateX(-8px);
+  }
+  40%,
+  80% {
+    transform: translateX(8px);
+  }
+}
+.pin-shake {
+  animation: pin-shake 360ms ease-in-out;
+}
 .sheet-panel {
   animation: sheet-up 240ms cubic-bezier(0.2, 0.8, 0.2, 1);
 }

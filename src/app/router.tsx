@@ -28,6 +28,8 @@ import { SearchPage } from '@/features/customer-app/pages/SearchPage'
 import { StorePage } from '@/features/customer-app/pages/StorePage'
 import { StoresPage } from '@/features/customer-app/pages/StoresPage'
 import { CustomerAuthPage } from '@/features/customer-auth/pages/CustomerAuthPage'
+import { OnboardingPage } from '@/features/customer-auth/pages/OnboardingPage'
+import { PinSetupPage } from '@/features/customer-auth/pages/PinSetupPage'
 import { HomePage } from '@/features/home/pages/HomePage'
 import { KitPage } from '@/features/kit/pages/KitPage'
 import { AttributeFormPage } from '@/features/manage/pages/AttributeFormPage'
@@ -81,6 +83,8 @@ export const router = createBrowserRouter([
       { path: ROUTES.manageRoles, element: <RolesPage /> },
       { path: ROUTES.manageRole, element: <RoleFormPage /> },
       { path: ROUTES.customerApp, element: <CustomerAuthPage /> },
+      { path: ROUTES.customerPinSetup, element: <PinSetupPage /> },
+      { path: ROUTES.customerWelcome, element: <OnboardingPage /> },
       {
         element: <CustomerTabLayout />,
         children: [

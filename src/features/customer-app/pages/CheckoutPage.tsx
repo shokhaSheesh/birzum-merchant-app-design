@@ -10,6 +10,7 @@ import { TERMS, type Fulfilment, type Term } from '@/entities/clients/clients'
 import { fulfilmentValid } from '@/entities/clients/fulfilment'
 import { installmentTerms } from '@/entities/clients/installment'
 import { CardSelect, FulfilmentFields } from '@/entities/clients/ui/FulfilmentFields'
+import { LegalConsent } from '@/entities/legal/ui/LegalConsent'
 import { usePickupPoints } from '@/entities/merchant/usePickupPoints'
 import { useCustomer } from '@/entities/session/customer'
 import { ROUTES } from '@/shared/config/routes'
@@ -42,6 +43,7 @@ export function CheckoutPage() {
   const [choices, setChoices] = useState<Record<string, ShopChoice>>({})
   const [pickedCard, setPickedCard] = useState<string | null>(null)
   const [submitted, setSubmitted] = useState(false)
+  const [agreed, setAgreed] = useState(false)
   const [loading, setLoading] = useState(false)
   const [sent, setSent] = useState(false)
 
@@ -124,7 +126,7 @@ export function CheckoutPage() {
 
   const checkout = async () => {
     setSubmitted(true)
-    if (error || shortAnywhere || !cardId || !shops.every((shop) => shop.valid)) return
+    if (!agreed || error || shortAnywhere || !cardId || !shops.every((shop) => shop.valid)) return
     setLoading(true)
     for (const shop of shops) {
       const { fulfilment } = shop.choice
@@ -231,6 +233,13 @@ export function CheckoutPage() {
       </div>
 
       <footer className="flex shrink-0 flex-col gap-3 px-5 pt-3 pb-[max(1.25rem,env(safe-area-inset-bottom))]">
+        <LegalConsent
+          text="consent.checkout"
+          documents={['offer', 'privacy']}
+          checked={agreed}
+          onChange={setAgreed}
+          error={submitted && !agreed ? t('consent.required') : undefined}
+        />
         {error && <Alert message={error} />}
         <Button
           block

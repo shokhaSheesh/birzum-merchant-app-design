@@ -2,13 +2,15 @@ import {
   CircleAlert,
   CircleCheck,
   Inbox,
+  KeyRound,
   LayoutGrid,
   LayoutList,
   PanelTop,
   Rows3,
+  Smartphone,
   TriangleAlert,
 } from 'lucide-react'
-import { stateDemoPath } from '@/shared/config/routes'
+import { ROUTES, stateDemoPath } from '@/shared/config/routes'
 import { useI18n } from '@/shared/i18n/useI18n'
 import { toast } from '@/shared/lib/toast'
 import { Button } from '@/shared/ui/Button'
@@ -62,6 +64,13 @@ export function StatesPage() {
               />
             ))}
             <MenuRow icon={Inbox} label={t('states.empty')} to={stateDemoPath('empty')} />
+          </MenuList>
+        </Section>
+
+        <Section title={t('states.customer')}>
+          <MenuList>
+            <MenuRow icon={Smartphone} label={t('states.onboarding')} to={ROUTES.customerWelcome} />
+            <MenuRow icon={KeyRound} label={t('states.pinSetup')} to={ROUTES.customerPinSetup} />
           </MenuList>
         </Section>
 
