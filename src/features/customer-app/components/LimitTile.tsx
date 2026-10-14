@@ -10,11 +10,16 @@ export function LimitTile({ limits }: { limits: Record<Term, number> }) {
   const [term, setTerm] = useState<Term>(12)
 
   return (
-    <section className="flex flex-col gap-4 rounded-card bg-tile p-2 text-on-tile">
+    <section className="relative isolate flex flex-col gap-4 overflow-hidden rounded-card bg-linear-160 from-green-100 to-green-300 p-2 text-ink">
+      {/* One soft shape low on the right, clear of the term strip */}
+      <span
+        aria-hidden
+        className="absolute -right-10 -bottom-16 -z-10 size-40 rounded-full bg-white/35 dark:bg-white/5"
+      />
       <div
         role="radiogroup"
         aria-label={t('cart.term')}
-        className="flex gap-1 rounded-[14px] bg-white/10 p-1"
+        className="flex gap-1 rounded-[14px] bg-white/70 p-1 dark:bg-canvas/40"
       >
         {TERMS.map((value) => {
           const selected = value === term
@@ -28,7 +33,7 @@ export function LimitTile({ limits }: { limits: Record<Term, number> }) {
               onClick={() => setTerm(value)}
               className={cn(
                 'h-10 min-w-0 rounded-[10px] font-semibold transition-colors',
-                selected ? 'flex-[1.7] bg-green-500 text-navy-950' : 'flex-1 opacity-75',
+                selected ? 'flex-[1.7] bg-green-500 text-navy-950' : 'flex-1 text-ink-muted',
               )}
             >
               {selected ? t('term.months', { count: String(value) }) : value}
@@ -37,9 +42,9 @@ export function LimitTile({ limits }: { limits: Record<Term, number> }) {
         })}
       </div>
       <div className="flex flex-col gap-1 px-3 pb-3">
-        <p className="text-sm opacity-75">{t('climit.forTerm')}</p>
+        <p className="text-sm text-ink-muted">{t('climit.forTerm')}</p>
         <p className="text-3xl font-bold">{formatSum(limits[term])}</p>
-        <p className="text-sm opacity-75">{t('climit.hint')}</p>
+        <p className="text-sm text-ink-muted">{t('climit.hint')}</p>
       </div>
     </section>
   )
