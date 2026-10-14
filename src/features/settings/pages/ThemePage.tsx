@@ -34,13 +34,8 @@ export function ThemePage() {
                 }}
                 className="flex min-h-13 w-full items-center justify-between gap-3 py-2 text-left"
               >
-                <span className="flex min-w-0 flex-col">
-                  <span className={cn('font-medium', selected && 'font-semibold')}>
-                    {t(`theme.${value}`)}
-                  </span>
-                  {value === 'system' && (
-                    <span className="text-sm text-ink-muted">{t('theme.system.hint')}</span>
-                  )}
+                <span className={cn('font-medium', selected && 'font-semibold')}>
+                  {t(`theme.${value}`)}
                 </span>
                 {selected && <Check size={22} className="shrink-0 text-brand" />}
               </button>
