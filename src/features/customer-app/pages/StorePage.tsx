@@ -34,7 +34,7 @@ export function StorePage() {
       <PageHeader />
       <div className="flex min-h-0 flex-1 flex-col gap-7 overflow-y-auto px-5 pb-6">
         <div className="flex items-center gap-4">
-          <StoreLogo size="lg" />
+          <StoreLogo store={store} size="lg" />
           <div className="flex min-w-0 flex-col gap-1">
             <h1 className="text-2xl leading-tight font-bold">{store.name}</h1>
             <StoreRating store={store} />

@@ -8,5 +8,5 @@ export const currentUser = {
   login: 'aziz.karimov',
   /** Nine digits after +998. */
   phone: '901112233',
-  store: 'Mega Texno',
+  store: 'Mediapark',
 }

@@ -1,10 +1,7 @@
-import { ChevronDown, Clock, MessageCircle, Phone, Send } from 'lucide-react'
+import { ChevronDown, Clock, Phone, Send } from 'lucide-react'
 import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
-import { ROUTES } from '@/shared/config/routes'
 import { useI18n } from '@/shared/i18n/useI18n'
 import { cn } from '@/shared/lib/cn'
-import { Button } from '@/shared/ui/Button'
 import { EmptyState } from '@/shared/ui/EmptyState'
 import { PageHeader } from '@/shared/ui/PageHeader'
 import { SearchField } from '@/shared/ui/SearchField'
@@ -14,10 +11,9 @@ import { faq } from '../data/faq'
 const PHONE = '+998 71 200 00 00'
 const TELEGRAM = '@birzum_support'
 
-/** Help: searchable questions and answers, the ways to reach support, and the chat. */
+/** Questions and answers with a search, then the phone and Telegram of support. The chat is its own screen. */
 export function SupportPage() {
   const { t, tl } = useI18n()
-  const navigate = useNavigate()
   const [query, setQuery] = useState('')
   const [open, setOpen] = useState<number | null>(null)
   const needle = query.trim().toLowerCase()
@@ -30,8 +26,8 @@ export function SupportPage() {
 
   return (
     <div className="flex h-full flex-col">
-      <PageHeader title={t('support.title')} />
-      <div className="flex min-h-0 flex-1 flex-col gap-6 overflow-y-auto px-5 pt-2 pb-6">
+      <PageHeader title={t('support.faq')} />
+      <div className="flex min-h-0 flex-1 flex-col gap-6 overflow-y-auto px-5 pt-2 pb-8">
         <SearchField
           label={t('support.search')}
           placeholder={t('support.search')}
@@ -39,7 +35,7 @@ export function SupportPage() {
           onChange={setQuery}
         />
 
-        <Section title={t('support.faq')}>
+        <Section title={t('support.questions')}>
           {found.length === 0 ? (
             <EmptyState title={t('support.notFound')} />
           ) : (
@@ -100,12 +96,6 @@ export function SupportPage() {
           </ul>
         </Section>
       </div>
-      <footer className="shrink-0 px-5 pt-3 pb-[max(1.25rem,env(safe-area-inset-bottom))]">
-        <Button block onClick={() => navigate(ROUTES.customerChat)}>
-          <MessageCircle size={20} />
-          {t('support.chat')}
-        </Button>
-      </footer>
     </div>
   )
 }

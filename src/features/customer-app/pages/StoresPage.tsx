@@ -36,7 +36,7 @@ export function StoresPage() {
         {found.map((store) => (
           <li key={store.id} className="border-b border-line last:border-b-0">
             <Link to={customerStorePath(store.id)} className="flex items-center gap-3 py-3">
-              <StoreLogo />
+              <StoreLogo store={store} />
               <div className="flex min-w-0 flex-1 flex-col gap-0.5">
                 <p className="truncate font-semibold">{store.name}</p>
                 <p className="truncate text-sm text-ink-muted">{store.address}</p>

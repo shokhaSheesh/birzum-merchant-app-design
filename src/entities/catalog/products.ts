@@ -1,4 +1,7 @@
 import { useMemo } from 'react'
+import castoreLogo from '@/shared/assets/stores/castore.jpg'
+import ispaceLogo from '@/shared/assets/stores/ispace.jpg'
+import mediaparkLogo from '@/shared/assets/stores/mediapark.jpg'
 import photo1 from '@/shared/assets/products/product-1.jpg'
 import photo2 from '@/shared/assets/products/product-2.jpg'
 import photo3 from '@/shared/assets/products/product-3.jpg'
@@ -24,6 +27,8 @@ export type Store = {
   id: string
   name: string
   address: string
+  /** Square logo. The admin panel will upload it with the shop. */
+  logo?: string
 }
 
 /** One option group on a product: an attribute from the directory and which of its values apply. */
@@ -60,9 +65,9 @@ export type Product = {
 
 // Invented sample shops and catalogue. Replace with the API.
 export const stores: Store[] = [
-  { id: 's1', name: 'Mega Texno', address: 'Toshkent, Chilonzor' },
-  { id: 's2', name: 'Texno Dunyo', address: 'Toshkent, Yunusobod' },
-  { id: 's3', name: 'Elektro Market', address: 'Samarqand, Registon koʻchasi' },
+  { id: 's1', name: 'Mediapark', address: 'Toshkent, Chilonzor', logo: mediaparkLogo },
+  { id: 's2', name: 'iSpace', address: 'Toshkent, Yunusobod', logo: ispaceLogo },
+  { id: 's3', name: 'CA.store', address: 'Samarqand, Registon koʻchasi', logo: castoreLogo },
 ]
 
 // The samples are written in a short form (Uzbek names, a price difference per option) and

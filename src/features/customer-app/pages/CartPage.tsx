@@ -1,10 +1,11 @@
-import { Store, Trash2 } from 'lucide-react'
+import { Trash2 } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 import { cartStore, useCart } from '@/entities/cart/cartStore'
 import { ProductPicture } from '@/entities/catalog/ProductPicture'
 import { getStore, photosOf, stockOf, useCatalog } from '@/entities/catalog/products'
 import { useVariantNames } from '@/entities/catalog/useVariantNames'
 import { installmentTerms } from '@/entities/clients/installment'
+import { StoreLogo } from '../components/StoreLogo'
 import { useCustomer } from '@/entities/session/customer'
 import { ROUTES } from '@/shared/config/routes'
 import { useI18n } from '@/shared/i18n/useI18n'
@@ -65,7 +66,7 @@ export function CartPage() {
       {storeIds.map((storeId) => (
         <section key={storeId} className="flex flex-col gap-3">
           <h2 className="flex items-center gap-2 text-lg font-bold">
-            <Store size={20} className="shrink-0 text-brand" />
+            <StoreLogo store={getStore(storeId)} size="sm" />
             {getStore(storeId)?.name}
           </h2>
           <ul className="flex flex-col gap-3">

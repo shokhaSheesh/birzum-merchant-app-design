@@ -1,4 +1,4 @@
-import { Check, Store } from 'lucide-react'
+import { CalendarDays, Check } from 'lucide-react'
 import { useState } from 'react'
 import { Navigate, useNavigate } from 'react-router-dom'
 import { cartStore, useCart } from '@/entities/cart/cartStore'
@@ -12,6 +12,8 @@ import { installmentTerms } from '@/entities/clients/installment'
 import { CardSelect, FulfilmentFields } from '@/entities/clients/ui/FulfilmentFields'
 import { LegalConsent } from '@/entities/legal/ui/LegalConsent'
 import { usePickupPoints } from '@/entities/merchant/usePickupPoints'
+import { SchedulePreviewSheet } from '../components/SchedulePreviewSheet'
+import { StoreLogo } from '../components/StoreLogo'
 import { useCustomer } from '@/entities/session/customer'
 import { ROUTES } from '@/shared/config/routes'
 import { useI18n } from '@/shared/i18n/useI18n'
@@ -40,6 +42,8 @@ export function CheckoutPage() {
   const { lines, total } = useCart()
   /** The term chosen for each cart line, by its key. Lines not touched yet are at 12 months. */
   const [terms, setTerms] = useState<Record<string, Term>>({})
+  /** The cart line whose payment schedule is open, if any. */
+  const [scheduleOf, setScheduleOf] = useState<string | null>(null)
   const [choices, setChoices] = useState<Record<string, ShopChoice>>({})
   const [pickedCard, setPickedCard] = useState<string | null>(null)
   const [submitted, setSubmitted] = useState(false)
@@ -161,7 +165,7 @@ export function CheckoutPage() {
         {shops.map((shop) => (
           <section key={shop.storeId} className="flex flex-col gap-3">
             <h2 className="flex items-center gap-2 text-lg font-bold">
-              <Store size={20} className="shrink-0 text-brand" />
+              <StoreLogo store={getStore(shop.storeId)} size="sm" />
               {getStore(shop.storeId)?.name}
             </h2>
             <FulfilmentFields
@@ -209,6 +213,14 @@ export function CheckoutPage() {
                       value={termOf(line.key)}
                       onChange={(term) => setTerms((all) => ({ ...all, [line.key]: term }))}
                     />
+                    <button
+                      type="button"
+                      onClick={() => setScheduleOf(line.key)}
+                      className="-my-1 flex h-9 items-center gap-1.5 self-start rounded-full px-1 text-sm font-semibold text-brand active:bg-navy-100"
+                    >
+                      <CalendarDays size={16} />
+                      {t('schedule.open')}
+                    </button>
                   </li>
                 )
               })}
@@ -250,6 +262,19 @@ export function CheckoutPage() {
           {t('cart.checkout')}
         </Button>
       </footer>
+      {(() => {
+        const line = lines.find((item) => item.key === scheduleOf)
+        return (
+          line && (
+            <SchedulePreviewSheet
+              title={lineName(line)}
+              amount={line.unitPrice * line.quantity}
+              term={termOf(line.key)}
+              onClose={() => setScheduleOf(null)}
+            />
+          )
+        )
+      })()}
     </div>
   )
 }

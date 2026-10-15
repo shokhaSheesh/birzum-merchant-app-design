@@ -3,6 +3,7 @@ import {
   CreditCard,
   LifeBuoy,
   LogOut,
+  MessageCircle,
   Receipt,
   ShieldCheck,
   Globe,
@@ -59,7 +60,12 @@ export function CustomerProfilePage() {
             <MenuRow icon={CreditCard} label={t('client.cards')} to={ROUTES.customerCards} />
             <MenuRow icon={Receipt} label={t('payments.overview')} to={ROUTES.customerPayments} />
             <MenuRow icon={ShieldCheck} label={t('pin.section')} to={ROUTES.customerSecurity} />
-            <MenuRow icon={LifeBuoy} label={t('support.title')} to={ROUTES.customerSupport} />
+            <MenuRow icon={LifeBuoy} label={t('support.faq')} to={ROUTES.customerSupport} />
+            <MenuRow
+              icon={MessageCircle}
+              label={t('support.chat.title')}
+              to={ROUTES.customerChat}
+            />
           </MenuList>
         </>
       )}

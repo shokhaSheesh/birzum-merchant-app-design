@@ -161,7 +161,7 @@ function ProductDetails({ product }: { product: Product }) {
               to={customerStorePath(store.id)}
               className="flex items-center gap-3 rounded-card bg-surface p-4 active:bg-navy-100"
             >
-              <StoreLogo />
+              <StoreLogo store={store} />
               <div className="flex min-w-0 flex-1 flex-col gap-0.5">
                 <p className="truncate font-semibold">{store.name}</p>
                 <StoreRating store={store} />
