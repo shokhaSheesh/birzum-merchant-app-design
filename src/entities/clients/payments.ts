@@ -47,6 +47,17 @@ export function paymentSchedule(application: Application, today = new Date()): P
       payment.state = 'paid'
       payment.paidOn = application.paidDates?.[i] ?? today
     })
+  // Money paid ahead settles the last payments first, so the nasiya ends sooner
+  let ahead = application.prepaid ?? 0
+  for (const payment of payments.filter((item) => item.state !== 'paid').toReversed()) {
+    if (ahead <= 0) break
+    const part = Math.min(ahead, payment.amount)
+    ahead -= part
+    if (part === payment.amount) {
+      payment.state = 'paid'
+      payment.paidOn = application.prepaidOn ?? today
+    } else payment.amount -= part
+  }
   for (const payment of payments) {
     // A nasiya closed early has its remaining payments made by today at the latest
     if (payment.state === 'paid')
@@ -64,3 +75,9 @@ export const nextPayment = (application: Application) =>
 /** Applications in these statuses have goods with the client and payments running or finished. */
 export const hasSchedule = (application: Application) =>
   !!application.details && (application.status === 'handed' || application.status === 'closed')
+
+/** What is still to be paid on an application. */
+export const remainingOf = (application: Application) =>
+  paymentSchedule(application)
+    .filter((payment) => payment.state !== 'paid')
+    .reduce((sum, payment) => sum + payment.amount, 0)

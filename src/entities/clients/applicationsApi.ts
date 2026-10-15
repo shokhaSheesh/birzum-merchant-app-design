@@ -11,7 +11,7 @@ import type {
 import { shortName } from './clientName'
 import { historyOf, SYSTEM } from './history'
 import { clientsStore } from './clientsStore'
-import { paymentSchedule } from './payments'
+import { paymentSchedule, remainingOf } from './payments'
 import { installmentTerms } from './installment'
 
 const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms))
@@ -133,11 +133,39 @@ export function takeStockFor(products: ApplicationProduct[], locationId?: string
   }
 }
 
+export type PayChoice = { kind: 'next' } | { kind: 'full' } | { kind: 'amount'; amount: number }
+
+/**
+ * Shopper side: pay the next installment, close the whole nasiya, or pay an amount ahead,
+ * which settles the last payments first. Paying everything that is left closes the nasiya.
+ */
+export async function payApplication(number: number, choice: PayChoice) {
+  await delay(900)
+  const application = find(number)
+  if (!application) return
+  if (choice.kind === 'next') {
+    await payNext(application)
+    return
+  }
+  const left = remainingOf(application)
+  const amount = choice.kind === 'full' ? left : Math.min(choice.amount, left)
+  const patch = {
+    prepaid: (application.prepaid ?? 0) + amount,
+    prepaidOn: new Date(),
+  }
+  if (amount >= left) move(number, 'closed', SYSTEM, patch)
+  else clientsStore.updateApplication(number, patch)
+}
+
 /** Shopper side: pay the next installment. Paying the last one closes the installment. */
 export async function payInstallment(number: number) {
   await delay(900)
   const application = find(number)
-  if (!application) return
+  if (application) await payNext(application)
+}
+
+async function payNext(application: Application) {
+  const number = application.id
   const extraPaid = (application.extraPaid ?? 0) + 1
   const paid = { ...application, extraPaid }
   const done = paymentSchedule(paid).every((payment) => payment.state === 'paid')

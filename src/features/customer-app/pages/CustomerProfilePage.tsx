@@ -1,6 +1,7 @@
 import {
   ArrowLeftRight,
   CreditCard,
+  LifeBuoy,
   LogOut,
   Receipt,
   ShieldCheck,
@@ -56,8 +57,9 @@ export function CustomerProfilePage() {
 
           <MenuList>
             <MenuRow icon={CreditCard} label={t('client.cards')} to={ROUTES.customerCards} />
-            <MenuRow icon={Receipt} label={t('payhistory.title')} to={ROUTES.customerPayments} />
+            <MenuRow icon={Receipt} label={t('payments.overview')} to={ROUTES.customerPayments} />
             <MenuRow icon={ShieldCheck} label={t('pin.section')} to={ROUTES.customerSecurity} />
+            <MenuRow icon={LifeBuoy} label={t('support.title')} to={ROUTES.customerSupport} />
           </MenuList>
         </>
       )}

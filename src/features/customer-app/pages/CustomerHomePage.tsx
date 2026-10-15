@@ -1,11 +1,9 @@
 import { Bell, Heart, Search, Sparkles } from 'lucide-react'
-import { useState } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { categoryImages } from '@/entities/catalog/categoryImages'
 import { ProductPicture } from '@/entities/catalog/ProductPicture'
 import { CATEGORIES, useCatalog } from '@/entities/catalog/products'
 import { initials } from '@/entities/clients/clientName'
-import { calculateLimit } from '@/entities/clients/limitsApi'
 import { useCustomer } from '@/entities/session/customer'
 import { customerProductsPath, ROUTES } from '@/shared/config/routes'
 import { useI18n } from '@/shared/i18n/useI18n'
@@ -13,6 +11,7 @@ import { Avatar } from '@/shared/ui/Avatar'
 import { Button } from '@/shared/ui/Button'
 import { Section } from '@/shared/ui/Section'
 import { LimitTile } from '../components/LimitTile'
+import { NextPaymentCard } from '../components/NextPaymentCard'
 import { ProductCard } from '../components/ProductCard'
 
 const roundButton =
@@ -23,16 +22,10 @@ export function CustomerHomePage() {
   const { t } = useI18n()
   const products = useCatalog()
   const customer = useCustomer()
-  const [loading, setLoading] = useState(false)
+  const navigate = useNavigate()
 
   if (!customer) return null
   const hasNews = customer.applications.length > 0
-
-  const getLimit = async () => {
-    setLoading(true)
-    await calculateLimit(customer.id)
-    setLoading(false)
-  }
 
   return (
     <div className="flex min-h-full flex-col gap-6 px-5 pt-[max(1rem,env(safe-area-inset-top))] pb-tabbar">
@@ -69,14 +62,15 @@ export function CustomerHomePage() {
             <h2 className="text-lg font-bold">{t('climit.title')}</h2>
             <p className="text-sm text-navy-700">{t('climit.none.hint')}</p>
           </div>
-          <Button block loading={loading} onClick={() => void getLimit()}>
+          <Button block onClick={() => navigate(ROUTES.customerScoring)}>
             <Sparkles size={20} />
             {t('climit.get')}
           </Button>
         </section>
       ) : (
-        <LimitTile limits={customer.limits} />
+        <LimitTile client={customer} limits={customer.limits} />
       )}
+      {customer.limits !== null && <NextPaymentCard client={customer} />}
 
       <Section
         title={t('chome.categories')}

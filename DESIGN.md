@@ -421,6 +421,13 @@ The repo holds the merchant app and the client (shopper) app. They share every t
 - **Switch vs checkbox:** a setting that takes effect at once is a `SwitchRow` in a menu card; a choice that is saved with a form is a `Checkbox`.
 - **Intro slides** (`OnboardingPage`), shown once after the first sign-in: three full screens, each a large picture in the empty-state style, a title and two lines. Swipe or "Keyingi"; "Oʻtkazib yuborish" at the top right; the last button is "Boshlash". Limit → shopping → paying.
 
+### Client app: limit, payments and help
+- **Getting a limit** opens its own screen (`ScoringPage`): a picture of a card with a gauge and a magnifier that moves while checking, and three steps that tick off one by one (MyID, kredit tarixi, limit). It ends in the result: "Limitingiz tayyor" with the highest limit and its expiry, or "Hozircha limit ajratib boʻlmadi" with the date to try again.
+- **The limit card** shows the available limit for the chosen term, a bar of how much open purchases use ("Ishlatilgan" and the full limit), and "15.04.2027 gacha amal qiladi". Open purchases take a share of the limit of their term; the shares add up.
+- **Under the limit card**, one line with the next payment, or a red line with the overdue sum. It opens **Toʻlovlar**: the total owed, the overdue sum and the next date, a link to the history, then the next payment of every running purchase, soonest first, each with "Toʻlash" (solid when overdue).
+- **Paying** (`PaySheet`) offers three choices as radio cards: Oylik toʻlov, Toʻliq yopish (the whole rest, closes the nasiya), Boshqa summa (an amount field; it comes off the last payments, so the nasiya ends sooner). The button states the sum.
+- **Yordam** (Profil): a question search, the questions as an accordion, the call-centre number with hours and Telegram, and "Chatga yozish" in the footer. The chat has quick topics, message bubbles (the shopper's navy on the right) and a typing indicator.
+
 ### Client app: from cart to payments
 - **Limit on Asosiy** (`LimitTile`): a soft green wash (pale green to light green, deep green in the dark theme) with one faint round shape low on the right, never over the term strip. The six terms sit in a white strip on top, the chosen one solid green and spelled "12 oy"; that term's limit is in large navy type below. Before a limit exists the tile is the pale green "Limitni olish" card. The limit is not a navy tile: navy is kept for buttons.
 - **Product page stock.** The badge above the name is the total for the chosen variant. When the shop has several filials, a "Filiallarda mavjudligi" section after Sotuvchi lists each filial with its address and a badge: green "8 dona" or grey "Tugagan".

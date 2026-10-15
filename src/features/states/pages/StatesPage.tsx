@@ -1,6 +1,7 @@
 import {
   CircleAlert,
   CircleCheck,
+  Gauge,
   Inbox,
   KeyRound,
   LayoutGrid,
@@ -71,6 +72,11 @@ export function StatesPage() {
           <MenuList>
             <MenuRow icon={Smartphone} label={t('states.onboarding')} to={ROUTES.customerWelcome} />
             <MenuRow icon={KeyRound} label={t('states.pinSetup')} to={ROUTES.customerPinSetup} />
+            <MenuRow
+              icon={Gauge}
+              label={t('states.scoringDeclined')}
+              to={`${ROUTES.customerScoring}?result=declined`}
+            />
           </MenuList>
         </Section>
 

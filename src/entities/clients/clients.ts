@@ -99,6 +99,9 @@ export type Application = {
   extraPaid?: number
   /** When each of those was made, in order. */
   paidDates?: Date[]
+  /** Paid ahead of the schedule, in UZS. It settles the last payments first, so the nasiya ends sooner. */
+  prepaid?: number
+  prepaidOn?: Date
   /** True once the shopper has left a review for this purchase. */
   reviewed?: boolean
   /** Set when the status is `rejected`. */
@@ -131,6 +134,8 @@ export type Client = {
   incomeSource?: IncomeSource
   /** Credit limit in UZS for each term; null until it has been calculated. */
   limits: Record<Term, number> | null
+  /** The day the limit stops being valid and has to be calculated again. */
+  limitExpiresOn?: Date
   cards: PaymentCard[]
   contacts: Contact[]
   applications: Application[]
@@ -150,6 +155,10 @@ type Seed = Pick<
 }
 
 const date = ([year, month, day]: [number, number, number]) => new Date(year, month - 1, day)
+const monthsAgo = (months: number) => {
+  const now = new Date()
+  return new Date(now.getFullYear(), now.getMonth() - months, 2, 11, 20)
+}
 
 function fromSeed({ born, issued, cards = [], applications = [], ...rest }: Seed): Client {
   const issuedOn = date(issued)
@@ -196,6 +205,31 @@ export const seedClients: Client[] = [
       ['8600', '8859'],
     ],
     applications: [
+      {
+        // Running nasiya without arrears, to try paying and early repayment in the client app
+        id: 252451,
+        date: monthsAgo(3),
+        goodsTotal: 7_800_000,
+        installmentTotal: 10_764_000,
+        status: 'handed',
+        contractNumber: 'B-37151/26',
+        details: {
+          products: [
+            {
+              name: 'Artel kir yuvish mashinasi (Qora, 9 kg)',
+              price: 7_800_000,
+              quantity: 1,
+              productId: 'p7',
+            },
+          ],
+          downPayment: 0,
+          paymentDay: 10,
+          term: 12,
+          markupPercent: 38,
+          monthlyPayment: 897_000,
+          fulfilment: { method: 'delivery', address: 'Toshkent, Chilonzor 9-kvartal, 21-uy' },
+        },
+      },
       {
         id: 252416,
         date: date([2026, 8, 6]),

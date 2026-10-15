@@ -159,6 +159,36 @@ body {
 .pin-shake {
   animation: pin-shake 360ms ease-in-out;
 }
+@keyframes scoring-needle {
+  0%,
+  100% {
+    transform: rotate(-55deg);
+  }
+  50% {
+    transform: rotate(50deg);
+  }
+}
+.scoring-needle {
+  animation: scoring-needle 1.6s ease-in-out infinite;
+}
+@keyframes scoring-lens {
+  0%,
+  100% {
+    transform: translate(0, 0);
+  }
+  50% {
+    transform: translate(-70px, -40px);
+  }
+}
+.scoring-lens {
+  animation: scoring-lens 2.4s ease-in-out infinite;
+}
+@media (prefers-reduced-motion: reduce) {
+  .scoring-needle,
+  .scoring-lens {
+    animation: none;
+  }
+}
 .sheet-panel {
   animation: sheet-up 240ms cubic-bezier(0.2, 0.8, 0.2, 1);
 }

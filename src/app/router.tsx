@@ -23,6 +23,10 @@ import { ProductPage } from '@/features/customer-app/pages/ProductPage'
 import { ProductsPage } from '@/features/customer-app/pages/ProductsPage'
 import { PaymentHistoryPage } from '@/features/customer-app/pages/PaymentHistoryPage'
 import { SecurityPage } from '@/features/customer-app/pages/SecurityPage'
+import { ChatPage } from '@/features/customer-app/pages/ChatPage'
+import { PaymentsPage } from '@/features/customer-app/pages/PaymentsPage'
+import { ScoringPage } from '@/features/customer-app/pages/ScoringPage'
+import { SupportPage } from '@/features/customer-app/pages/SupportPage'
 import { PurchasePage } from '@/features/customer-app/pages/PurchasePage'
 import { PurchasesPage } from '@/features/customer-app/pages/PurchasesPage'
 import { SearchPage } from '@/features/customer-app/pages/SearchPage'
@@ -105,7 +109,11 @@ export const router = createBrowserRouter([
       },
       { path: ROUTES.customerProduct, element: <ProductPage /> },
       { path: ROUTES.customerCheckout, element: <CheckoutPage /> },
-      { path: ROUTES.customerPayments, element: <PaymentHistoryPage /> },
+      { path: ROUTES.customerPayments, element: <PaymentsPage /> },
+      { path: ROUTES.customerPaymentHistory, element: <PaymentHistoryPage /> },
+      { path: ROUTES.customerScoring, element: <ScoringPage /> },
+      { path: ROUTES.customerSupport, element: <SupportPage /> },
+      { path: ROUTES.customerChat, element: <ChatPage /> },
       { path: ROUTES.customerPurchase, element: <PurchasePage /> },
       { path: ROUTES.customerCards, element: <CustomerCardsPage /> },
       { path: ROUTES.customerAddCard, element: <CustomerAddCardPage /> },
