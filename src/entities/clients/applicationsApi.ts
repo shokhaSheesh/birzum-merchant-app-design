@@ -41,7 +41,7 @@ export async function submitApplication(
   clientId: string,
   products: ApplicationProduct[],
   term: Term,
-  checkout: Pick<ApplicationDetails, 'fulfilment' | 'cardId'>,
+  checkout: Pick<ApplicationDetails, 'fulfilment' | 'cardId'> & { downPayment?: number },
   /** Which shop the order goes to and, for pickup, which of its filials. */
   shop: { storeId: string; locationId?: string },
 ) {
@@ -50,7 +50,9 @@ export async function submitApplication(
   if (!client) return undefined
 
   const total = products.reduce((sum, item) => sum + item.price * item.quantity, 0)
-  const terms = installmentTerms(total, term)
+  const { downPayment = 0, ...rest } = checkout
+  // The down payment is paid at checkout; the nasiya covers the rest
+  const terms = installmentTerms(total - downPayment, term)
   const id = clientsStore.nextApplicationNumber()
   clientsStore.update(clientId, {
     applications: [
@@ -70,12 +72,12 @@ export async function submitApplication(
         installmentTotal: terms.installmentTotal,
         details: {
           products,
-          downPayment: 0,
+          downPayment,
           paymentDay: 5,
           term,
           markupPercent: terms.markupPercent,
           monthlyPayment: terms.monthlyPayment,
-          ...checkout,
+          ...rest,
         },
       },
       ...client.applications,

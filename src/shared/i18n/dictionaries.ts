@@ -270,6 +270,8 @@ const uz = {
   'checkout.overLimit':
     'Tanlangan muddatlar uchun limit yetarli emas. Muddatni uzaytiring yoki mahsulotni kamaytiring.',
   'checkout.perMonth': '{amount} / oy',
+  'checkout.down.hint': 'Buyurtma tasdiqlanganda kartadan yechiladi. Oylik toʻlov kamayadi.',
+  'checkout.payToday': 'Boshlangʻich toʻlov',
   'stores.map': 'Xaritada koʻrish',
   'cart.toCheckout': 'Rasmiylashtirishga oʻtish',
   'checkout.title': 'Rasmiylashtirish',
@@ -990,6 +992,8 @@ const ru: Record<TranslationKey, string> = {
   'checkout.limitUsed': 'Будет использовано {percent}% лимита',
   'checkout.overLimit': 'Лимита на выбранные сроки не хватает. Увеличьте срок или уберите товар.',
   'checkout.perMonth': '{amount} / мес.',
+  'checkout.down.hint': 'Спишется с карты, когда заказ подтвердят. Ежемесячный платёж уменьшится.',
+  'checkout.payToday': 'Первый взнос',
   'stores.map': 'На карте',
   'cart.toCheckout': 'Перейти к оформлению',
   'checkout.title': 'Оформление',

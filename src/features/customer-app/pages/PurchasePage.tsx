@@ -132,6 +132,9 @@ export function PurchasePage() {
               <InfoRow label={t('application.date')} value={formatDateTime(application.date)} />
               {store && <InfoRow label={t('profile.store')} value={store.name} />}
               {details && <FulfilmentRows details={details} cards={customer.cards} />}
+              {!!details?.downPayment && (
+                <InfoRow label={t('field.downPayment')} value={formatSum(details.downPayment)} />
+              )}
               {point && details?.fulfilment?.method !== 'delivery' && (
                 <InfoRow label={t('delivery.point')} value={`${point.name}, ${point.address}`} />
               )}

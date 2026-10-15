@@ -1,4 +1,4 @@
-import { CalendarDays, Check } from 'lucide-react'
+import { CalendarDays, Check, Plus } from 'lucide-react'
 import { useState } from 'react'
 import { Navigate, useNavigate } from 'react-router-dom'
 import { cartStore, useCart } from '@/entities/cart/cartStore'
@@ -9,6 +9,7 @@ import { submitApplication } from '@/entities/clients/applicationsApi'
 import { TERMS, type Fulfilment, type Term } from '@/entities/clients/clients'
 import { fulfilmentValid } from '@/entities/clients/fulfilment'
 import { installmentTerms } from '@/entities/clients/installment'
+import { usedShare } from '@/entities/clients/limitUsage'
 import { CardSelect, FulfilmentFields } from '@/entities/clients/ui/FulfilmentFields'
 import { LegalConsent } from '@/entities/legal/ui/LegalConsent'
 import { usePickupPoints } from '@/entities/merchant/usePickupPoints'
@@ -21,6 +22,7 @@ import { formatSum } from '@/shared/lib/format'
 import { Alert } from '@/shared/ui/Alert'
 import { Button } from '@/shared/ui/Button'
 import { InfoList, InfoRow } from '@/shared/ui/InfoList'
+import { NumberField } from '@/shared/ui/NumberField'
 import { PageHeader } from '@/shared/ui/PageHeader'
 import { Section } from '@/shared/ui/Section'
 import { TermPicker } from '@/shared/ui/TermPicker'
@@ -44,6 +46,9 @@ export function CheckoutPage() {
   const [terms, setTerms] = useState<Record<string, Term>>({})
   /** The cart line whose payment schedule is open, if any. */
   const [scheduleOf, setScheduleOf] = useState<string | null>(null)
+  /** Down payments by cart line, and which lines have the field open. */
+  const [downs, setDowns] = useState<Record<string, number | null>>({})
+  const [downOpen, setDownOpen] = useState<Record<string, boolean>>({})
   const [choices, setChoices] = useState<Record<string, ShopChoice>>({})
   const [pickedCard, setPickedCard] = useState<string | null>(null)
   const [submitted, setSubmitted] = useState(false)
@@ -72,8 +77,11 @@ export function CheckoutPage() {
   if (lines.length === 0 || !customer) return <Navigate to={ROUTES.customerCart} replace />
 
   const termOf = (key: string): Term => terms[key] ?? 12
+  const downOf = (key: string) => downs[key] ?? 0
+  const financedOf = (line: (typeof lines)[number]) =>
+    Math.max(0, line.unitPrice * line.quantity - downOf(line.key))
   const planOf = (line: (typeof lines)[number]) =>
-    installmentTerms(line.unitPrice * line.quantity, termOf(line.key))
+    installmentTerms(financedOf(line), termOf(line.key))
 
   const lineName = ({ product, valueIds }: (typeof lines)[number]) => {
     const variant = names(product, valueIds)
@@ -116,8 +124,9 @@ export function CheckoutPage() {
   const limits = customer.limits
   const limitUsed = limits
     ? lines.reduce(
-        (share, line) => share + (line.unitPrice * line.quantity) / limits[termOf(line.key)],
-        0,
+        (share, line) => share + financedOf(line) / limits[termOf(line.key)],
+        // Purchases still being paid take their part of the limit too
+        usedShare(customer),
       )
     : null
   const error =
@@ -127,10 +136,22 @@ export function CheckoutPage() {
         ? t('checkout.overLimit')
         : undefined
   const shortAnywhere = shops.some((shop) => shop.short.length > 0)
+  const downTotal = lines.reduce((sum, line) => sum + downOf(line.key), 0)
+  const downTooBig = lines.some(
+    (line) => downOf(line.key) > 0 && downOf(line.key) >= line.unitPrice * line.quantity,
+  )
 
   const checkout = async () => {
     setSubmitted(true)
-    if (!agreed || error || shortAnywhere || !cardId || !shops.every((shop) => shop.valid)) return
+    if (
+      !agreed ||
+      error ||
+      shortAnywhere ||
+      downTooBig ||
+      !cardId ||
+      !shops.every((shop) => shop.valid)
+    )
+      return
     setLoading(true)
     for (const shop of shops) {
       const { fulfilment } = shop.choice
@@ -148,7 +169,11 @@ export function CheckoutPage() {
             valueIds: line.valueIds,
           })),
           term,
-          { fulfilment: { ...fulfilment, address: fulfilment.address.trim() }, cardId },
+          {
+            fulfilment: { ...fulfilment, address: fulfilment.address.trim() },
+            cardId,
+            downPayment: group.reduce((sum, line) => sum + downOf(line.key), 0),
+          },
           { storeId: shop.storeId, locationId: shop.pointId ?? shop.points[0]?.id },
         )
       }
@@ -213,14 +238,41 @@ export function CheckoutPage() {
                       value={termOf(line.key)}
                       onChange={(term) => setTerms((all) => ({ ...all, [line.key]: term }))}
                     />
-                    <button
-                      type="button"
-                      onClick={() => setScheduleOf(line.key)}
-                      className="-my-1 flex h-9 items-center gap-1.5 self-start rounded-full px-1 text-sm font-semibold text-brand active:bg-navy-100"
-                    >
-                      <CalendarDays size={16} />
-                      {t('schedule.open')}
-                    </button>
+                    <div className="-my-1 flex flex-wrap gap-x-4">
+                      <button
+                        type="button"
+                        onClick={() => setScheduleOf(line.key)}
+                        className="flex h-9 items-center gap-1.5 rounded-full px-1 text-sm font-semibold text-brand active:bg-navy-100"
+                      >
+                        <CalendarDays size={16} />
+                        {t('schedule.open')}
+                      </button>
+                      {!downOpen[line.key] && (
+                        <button
+                          type="button"
+                          onClick={() => setDownOpen((all) => ({ ...all, [line.key]: true }))}
+                          className="flex h-9 items-center gap-1.5 rounded-full px-1 text-sm font-semibold text-brand active:bg-navy-100"
+                        >
+                          <Plus size={16} />
+                          {t('field.downPayment')}
+                        </button>
+                      )}
+                    </div>
+                    {downOpen[line.key] && (
+                      <NumberField
+                        label={t('field.downPayment')}
+                        value={downs[line.key] ?? null}
+                        onChange={(value) => setDowns((all) => ({ ...all, [line.key]: value }))}
+                        suffix={t('common.currency')}
+                        maxDigits={10}
+                        hint={t('checkout.down.hint')}
+                        error={
+                          downOf(line.key) >= line.unitPrice * line.quantity
+                            ? t('error.downPayment')
+                            : undefined
+                        }
+                      />
+                    )}
                   </li>
                 )
               })}
@@ -235,6 +287,9 @@ export function CheckoutPage() {
             <InfoRow label={t('application.goodsTotal')} value={formatSum(total)} />
             <InfoRow label={t('contract.installmentTotal')} value={formatSum(installmentTotal)} />
             <InfoRow label={t('checkout.monthlyTotal')} value={formatSum(monthlyTotal)} />
+            {downTotal > 0 && (
+              <InfoRow label={t('checkout.payToday')} value={formatSum(downTotal)} />
+            )}
           </InfoList>
           {limitUsed !== null && (
             <p className="text-sm text-ink-muted">
@@ -268,7 +323,7 @@ export function CheckoutPage() {
           line && (
             <SchedulePreviewSheet
               title={lineName(line)}
-              amount={line.unitPrice * line.quantity}
+              amount={financedOf(line)}
               term={termOf(line.key)}
               onClose={() => setScheduleOf(null)}
             />
