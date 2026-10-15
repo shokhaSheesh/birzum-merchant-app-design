@@ -30,6 +30,7 @@ export const ROUTES = {
   customerHome: '/customer/home',
   customerPinSetup: '/customer/pin/new',
   customerSecurity: '/customer/security',
+  customerPersonal: '/customer/me',
   customerWelcome: '/customer/welcome',
   customerStores: '/customer/stores',
   customerStore: '/customer/stores/:id',

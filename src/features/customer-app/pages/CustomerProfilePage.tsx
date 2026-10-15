@@ -1,5 +1,6 @@
 import {
   ArrowLeftRight,
+  ChevronRight,
   CreditCard,
   LifeBuoy,
   LogOut,
@@ -9,21 +10,18 @@ import {
   Globe,
   Palette,
 } from 'lucide-react'
-import { useNavigate } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { fullName, initials } from '@/entities/clients/clientName'
 import { useCustomer } from '@/entities/session/customer'
 import { security } from '@/entities/session/security'
 import { ROUTES } from '@/shared/config/routes'
 import { LANG_NAMES } from '@/shared/i18n/dictionaries'
 import { useI18n } from '@/shared/i18n/useI18n'
-import { formatDate } from '@/shared/lib/format'
-import { formatPassport } from '@/shared/lib/passport'
 import { formatPhone } from '@/shared/lib/phone'
 import { useTheme } from '@/shared/theme/useTheme'
 import { ActionCard } from '@/shared/ui/ActionCard'
 import { Avatar } from '@/shared/ui/Avatar'
 import { Button } from '@/shared/ui/Button'
-import { InfoList, InfoRow } from '@/shared/ui/InfoList'
 import { MenuList, MenuRow } from '@/shared/ui/MenuList'
 import { Section } from '@/shared/ui/Section'
 
@@ -39,39 +37,29 @@ export function CustomerProfilePage() {
       <h1 className="flex min-h-10 items-center text-2xl font-bold">{t('nav.profile')}</h1>
 
       {customer && (
-        <>
-          <div className="flex items-center gap-4">
-            <Avatar initials={initials(customer)} photoUrl={customer.photoUrl} size="lg" />
-            <div className="flex min-w-0 flex-col gap-1">
-              <p className="text-xl leading-tight font-bold">{fullName(customer)}</p>
-              <p className="text-ink-muted">{formatPhone(customer.phone)}</p>
-            </div>
+        <Link
+          to={ROUTES.customerPersonal}
+          className="flex items-center gap-4 rounded-card bg-surface p-4 active:bg-navy-100"
+        >
+          <Avatar initials={initials(customer)} photoUrl={customer.photoUrl} size="lg" />
+          <div className="flex min-w-0 flex-1 flex-col gap-1">
+            <p className="text-lg leading-tight font-bold">{fullName(customer)}</p>
+            <p className="text-ink-muted">{formatPhone(customer.phone)}</p>
           </div>
-
-          <Section title={t('client.personal')}>
-            <InfoList>
-              <InfoRow label={t('client.passport')} value={formatPassport(customer.passport)} />
-              <InfoRow label={t('clients.pinfl')} value={customer.pinfl} />
-              <InfoRow label={t('field.birthDate')} value={formatDate(customer.birthDate)} />
-            </InfoList>
-          </Section>
-
-          <MenuList>
-            <MenuRow icon={CreditCard} label={t('client.cards')} to={ROUTES.customerCards} />
-            <MenuRow icon={Receipt} label={t('payments.overview')} to={ROUTES.customerPayments} />
-            <MenuRow icon={ShieldCheck} label={t('pin.section')} to={ROUTES.customerSecurity} />
-            <MenuRow icon={LifeBuoy} label={t('support.faq')} to={ROUTES.customerSupport} />
-            <MenuRow
-              icon={MessageCircle}
-              label={t('support.chat.title')}
-              to={ROUTES.customerChat}
-            />
-          </MenuList>
-        </>
+          <ChevronRight size={20} className="shrink-0 text-ink-subtle" />
+        </Link>
       )}
+
+      <Section title={t('profile.account')}>
+        <MenuList>
+          <MenuRow icon={Receipt} label={t('payments.overview')} to={ROUTES.customerPayments} />
+          <MenuRow icon={CreditCard} label={t('client.cards')} to={ROUTES.customerCards} />
+        </MenuList>
+      </Section>
 
       <Section title={t('profile.settings')}>
         <MenuList>
+          <MenuRow icon={ShieldCheck} label={t('pin.section')} to={ROUTES.customerSecurity} />
           <MenuRow
             icon={Palette}
             label={t('profile.theme')}
@@ -84,6 +72,13 @@ export function CustomerProfilePage() {
             to={ROUTES.customerLanguage}
             value={LANG_NAMES[lang]}
           />
+        </MenuList>
+      </Section>
+
+      <Section title={t('support.title')}>
+        <MenuList>
+          <MenuRow icon={LifeBuoy} label={t('support.faq')} to={ROUTES.customerSupport} />
+          <MenuRow icon={MessageCircle} label={t('support.chat.title')} to={ROUTES.customerChat} />
         </MenuList>
       </Section>
 

@@ -1,11 +1,11 @@
-import { Headset, SendHorizontal } from 'lucide-react'
+import { Headset, ImagePlus, SendHorizontal } from 'lucide-react'
 import { useEffect, useRef, useState, type FormEvent } from 'react'
 import type { TranslationKey } from '@/shared/i18n/dictionaries'
 import { useI18n } from '@/shared/i18n/useI18n'
 import { cn } from '@/shared/lib/cn'
 import { PageHeader } from '@/shared/ui/PageHeader'
 
-type Message = { id: number; from: 'agent' | 'me'; text: string; at: Date }
+type Message = { id: number; from: 'agent' | 'me'; text: string; at: Date; image?: string }
 
 const TOPICS: TranslationKey[] = ['chat.topic.payment', 'chat.topic.limit', 'chat.topic.order']
 const time = (date: Date) =>
@@ -26,15 +26,19 @@ export function ChatPage() {
   const [draft, setDraft] = useState('')
   const [typing, setTyping] = useState(false)
   const end = useRef<HTMLDivElement>(null)
+  const picker = useRef<HTMLInputElement>(null)
 
   useEffect(() => {
     end.current?.scrollIntoView({ behavior: 'smooth' })
   }, [messages, typing])
 
-  const send = (text: string) => {
+  const send = (text: string, image?: string) => {
     const clean = text.trim()
-    if (!clean) return
-    setMessages((list) => [...list, { id: nextId(), from: 'me', text: clean, at: new Date() }])
+    if (!clean && !image) return
+    setMessages((list) => [
+      ...list,
+      { id: nextId(), from: 'me', text: clean, image, at: new Date() },
+    ])
     setDraft('')
     setTyping(true)
     setTimeout(() => {
@@ -76,7 +80,14 @@ export function ChatPage() {
                   : 'rounded-bl-md bg-surface',
               )}
             >
-              <p className="break-words whitespace-pre-line">{message.text}</p>
+              {message.image && (
+                <img
+                  src={message.image}
+                  alt={t('chat.photo')}
+                  className="-mx-1.5 -mt-0.5 max-h-60 rounded-xl object-cover"
+                />
+              )}
+              {message.text && <p className="break-words whitespace-pre-line">{message.text}</p>}
               <p className="self-end text-[11px] opacity-60">{time(message.at)}</p>
             </div>
           </div>
@@ -115,8 +126,27 @@ export function ChatPage() {
       </div>
       <form
         onSubmit={submit}
-        className="flex shrink-0 items-center gap-2 border-t border-line px-5 pt-3 pb-[max(1rem,env(safe-area-inset-bottom))]"
+        className="flex shrink-0 items-center gap-1.5 border-t border-line px-4 pt-3 pb-[max(1rem,env(safe-area-inset-bottom))]"
       >
+        <button
+          type="button"
+          aria-label={t('chat.attach')}
+          onClick={() => picker.current?.click()}
+          className="grid size-12 shrink-0 place-items-center rounded-full text-brand active:bg-surface"
+        >
+          <ImagePlus size={22} />
+        </button>
+        <input
+          ref={picker}
+          type="file"
+          accept="image/*"
+          hidden
+          onChange={(e) => {
+            const file = e.target.files?.[0]
+            if (file) send(draft, URL.createObjectURL(file))
+            e.target.value = ''
+          }}
+        />
         <label htmlFor="chat-input" className="sr-only">
           {t('chat.placeholder')}
         </label>
