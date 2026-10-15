@@ -1,4 +1,4 @@
-export type NotificationType = 'contract' | 'closed' | 'rejected' | 'cancelled'
+export type NotificationType = 'new' | 'approved' | 'contract' | 'closed' | 'rejected' | 'cancelled'
 
 export type AppNotification = {
   id: string
@@ -11,6 +11,13 @@ export type AppNotification = {
 
 // Invented sample notifications about the mock applications. Replace with the API.
 export const applicationNotifications: AppNotification[] = [
+  {
+    id: '0',
+    type: 'approved',
+    applicationNumber: 252394,
+    date: new Date(2026, 7, 6, 10, 40),
+    read: true,
+  },
   {
     id: '1',
     type: 'rejected',
@@ -47,8 +54,5 @@ export const applicationNotifications: AppNotification[] = [
     read: true,
   },
 ]
-
-/** No news in the mock data, so that tab shows the empty state. */
-export const newsNotifications: AppNotification[] = []
 
 export const unreadCount = applicationNotifications.filter((n) => !n.read).length

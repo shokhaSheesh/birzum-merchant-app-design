@@ -55,6 +55,7 @@ import { NotFoundPage, StateDemoPage } from '@/features/states/pages/StateDemoPa
 import { StatesPage } from '@/features/states/pages/StatesPage'
 import { LanguagePage } from '@/features/settings/pages/LanguagePage'
 import { ThemePage } from '@/features/settings/pages/ThemePage'
+import { SettlementsPage } from '@/features/settlements/pages/SettlementsPage'
 import { ProfilePage } from '@/features/profile/pages/ProfilePage'
 import { ROUTES } from '@/shared/config/routes'
 import { DeviceLayout } from './layouts/DeviceLayout'
@@ -92,6 +93,7 @@ export const router = createBrowserRouter([
       { path: ROUTES.manageStaff, element: <StaffPage /> },
       { path: ROUTES.manageStaffMember, element: <StaffFormPage /> },
       { path: ROUTES.manageReviews, element: <ReviewsPage /> },
+      { path: ROUTES.settlements, element: <SettlementsPage /> },
       { path: ROUTES.manageRoles, element: <RolesPage /> },
       { path: ROUTES.manageRole, element: <RoleFormPage /> },
       { path: ROUTES.customerApp, element: <CustomerAuthPage /> },

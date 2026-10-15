@@ -2,6 +2,7 @@ import {
   ArrowLeftRight,
   Boxes,
   LoaderCircle,
+  Landmark,
   LogOut,
   MapPin,
   Package,
@@ -100,6 +101,9 @@ export function ProfilePage() {
               <MenuRow icon={ShieldCheck} label={t('manage.roles')} to={ROUTES.manageRoles} />
             )}
             <MenuRow icon={Star} label={t('manage.reviews')} to={ROUTES.manageReviews} />
+            {can('analytics') && (
+              <MenuRow icon={Landmark} label={t('settle.title')} to={ROUTES.settlements} />
+            )}
           </MenuList>
         </Section>
       )}

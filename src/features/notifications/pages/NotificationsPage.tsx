@@ -1,21 +1,35 @@
-import { ArrowLeft, Ban, CircleCheck, CircleX, FileSignature, type LucideIcon } from 'lucide-react'
+import {
+  ArrowLeft,
+  Ban,
+  CircleCheck,
+  CircleX,
+  FileSignature,
+  Landmark,
+  Megaphone,
+  ShoppingBag,
+  ThumbsUp,
+  type LucideIcon,
+} from 'lucide-react'
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { payoutsOf } from '@/entities/clients/settlements'
+import { useApplications } from '@/entities/clients/useApplications'
 import {
   applicationNotifications,
-  newsNotifications,
   type NotificationType,
 } from '@/entities/notifications/notifications'
 import { NotificationRow } from '@/entities/notifications/ui/NotificationRow'
-import { applicationPath } from '@/shared/config/routes'
+import { applicationPath, ROUTES } from '@/shared/config/routes'
 import { useI18n } from '@/shared/i18n/useI18n'
-import { groupDigits } from '@/shared/lib/format'
+import { formatDate, formatSum, groupDigits } from '@/shared/lib/format'
 import { EmptyState } from '@/shared/ui/EmptyState'
 import { SegmentedTabs } from '@/shared/ui/SegmentedTabs'
 
 type Tab = 'applications' | 'news'
 
 const looks: Record<NotificationType, { icon: LucideIcon; tone: string }> = {
+  new: { icon: ShoppingBag, tone: 'bg-warning-soft text-warning' },
+  approved: { icon: ThumbsUp, tone: 'bg-green-200 text-brand' },
   contract: { icon: FileSignature, tone: 'bg-green-200 text-brand' },
   closed: { icon: CircleCheck, tone: 'bg-success-soft text-success' },
   rejected: { icon: CircleX, tone: 'bg-danger-soft text-danger' },
@@ -26,7 +40,64 @@ export function NotificationsPage() {
   const { t } = useI18n()
   const navigate = useNavigate()
   const [tab, setTab] = useState<Tab>('applications')
-  const items = tab === 'applications' ? applicationNotifications : newsNotifications
+  const all = useApplications()
+  // A shopper's order waiting for the shop shows up here as "Yangi buyurtma"
+  const orders = all
+    .filter(({ application }) => application.status === 'pending')
+    .map(({ application }) => ({
+      key: `new-${application.id}`,
+      ...looks.new,
+      title: t('notification.new.title'),
+      body: t('notification.new.body', { number: groupDigits(application.id) }),
+      date: application.date,
+      unread: true,
+      to: applicationPath(application.id),
+    }))
+  const stored = applicationNotifications.map((notification) => ({
+    key: notification.id,
+    ...looks[notification.type],
+    title: t(`notification.${notification.type}.title`),
+    body: t(`notification.${notification.type}.body`, {
+      number: groupDigits(notification.applicationNumber),
+    }),
+    date: notification.date,
+    unread: !notification.read,
+    to: applicationPath(notification.applicationNumber),
+  }))
+  const payouts = payoutsOf(all)
+    .slice(0, 3)
+    .map((payout) => ({
+      key: payout.id,
+      icon: Landmark,
+      tone: 'bg-success-soft text-success',
+      title: t(
+        payout.state === 'paid' ? 'notification.payout.title' : 'notification.payoutSoon.title',
+      ),
+      body: t(
+        payout.state === 'paid' ? 'notification.payout.body' : 'notification.payoutSoon.body',
+        {
+          amount: formatSum(payout.amount),
+          reference: payout.reference,
+          date: formatDate(payout.date),
+        },
+      ),
+      date: payout.date,
+      unread: payout.state === 'processing',
+      to: ROUTES.settlements,
+    }))
+  const news = {
+    key: 'news',
+    icon: Megaphone,
+    tone: 'bg-navy-100 text-brand',
+    title: t('notification.news.title'),
+    body: t('notification.news.body'),
+    date: new Date(2026, 9, 1, 10, 0),
+    unread: false,
+    to: ROUTES.settlements,
+  }
+  const items = (tab === 'applications' ? [...orders, ...stored] : [...payouts, news]).sort(
+    (a, b) => b.date.getTime() - a.date.getTime(),
+  )
 
   return (
     <div className="flex h-full flex-col">
@@ -61,18 +132,8 @@ export function NotificationsPage() {
           />
         ) : (
           <ul className="rounded-card bg-surface px-4">
-            {items.map((notification) => (
-              <NotificationRow
-                key={notification.id}
-                {...looks[notification.type]}
-                title={t(`notification.${notification.type}.title`)}
-                body={t(`notification.${notification.type}.body`, {
-                  number: groupDigits(notification.applicationNumber),
-                })}
-                date={notification.date}
-                unread={!notification.read}
-                to={applicationPath(notification.applicationNumber)}
-              />
+            {items.map(({ key, ...item }) => (
+              <NotificationRow key={key} {...item} />
             ))}
           </ul>
         )}

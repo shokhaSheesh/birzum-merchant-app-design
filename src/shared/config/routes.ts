@@ -23,6 +23,7 @@ export const ROUTES = {
   manageStaff: '/manage/staff',
   manageStaffMember: '/manage/staff/:id',
   manageReviews: '/manage/reviews',
+  settlements: '/settlements',
   manageRoles: '/manage/roles',
   manageRole: '/manage/roles/:id',
   /** The separate app for shoppers. Its screens will live under this path. */

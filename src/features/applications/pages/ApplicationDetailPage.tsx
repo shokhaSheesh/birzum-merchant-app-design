@@ -36,6 +36,7 @@ import { OptionSheet } from '@/shared/ui/OptionSheet'
 import { Section } from '@/shared/ui/Section'
 import { SegmentedTabs } from '@/shared/ui/SegmentedTabs'
 import { StatusBadge } from '@/shared/ui/StatusBadge'
+import { HandOverSheet } from '../components/HandOverSheet'
 import { RejectSheet } from '../components/RejectSheet'
 import { downloadContract } from '@/entities/clients/contractPdf'
 
@@ -52,10 +53,11 @@ export function ApplicationDetailPage() {
   const locations = locationsStore.useAll()
   const [busy, setBusy] = useState<'approve' | 'handOver' | null>(null)
 
-  const handOver = async () => {
+  const [handingOver, setHandingOver] = useState(false)
+  const handOver = async (photos: string[]) => {
     if (!found) return
     setBusy('handOver')
-    await handOverApplication(found.application.id, me)
+    await handOverApplication(found.application.id, me, photos)
     setBusy(null)
   }
 
@@ -75,7 +77,7 @@ export function ApplicationDetailPage() {
     if (!found) return
     if (status === 'rejected') setRejecting(true)
     else if (status === 'processing') void approve()
-    else if (status === 'handed') void handOver()
+    else if (status === 'handed') setHandingOver(true)
     else if (status === 'cancelled') setCancelling(true)
     else closeApplication(found.application.id, me)
   }
@@ -238,6 +240,20 @@ export function ApplicationDetailPage() {
                   </InfoList>
                 </Section>
               )}
+              {!!found.application.handoverPhotos?.length && (
+                <Section title={t('handover.photos')}>
+                  <div className="grid grid-cols-3 gap-3">
+                    {found.application.handoverPhotos.map((src) => (
+                      <img
+                        key={src}
+                        src={src}
+                        alt=""
+                        className="aspect-square w-full rounded-control object-cover"
+                      />
+                    ))}
+                  </div>
+                </Section>
+              )}
             </>
           )}
 
@@ -287,13 +303,14 @@ export function ApplicationDetailPage() {
 
       {found?.application.status === 'processing' && (
         <footer className="shrink-0 px-5 pt-3 pb-[max(1.25rem,env(safe-area-inset-bottom))]">
-          <Button block loading={busy === 'handOver'} onClick={() => void handOver()}>
+          <Button block loading={busy === 'handOver'} onClick={() => setHandingOver(true)}>
             <PackageCheck size={20} />
             {t('application.handOver')}
           </Button>
         </footer>
       )}
 
+      {handingOver && <HandOverSheet onClose={() => setHandingOver(false)} onConfirm={handOver} />}
       {rejecting && <RejectSheet onClose={() => setRejecting(false)} onReject={reject} />}
       {cancelling && found && (
         <CancelSheet

@@ -98,10 +98,11 @@ export async function rejectApplication(number: number, rejection: Rejection, by
 }
 
 /** Marks the goods as given to the client. The contract gets its number and payments run from here. */
-export async function handOverApplication(number: number, by: Actor) {
+export async function handOverApplication(number: number, by: Actor, photos: string[] = []) {
   await delay(700)
   const application = find(number)
   move(number, 'handed', by, {
+    handoverPhotos: photos,
     // The contract is drawn up at hand-over, if it was not already
     contractNumber:
       application?.contractNumber ??

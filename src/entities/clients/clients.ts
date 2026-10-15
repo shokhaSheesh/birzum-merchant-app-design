@@ -106,6 +106,8 @@ export type Application = {
   reviewed?: boolean
   /** Set when the status is `rejected`. */
   rejection?: Rejection
+  /** Photos of the client with the goods, taken by the seller at hand-over. */
+  handoverPhotos?: string[]
   /** Why it was cancelled, in the words of whoever cancelled it. */
   cancelComment?: string
   /** Every status change, oldest first. Sample applications get theirs from `historyOf`. */
@@ -155,6 +157,7 @@ type Seed = Pick<
 }
 
 const date = ([year, month, day]: [number, number, number]) => new Date(year, month - 1, day)
+const hoursAgo = (hours: number) => new Date(Date.now() - hours * 60 * 60 * 1000)
 const monthsAgo = (months: number) => {
   const now = new Date()
   return new Date(now.getFullYear(), now.getMonth() - months, 2, 11, 20)
@@ -213,6 +216,7 @@ export const seedClients: Client[] = [
         installmentTotal: 10_764_000,
         status: 'handed',
         contractNumber: 'B-37151/26',
+        handoverPhotos: [user1Photo],
         details: {
           products: [
             {
@@ -321,6 +325,24 @@ export const seedClients: Client[] = [
     incomeSource: 'salary',
     cards: [['8600', '4410']],
     applications: [
+      {
+        // A shopper's order from the client app, waiting for the shop
+        id: 252460,
+        date: hoursAgo(2),
+        goodsTotal: 4_200_000,
+        installmentTotal: 5_796_000,
+        status: 'pending',
+        locationId: 'l1',
+        details: {
+          products: [{ name: 'Televizor 43', price: 4_200_000, quantity: 1, productId: 'p2' }],
+          downPayment: 0,
+          paymentDay: 5,
+          term: 12,
+          markupPercent: 38,
+          monthlyPayment: 483_000,
+          fulfilment: { method: 'pickup', address: '' },
+        },
+      },
       {
         id: 240118,
         date: date([2026, 6, 30]),
