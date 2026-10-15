@@ -4,7 +4,6 @@ import {
   CircleCheck,
   CircleX,
   FileSignature,
-  Landmark,
   Megaphone,
   ShoppingBag,
   ThumbsUp,
@@ -12,7 +11,6 @@ import {
 } from 'lucide-react'
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { payoutsOf } from '@/entities/clients/settlements'
 import { useApplications } from '@/entities/clients/useApplications'
 import {
   applicationNotifications,
@@ -21,7 +19,7 @@ import {
 import { NotificationRow } from '@/entities/notifications/ui/NotificationRow'
 import { applicationPath, ROUTES } from '@/shared/config/routes'
 import { useI18n } from '@/shared/i18n/useI18n'
-import { formatDate, formatSum, groupDigits } from '@/shared/lib/format'
+import { groupDigits } from '@/shared/lib/format'
 import { EmptyState } from '@/shared/ui/EmptyState'
 import { SegmentedTabs } from '@/shared/ui/SegmentedTabs'
 
@@ -64,27 +62,6 @@ export function NotificationsPage() {
     unread: !notification.read,
     to: applicationPath(notification.applicationNumber),
   }))
-  const payouts = payoutsOf(all)
-    .slice(0, 3)
-    .map((payout) => ({
-      key: payout.id,
-      icon: Landmark,
-      tone: 'bg-success-soft text-success',
-      title: t(
-        payout.state === 'paid' ? 'notification.payout.title' : 'notification.payoutSoon.title',
-      ),
-      body: t(
-        payout.state === 'paid' ? 'notification.payout.body' : 'notification.payoutSoon.body',
-        {
-          amount: formatSum(payout.amount),
-          reference: payout.reference,
-          date: formatDate(payout.date),
-        },
-      ),
-      date: payout.date,
-      unread: payout.state === 'processing',
-      to: ROUTES.settlements,
-    }))
   const news = {
     key: 'news',
     icon: Megaphone,
@@ -93,9 +70,9 @@ export function NotificationsPage() {
     body: t('notification.news.body'),
     date: new Date(2026, 9, 1, 10, 0),
     unread: false,
-    to: ROUTES.settlements,
+    to: ROUTES.home,
   }
-  const items = (tab === 'applications' ? [...orders, ...stored] : [...payouts, news]).sort(
+  const items = (tab === 'applications' ? [...orders, ...stored] : [news]).sort(
     (a, b) => b.date.getTime() - a.date.getTime(),
   )
 
