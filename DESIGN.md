@@ -511,6 +511,7 @@ The status, title and reject reason stay above the tabs, and the footer button s
 - Photos are square, 800px, with the product centered on its plain backdrop and a little margin. Sample ones live in `src/shared/assets/products`.
 - `ProductPicture` draws a photo on a grey tile with `mix-blend-multiply`, so a white backdrop takes the tile's colour and every card keeps the same shape. In the dark theme the photo is shown as it is.
 - A product without a photo falls back to the drawn stand-in for its category.
+- **A product card** (`ProductCard`) shows, under its photos: the name on one line, two lines of description cut with an ellipsis, the price, the green "oyiga … dan" pill, and the shop (tiny logo and name).
 - **Several photos are always swipeable** (`PhotoSwiper`): on product cards and on the product page. It shows dots at the bottom of the picture and small round arrows at the sides for a mouse; an arrow never opens the card's link. One photo shows neither.
 - The swipe order is the chosen colour's photos first, then the product's other photos (`galleryOf`).
 - **Tapping a photo on the product page opens it full screen** (`PhotoViewer`): a dark screen with a counter and a close button on top, the photo in the middle, and the other photos as 64px thumbnails at the bottom, the current one with a green border. Tapping outside the photo or pressing close returns to the product.
