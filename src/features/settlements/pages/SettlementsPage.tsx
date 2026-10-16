@@ -1,11 +1,6 @@
 import { ChevronRight } from 'lucide-react'
 import { useState } from 'react'
-import {
-  COMMISSION_PERCENT,
-  payableFor,
-  payoutsOf,
-  type Payout,
-} from '@/entities/clients/settlements'
+import { payableFor, payoutsOf, type Payout } from '@/entities/clients/settlements'
 import { useApplications, type ApplicationWithClient } from '@/entities/clients/useApplications'
 import { shortName } from '@/entities/clients/clientName'
 import { useI18n } from '@/shared/i18n/useI18n'
@@ -23,8 +18,8 @@ const isSale = ({ application }: ApplicationWithClient) =>
   application.status === 'handed' || application.status === 'closed'
 
 /**
- * Settlements with Birzum for a period: what was sold on nasiya, Birzum's commission, what
- * Birzum owes, how much of it has been transferred, and every transfer with the sales it covers.
+ * Settlements with Birzum for a period: what was sold on nasiya and Birzum owes, how much of it
+ * has been transferred, and every transfer with the sales it covers.
  */
 export function SettlementsPage() {
   const { t } = useI18n()
@@ -33,11 +28,6 @@ export function SettlementsPage() {
   const [open, setOpen] = useState<Payout | null>(null)
 
   const sales = all.filter((sale) => isSale(sale) && inPeriod(sale.application.date, period))
-  const financed = sales.reduce(
-    (sum, { application }) =>
-      sum + application.goodsTotal - (application.details?.downPayment ?? 0),
-    0,
-  )
   const payable = sales.reduce((sum, sale) => sum + payableFor(sale), 0)
   const payouts = payoutsOf(all).filter((payout) =>
     payout.sales.some((sale) => inPeriod(sale.application.date, period)),
@@ -60,13 +50,8 @@ export function SettlementsPage() {
           <InfoList>
             <InfoRow
               label={t('settle.sales', { count: String(sales.length) })}
-              value={formatSum(financed)}
+              value={formatSum(payable)}
             />
-            <InfoRow
-              label={t('settle.commission', { percent: String(COMMISSION_PERCENT) })}
-              value={`− ${formatSum(financed - payable)}`}
-            />
-            <InfoRow label={t('settle.payable')} value={formatSum(payable)} />
             <InfoRow label={t('settle.paid')} value={formatSum(paid)} />
           </InfoList>
         </div>

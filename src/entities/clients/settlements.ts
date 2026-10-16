@@ -1,8 +1,5 @@
 import type { ApplicationWithClient } from './useApplications'
 
-/** Birzum's share of each nasiya sale, kept out of what it pays the merchant. Mock value. */
-export const COMMISSION_PERCENT = 4
-
 export type Payout = {
   id: string
   /** Transfer reference, as it appears on the bank statement. */
@@ -14,11 +11,9 @@ export type Payout = {
   sales: ApplicationWithClient[]
 }
 
-/** What Birzum owes the merchant for one sale: the financed sum less the commission. */
-export const payableFor = ({ application }: ApplicationWithClient) => {
-  const financed = application.goodsTotal - (application.details?.downPayment ?? 0)
-  return Math.round(financed * (1 - COMMISSION_PERCENT / 100))
-}
+/** What Birzum owes the merchant for one sale: the part the shopper did not pay up front. */
+export const payableFor = ({ application }: ApplicationWithClient) =>
+  application.goodsTotal - (application.details?.downPayment ?? 0)
 
 const DAY = 24 * 60 * 60 * 1000
 
