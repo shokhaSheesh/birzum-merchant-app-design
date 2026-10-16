@@ -21,6 +21,7 @@ import { RangeSlider } from '@/shared/ui/RangeSlider'
 import { Select } from '@/shared/ui/Select'
 import { Sheet } from '@/shared/ui/Sheet'
 import { PageHeader } from '@/shared/ui/PageHeader'
+import { getSubcategory, subcategoriesOf } from '@/entities/catalog/subcategories'
 import { ProductCard } from '../components/ProductCard'
 
 const ALL = 'all'
@@ -28,6 +29,8 @@ const PRICE_STEP = 100_000
 
 type Filters = {
   category: 'all' | Category
+  /** A subcategory id of the chosen category, or "all". */
+  sub: string
   brand: string
   /** A shop id, or "all". */
   store: string
@@ -40,6 +43,7 @@ const matches = (product: Product, name: string, needle: string, filters: Filter
     name.toLowerCase().includes(needle) ||
     product.brand.toLowerCase().includes(needle)) &&
   (filters.category === ALL || product.category === filters.category) &&
+  (filters.sub === ALL || product.subcategory === filters.sub) &&
   (filters.brand === ALL || product.brand === filters.brand) &&
   (filters.store === ALL || product.storeId === filters.store) &&
   product.price >= filters.priceFrom &&
@@ -59,11 +63,13 @@ export function ProductsPage() {
     Math.min(PRICE_MAX, Math.max(PRICE_MIN, value ?? fallback))
   const query = searchParams.get('q')?.trim() ?? ''
   const requestedCategory = searchParams.get('category') as Category
+  const requestedSub = searchParams.get('sub') ?? ''
   const requestedBrand = searchParams.get('brand') ?? ''
   const requestedStore = searchParams.get('store') ?? ''
 
   const [filters, setFilters] = useState<Filters>({
     category: CATEGORIES.includes(requestedCategory) ? requestedCategory : ALL,
+    sub: getSubcategory(requestedSub)?.parent === requestedCategory ? requestedSub : ALL,
     brand: BRANDS.includes(requestedBrand) ? requestedBrand : ALL,
     store: getStore(requestedStore) ? requestedStore : ALL,
     priceFrom: PRICE_MIN,
@@ -87,13 +93,15 @@ export function ProductsPage() {
 
   const title = query
     ? t('search.results', { query })
-    : filters.category !== ALL
-      ? t(`catalog.category.${filters.category}`)
-      : filters.brand !== ALL
-        ? filters.brand
-        : filters.store !== ALL
-          ? (getStore(filters.store)?.name ?? '')
-          : t('catalog.popular')
+    : filters.sub !== ALL
+      ? tl(getSubcategory(filters.sub)!.name)
+      : filters.category !== ALL
+        ? t(`catalog.category.${filters.category}`)
+        : filters.brand !== ALL
+          ? filters.brand
+          : filters.store !== ALL
+            ? (getStore(filters.store)?.name ?? '')
+            : t('catalog.popular')
 
   const apply = (e: FormEvent) => {
     e.preventDefault()
@@ -102,7 +110,14 @@ export function ProductsPage() {
   }
 
   const clear = () => {
-    setFilters({ category: ALL, brand: ALL, store: ALL, priceFrom: PRICE_MIN, priceTo: PRICE_MAX })
+    setFilters({
+      category: ALL,
+      sub: ALL,
+      brand: ALL,
+      store: ALL,
+      priceFrom: PRICE_MIN,
+      priceTo: PRICE_MAX,
+    })
     setOpen(false)
   }
 
@@ -159,8 +174,22 @@ export function ProductsPage() {
               })),
             ]}
             value={draft.category}
-            onChange={(category) => setDraft({ ...draft, category })}
+            onChange={(category) => setDraft({ ...draft, category, sub: ALL })}
           />
+          {draft.category !== ALL && subcategoriesOf(draft.category).length > 0 && (
+            <Select
+              label={t('filter.subcategory')}
+              options={[
+                { value: ALL, label: t('catalog.all') },
+                ...subcategoriesOf(draft.category).map((sub) => ({
+                  value: sub.id,
+                  label: tl(sub.name),
+                })),
+              ]}
+              value={draft.sub}
+              onChange={(sub) => setDraft({ ...draft, sub })}
+            />
+          )}
           <Select
             label={t('filter.brand')}
             options={[

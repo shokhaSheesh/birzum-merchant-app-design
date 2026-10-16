@@ -3,7 +3,8 @@ import { Link } from 'react-router-dom'
 import { categoryImages } from '@/entities/catalog/categoryImages'
 import { ProductPicture } from '@/entities/catalog/ProductPicture'
 import { CATEGORIES, useCatalog } from '@/entities/catalog/products'
-import { customerProductsPath } from '@/shared/config/routes'
+import { customerCategoryTarget } from '@/shared/config/routes'
+import { subcategoriesOf } from '@/entities/catalog/subcategories'
 import { useI18n } from '@/shared/i18n/useI18n'
 
 /** Every category, one per row with its picture. A row opens that category's products. */
@@ -15,7 +16,10 @@ export function CategoryList() {
     <ul className="rounded-card bg-surface px-3">
       {CATEGORIES.map((category) => (
         <li key={category} className="border-b border-line last:border-b-0">
-          <Link to={customerProductsPath({ category })} className="flex items-center gap-3 py-2.5">
+          <Link
+            to={customerCategoryTarget(category, subcategoriesOf(category).length > 0)}
+            className="flex items-center gap-3 py-2.5"
+          >
             <ProductPicture
               category={category}
               src={categoryImages[category]}

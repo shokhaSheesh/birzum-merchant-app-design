@@ -38,6 +38,8 @@ export type Product = {
   id: string
   name: LocalizedText
   category: Category
+  /** Required when the category has subcategories (see `subcategoriesOf`). */
+  subcategory?: string
   brand: string
   /** The price shown on cards: the product's own price, or its cheapest variant's. In UZS. */
   price: number
@@ -77,6 +79,7 @@ type SeedProduct = {
   id: string
   name: string
   category: Category
+  subcategory?: string
   brand: string
   price: number
   storeId: string
@@ -109,6 +112,7 @@ const seedProducts: SeedProduct[] = [
     id: 'p1',
     name: 'iPhone 18 Pro',
     category: 'phones',
+    subcategory: 'smartphones',
     brand: 'Apple',
     price: 16_900_000,
     storeId: 's1',
@@ -153,6 +157,7 @@ const seedProducts: SeedProduct[] = [
     id: 'p3',
     name: 'LG kir yuvish mashinasi',
     category: 'appliances',
+    subcategory: 'washers',
     brand: 'LG',
     price: 6_900_000,
     storeId: 's2',
@@ -199,6 +204,7 @@ const seedProducts: SeedProduct[] = [
     id: 'p5',
     name: 'iPhone 18',
     category: 'phones',
+    subcategory: 'smartphones',
     brand: 'Apple',
     price: 12_900_000,
     storeId: 's3',
@@ -242,6 +248,7 @@ const seedProducts: SeedProduct[] = [
     id: 'p7',
     name: 'Artel kir yuvish mashinasi',
     category: 'appliances',
+    subcategory: 'washers',
     brand: 'Artel',
     price: 6_000_000,
     storeId: 's1',
@@ -289,6 +296,7 @@ const seedProducts: SeedProduct[] = [
     id: 'p9',
     name: 'iPhone 18 Pro Max',
     category: 'phones',
+    subcategory: 'smartphones',
     brand: 'Apple',
     price: 19_900_000,
     storeId: 's2',
@@ -314,6 +322,7 @@ const seedProducts: SeedProduct[] = [
     id: 'p10',
     name: 'iPhone 18 Pro',
     category: 'phones',
+    subcategory: 'smartphones',
     brand: 'Apple',
     price: 17_200_000,
     storeId: 's3',
@@ -398,6 +407,7 @@ function fromSeed(seed: SeedProduct): Product {
     id: seed.id,
     name: text(seed.name, RUSSIAN_NAMES[seed.id] ?? seed.name),
     category: seed.category,
+    subcategory: seed.subcategory,
     brand: seed.brand,
     price: seed.price,
     storeId: seed.storeId,

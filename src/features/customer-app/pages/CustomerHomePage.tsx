@@ -5,7 +5,8 @@ import { ProductPicture } from '@/entities/catalog/ProductPicture'
 import { CATEGORIES, useCatalog } from '@/entities/catalog/products'
 import { initials } from '@/entities/clients/clientName'
 import { useCustomer } from '@/entities/session/customer'
-import { customerProductsPath, ROUTES } from '@/shared/config/routes'
+import { customerCategoryTarget, customerProductsPath, ROUTES } from '@/shared/config/routes'
+import { subcategoriesOf } from '@/entities/catalog/subcategories'
 import { useI18n } from '@/shared/i18n/useI18n'
 import { Avatar } from '@/shared/ui/Avatar'
 import { Button } from '@/shared/ui/Button'
@@ -84,7 +85,7 @@ export function CustomerHomePage() {
           {CATEGORIES.map((category) => (
             <Link
               key={category}
-              to={customerProductsPath({ category })}
+              to={customerCategoryTarget(category, subcategoriesOf(category).length > 0)}
               className="flex min-w-0 flex-col items-center gap-1.5 text-center text-xs leading-tight font-medium"
             >
               <ProductPicture

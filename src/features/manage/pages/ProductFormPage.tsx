@@ -11,6 +11,7 @@ import {
   variantKey,
   type Category,
 } from '@/entities/catalog/products'
+import { subcategoriesOf } from '@/entities/catalog/subcategories'
 import type { Lang, LocalizedText } from '@/shared/i18n/dictionaries'
 import { emptyText, fillMissing, isBlank, isComplete } from '@/shared/i18n/localized'
 import { useI18n } from '@/shared/i18n/useI18n'
@@ -71,6 +72,9 @@ export function ProductFormPage() {
     existing?.description ?? emptyText(),
   )
   const [category, setCategory] = useState<Category | null>(existing?.category ?? null)
+  const [subcategory, setSubcategory] = useState<string | null>(existing?.subcategory ?? null)
+  const subcategories = subcategoriesOf(category)
+  const subcategoryMissing = subcategories.length > 0 && !subcategory
   const [brand, setBrand] = useState<string | null>(existing?.brand ?? null)
   const [price, setPrice] = useState<number | null>(existing?.price ?? null)
   const [active, setActive] = useState(existing?.active ?? true)
@@ -141,7 +145,16 @@ export function ProductFormPage() {
 
   const save = () => {
     setSubmitted(true)
-    if (!isComplete(name) || !category || !brand || !price || !groupsValid || !combosValid) return
+    if (
+      !isComplete(name) ||
+      !category ||
+      subcategoryMissing ||
+      !brand ||
+      !price ||
+      !groupsValid ||
+      !combosValid
+    )
+      return
 
     const variants = Object.fromEntries(
       sold.map((combo) => [variantKey(combo), { price: comboOf(combo).price ?? price }]),
@@ -153,6 +166,7 @@ export function ProductFormPage() {
       name: fillMissing(name),
       description: fillMissing(description),
       category,
+      subcategory: subcategories.length > 0 ? (subcategory ?? undefined) : undefined,
       brand,
       // Cards show the cheapest way to buy the product
       price: sold.length > 0 ? Math.min(...Object.values(variants).map((v) => v.price)) : price,
@@ -222,9 +236,21 @@ export function ProductFormPage() {
             label: t(`catalog.category.${value}`),
           }))}
           value={category}
-          onChange={setCategory}
+          onChange={(value) => {
+            setCategory(value)
+            setSubcategory(null)
+          }}
           error={submitted && !category ? t('error.required') : undefined}
         />
+        {subcategories.length > 0 && (
+          <Select
+            label={t('filter.subcategory')}
+            options={subcategories.map((sub) => ({ value: sub.id, label: tl(sub.name) }))}
+            value={subcategory}
+            onChange={setSubcategory}
+            error={submitted && subcategoryMissing ? t('error.required') : undefined}
+          />
+        )}
         <Select
           label={t('filter.brand')}
           options={BRANDS.map((value) => ({ value, label: value }))}

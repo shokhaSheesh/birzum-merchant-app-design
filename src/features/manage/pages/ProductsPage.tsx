@@ -1,6 +1,13 @@
 import { useState } from 'react'
+import { getSubcategory } from '@/entities/catalog/subcategories'
 import { ProductPicture } from '@/entities/catalog/ProductPicture'
-import { OWN_STORE_ID, photosOf, productsStore, stockOf } from '@/entities/catalog/products'
+import {
+  OWN_STORE_ID,
+  photosOf,
+  productsStore,
+  stockOf,
+  type Product,
+} from '@/entities/catalog/products'
 import { managePath } from '@/shared/config/routes'
 import { useI18n } from '@/shared/i18n/useI18n'
 import { formatSum } from '@/shared/lib/format'
@@ -10,6 +17,10 @@ import { ListRow, ListScreen } from '../components/ListScreen'
 /** The merchant's own products, visible or hidden. */
 export function ProductsPage() {
   const { t, tl, lang } = useI18n()
+  const categoryOf = (product: Product) => {
+    const sub = getSubcategory(product.subcategory)
+    return sub ? tl(sub.name) : t(`catalog.category.${product.category}`)
+  }
   const [query, setQuery] = useState('')
   const needle = query.trim().toLowerCase()
   const products = productsStore
@@ -45,7 +56,7 @@ export function ProductsPage() {
             }
             title={tl(product.name)}
             lines={[
-              `${product.brand} · ${t(`catalog.category.${product.category}`)}`,
+              `${product.brand} · ${categoryOf(product)}`,
               `${formatSum(product.price)} · ${t('product.totalStock', {
                 count: String(stockOf(product)),
               })}`,

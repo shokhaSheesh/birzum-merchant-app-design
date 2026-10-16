@@ -6,6 +6,7 @@ import { customerProductsPath } from '@/shared/config/routes'
 import { useI18n } from '@/shared/i18n/useI18n'
 import { EmptyState } from '@/shared/ui/EmptyState'
 import { SearchField } from '@/shared/ui/SearchField'
+import { SUBCATEGORIES } from '@/entities/catalog/subcategories'
 import { CategoryList } from '../components/CategoryList'
 import { PageHeader } from '@/shared/ui/PageHeader'
 
@@ -37,6 +38,11 @@ export function SearchPage() {
             to: customerProductsPath({ category }),
           }),
         ),
+        ...SUBCATEGORIES.filter((sub) => matches(tl(sub.name))).map((sub) => ({
+          text: tl(sub.name),
+          kind: t('filter.subcategory'),
+          to: customerProductsPath({ category: sub.parent, sub: sub.id }),
+        })),
         ...products
           .filter((product) => matches(tl(product.name)))
           .map((product) => ({

@@ -37,6 +37,7 @@ export const ROUTES = {
   customerStore: '/customer/stores/:id',
   customerSearch: '/customer/search',
   customerCategories: '/customer/categories',
+  customerCategory: '/customer/categories/:category',
   customerProducts: '/customer/products',
   customerNotifications: '/customer/notifications',
   customerFavorites: '/customer/favorites',
@@ -72,9 +73,14 @@ export const applicationPath = (number: number) => `/applications/${number}`
 export const customerProductPath = (id: string) => `/customer/product/${id}`
 export const customerPurchasePath = (number: number) => `/customer/purchases/${number}`
 export const customerStorePath = (id: string) => `/customer/stores/${id}`
-/** The product listing, optionally narrowed by a search text, category, brand or shop. */
+/** A category's subcategories, for a category that has any. */
+export const customerCategoryPath = (category: string) => `/customer/categories/${category}`
+/** Where tapping a category goes: its subcategories when it has any, else its products. */
+export const customerCategoryTarget = (category: string, hasSubcategories: boolean) =>
+  hasSubcategories ? customerCategoryPath(category) : customerProductsPath({ category })
+/** The product listing, optionally narrowed by a search text, category, subcategory, brand or shop. */
 export function customerProductsPath(
-  filter: { q?: string; category?: string; brand?: string; store?: string } = {},
+  filter: { q?: string; category?: string; sub?: string; brand?: string; store?: string } = {},
 ) {
   const query = new URLSearchParams(
     Object.entries(filter).filter((entry): entry is [string, string] => !!entry[1]),
