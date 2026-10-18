@@ -9,6 +9,7 @@ import {
   ShieldCheck,
   Globe,
   Palette,
+  QrCode,
 } from 'lucide-react'
 import { Link, useNavigate } from 'react-router-dom'
 import { fullName, initials } from '@/entities/clients/clientName'
@@ -52,6 +53,7 @@ export function CustomerProfilePage() {
 
       <Section title={t('profile.account')}>
         <MenuList>
+          <MenuRow icon={QrCode} label={t('myqr.title')} to={ROUTES.customerQr} />
           <MenuRow icon={Receipt} label={t('payments.overview')} to={ROUTES.customerPayments} />
           <MenuRow icon={CreditCard} label={t('client.cards')} to={ROUTES.customerCards} />
         </MenuList>

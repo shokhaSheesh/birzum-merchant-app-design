@@ -9,10 +9,12 @@ import { AddCardPage } from '@/features/clients/pages/AddCardPage'
 import { ClientDetailPage } from '@/features/clients/pages/ClientDetailPage'
 import { ClientsPage } from '@/features/clients/pages/ClientsPage'
 import { NewClientPage } from '@/features/clients/pages/NewClientPage'
+import { ScanClientPage } from '@/features/clients/pages/ScanClientPage'
 import { NewContractPage } from '@/features/clients/pages/NewContractPage'
 import { CustomerCardsPage } from '@/features/customer-app/pages/CustomerCardsPage'
 import { CustomerAddCardPage } from '@/features/customer-app/pages/CustomerAddCardPage'
 import { CustomerProfilePage } from '@/features/customer-app/pages/CustomerProfilePage'
+import { MyQrPage } from '@/features/customer-app/pages/MyQrPage'
 import { FavoritesPage } from '@/features/customer-app/pages/FavoritesPage'
 import { CartPage } from '@/features/customer-app/pages/CartPage'
 import { CheckoutPage } from '@/features/customer-app/pages/CheckoutPage'
@@ -79,6 +81,7 @@ export const router = createBrowserRouter([
       { path: ROUTES.states, element: <StatesPage /> },
       { path: ROUTES.stateDemo, element: <StateDemoPage /> },
       { path: ROUTES.newClient, element: <NewClientPage /> },
+      { path: ROUTES.scanClient, element: <ScanClientPage /> },
       { path: ROUTES.clientDetail, element: <ClientDetailPage /> },
       { path: ROUTES.clientAddCard, element: <AddCardPage /> },
       { path: ROUTES.clientContract, element: <NewContractPage /> },
@@ -121,6 +124,7 @@ export const router = createBrowserRouter([
       { path: ROUTES.customerChat, element: <ChatPage /> },
       { path: ROUTES.customerPurchase, element: <PurchasePage /> },
       { path: ROUTES.customerCards, element: <CustomerCardsPage /> },
+      { path: ROUTES.customerQr, element: <MyQrPage /> },
       { path: ROUTES.customerAddCard, element: <CustomerAddCardPage /> },
       { path: ROUTES.customerStore, element: <StorePage /> },
       { path: ROUTES.customerSearch, element: <SearchPage /> },

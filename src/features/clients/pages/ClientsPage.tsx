@@ -1,4 +1,4 @@
-import { Plus } from 'lucide-react'
+import { Plus, ScanLine } from 'lucide-react'
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { ROUTES } from '@/shared/config/routes'
@@ -9,7 +9,7 @@ import { SkeletonRows } from '@/shared/ui/Skeleton'
 import { EmptyState } from '@/shared/ui/EmptyState'
 import { SearchField } from '@/shared/ui/SearchField'
 import { ClientRow } from '@/entities/clients/ui/ClientRow'
-import { useClients } from '@/entities/clients/useClients'
+import { useListedClients } from '@/entities/clients/useClients'
 import { searchClients } from '../lib/searchClients'
 
 export function ClientsPage() {
@@ -17,13 +17,22 @@ export function ClientsPage() {
   const loaded = useLoaded()
   const navigate = useNavigate()
   const [query, setQuery] = useState('')
-  const clients = searchClients(useClients(), query)
+  const clients = searchClients(useListedClients(), query)
 
   return (
     <div className="flex h-full flex-col">
       <header className="flex shrink-0 flex-col gap-4 px-5 pt-[max(1.5rem,env(safe-area-inset-top))] pb-3">
         <div className="flex items-center justify-between gap-3">
           <h1 className="text-2xl font-bold">{t('nav.clients')}</h1>
+          <button
+            type="button"
+            onClick={() => navigate(ROUTES.scanClient)}
+            aria-label={t('scan.button')}
+            title={t('scan.button')}
+            className="ml-auto grid size-10 shrink-0 place-items-center rounded-full border border-line bg-canvas text-brand active:bg-navy-100"
+          >
+            <ScanLine size={20} />
+          </button>
           <Button size="sm" onClick={() => navigate(ROUTES.newClient)}>
             <Plus size={18} />
             {t('clients.create')}

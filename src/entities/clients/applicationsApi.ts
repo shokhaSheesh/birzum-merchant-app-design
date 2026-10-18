@@ -55,6 +55,8 @@ export async function submitApplication(
   const terms = installmentTerms(total - downPayment, term)
   const id = clientsStore.nextApplicationNumber()
   clientsStore.update(clientId, {
+    // An order makes the shopper one of this merchant's clients
+    listed: true,
     applications: [
       {
         id,

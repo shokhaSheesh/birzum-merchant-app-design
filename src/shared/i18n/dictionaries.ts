@@ -729,6 +729,30 @@ const uz = {
   'clients.new.code.subtitle': 'Klientdan {phone} raqamiga SMS orqali kelgan kodni soʻrang.',
   'clients.new.details.title': 'Klient maʼlumotlari',
   'clients.new.details.subtitle': 'Maʼlumotlarni klientning pasporti boʻyicha toʻldiring.',
+  'myqr.title': 'Mening QR kodim',
+  'myqr.code': 'Kod',
+  'myqr.hint':
+    'Doʻkonda sotuvchiga koʻrsating. U skanerlab, sizni mijozlari roʻyxatiga qoʻshadi va nasiyani tezroq rasmiylashtiradi.',
+  'myqr.safe':
+    'Sotuvchi faqat ismingiz va telefon raqamingizni koʻradi. Nasiya baribir faqat sizning tasdigʻingiz bilan rasmiylashadi.',
+  'scan.button': 'QR orqali qoʻshish',
+  'scan.title': 'Klient QR kodini skanerlang',
+  'scan.hint': 'Klient Birzum ilovasida Asosiy ekrandagi QR tugmasini bosib, kodini koʻrsatsin.',
+  'scan.typeCode': 'Kodni qoʻlda kiritish',
+  'scan.code.title': 'Klient kodini kiriting',
+  'scan.code.hint': 'QR kod ostidagi 6 ta raqam.',
+  'scan.code.find': 'Topish',
+  'scan.code.short': '6 ta raqamni toʻliq kiriting',
+  'scan.code.notFound': 'Bu kod bilan klient topilmadi. Raqamlarni tekshiring.',
+  'scan.found.hint': 'Birzum ilovasida roʻyxatdan oʻtgan',
+  'scan.already': 'Bu klient allaqachon roʻyxatingizda',
+  'scan.limit': 'Nasiya limiti',
+  'scan.limit.yes': 'Hisoblangan',
+  'scan.limit.no': 'Hali hisoblanmagan',
+  'scan.add': 'Mijozlarga qoʻshish',
+  'scan.open': 'Klientni ochish',
+  'scan.again': 'Boshqasini skanerlash',
+  'scan.added': 'Mijozlarga qoʻshildi',
 } as const
 
 export type TranslationKey = keyof typeof uz
@@ -1449,6 +1473,30 @@ const ru: Record<TranslationKey, string> = {
   'clients.new.code.subtitle': 'Попросите у клиента код из SMS, отправленного на номер {phone}.',
   'clients.new.details.title': 'Данные клиента',
   'clients.new.details.subtitle': 'Заполните данные по паспорту клиента.',
+  'myqr.title': 'Мой QR-код',
+  'myqr.code': 'Код',
+  'myqr.hint':
+    'Покажите продавцу в магазине. Он отсканирует код, добавит вас в свои клиенты и быстрее оформит рассрочку.',
+  'myqr.safe':
+    'Продавец увидит только ваше имя и номер телефона. Рассрочка всё равно оформляется только с вашим подтверждением.',
+  'scan.button': 'Добавить по QR',
+  'scan.title': 'Отсканируйте QR-код клиента',
+  'scan.hint': 'Пусть клиент нажмёт кнопку QR на главном экране приложения Birzum и покажет код.',
+  'scan.typeCode': 'Ввести код вручную',
+  'scan.code.title': 'Введите код клиента',
+  'scan.code.hint': '6 цифр под QR-кодом.',
+  'scan.code.find': 'Найти',
+  'scan.code.short': 'Введите все 6 цифр',
+  'scan.code.notFound': 'Клиент с таким кодом не найден. Проверьте цифры.',
+  'scan.found.hint': 'Зарегистрирован в приложении Birzum',
+  'scan.already': 'Этот клиент уже в вашем списке',
+  'scan.limit': 'Лимит рассрочки',
+  'scan.limit.yes': 'Рассчитан',
+  'scan.limit.no': 'Ещё не рассчитан',
+  'scan.add': 'Добавить в клиенты',
+  'scan.open': 'Открыть клиента',
+  'scan.again': 'Сканировать другого',
+  'scan.added': 'Добавлен в клиенты',
 }
 
 export const dictionaries: Record<Lang, Record<TranslationKey, string>> = { uz, ru }

@@ -2,7 +2,7 @@ import { ChevronRight } from 'lucide-react'
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { initials, shortName } from '@/entities/clients/clientName'
-import { useClients } from '@/entities/clients/useClients'
+import { useListedClients } from '@/entities/clients/useClients'
 import { clientContractPath, clientPath } from '@/shared/config/routes'
 import { useI18n } from '@/shared/i18n/useI18n'
 import { formatPhone } from '@/shared/lib/phone'
@@ -21,7 +21,7 @@ export function PickClientSheet({ onClose }: { onClose: () => void }) {
   const navigate = useNavigate()
   const [query, setQuery] = useState('')
   const needle = query.trim().toLowerCase().replace(/\s/g, '')
-  const clients = useClients().filter(
+  const clients = useListedClients().filter(
     (client) =>
       needle === '' ||
       shortName(client).toLowerCase().replace(/\s/g, '').includes(needle) ||

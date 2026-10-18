@@ -1,8 +1,8 @@
-import { seedClients, type Application, type Client } from './clients'
+import { appShoppers, seedClients, type Application, type Client } from './clients'
 import { withGeneratedApplications } from './seedApplications'
 
 // In-memory store standing in for the backend. A page refresh resets it.
-let clients = withGeneratedApplications(seedClients)
+let clients = [...withGeneratedApplications(seedClients), ...appShoppers]
 const listeners = new Set<() => void>()
 const emit = () => listeners.forEach((listener) => listener())
 

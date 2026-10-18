@@ -12,44 +12,45 @@ Open `/kit` in the running app to see every shared control.
 
 All colors are tokens in `src/shared/styles/index.css`. No hex values in components.
 
-| Role | Token | Value | Used for |
-| --- | --- | --- | --- |
-| Screen background | `page` | `#F2F5F6` | Behind everything on a screen, like the admin panel |
-| Card background | `canvas` | `#FFFFFF` | Cards, list groups, sheets, inputs, chips and secondary buttons, always with a `line` border |
-| Inset fill | `surface` | `#F2F5F6` | Small things inside a white card: icon circles, picture tiles, number badges |
-| Divider | `line` | `#DFE6E9` | Card and input borders, list dividers |
-| Text | `ink` | `#072A3C` | Titles and body text |
-| Secondary text | `ink-muted` | `#56707F` | Labels, subtitles, descriptions |
-| Placeholder text | `ink-subtle` | `#8499A4` | Placeholders, inactive tabs, decorative icons |
-| Primary | `primary` / `on-primary` | `#0B3D57` / white | Fill and text of primary buttons, selected tiles, chips, dates and checkboxes |
-| Brand ink | `brand` | `#0B3D57` | Navy text and icons: links, secondary button labels, the active tab |
-| Card tile | `tile` / `on-tile` | `#0B3D57` / white | Bank card tiles |
-| Brand green | `green-500` | `#85C905` | Accents only (see below) |
-| Green tint | `green-200` | `#E7F4CD` | Selected option, focus ring, icon badges |
-| Approved | `success` | `#1E8E4A` | Approved status, passed checks |
-| Pending | `warning` | `#B26A00` | Pending status |
-| Rejected / error | `danger` | `#C93B3B` | Rejected status, field errors, destructive buttons |
+| Role              | Token                    | Value             | Used for                                                                                     |
+| ----------------- | ------------------------ | ----------------- | -------------------------------------------------------------------------------------------- |
+| Screen background | `page`                   | `#F2F5F6`         | Behind everything on a screen, like the admin panel                                          |
+| Card background   | `canvas`                 | `#FFFFFF`         | Cards, list groups, sheets, inputs, chips and secondary buttons, always with a `line` border |
+| Inset fill        | `surface`                | `#F2F5F6`         | Small things inside a white card: icon circles, picture tiles, number badges                 |
+| Divider           | `line`                   | `#DFE6E9`         | Card and input borders, list dividers                                                        |
+| Text              | `ink`                    | `#072A3C`         | Titles and body text                                                                         |
+| Secondary text    | `ink-muted`              | `#56707F`         | Labels, subtitles, descriptions                                                              |
+| Placeholder text  | `ink-subtle`             | `#8499A4`         | Placeholders, inactive tabs, decorative icons                                                |
+| Primary           | `primary` / `on-primary` | `#0B3D57` / white | Fill and text of primary buttons, selected tiles, chips, dates and checkboxes                |
+| Brand ink         | `brand`                  | `#0B3D57`         | Navy text and icons: links, secondary button labels, the active tab                          |
+| Card tile         | `tile` / `on-tile`       | `#0B3D57` / white | Bank card tiles                                                                              |
+| Brand green       | `green-500`              | `#85C905`         | Accents only (see below)                                                                     |
+| Green tint        | `green-200`              | `#E7F4CD`         | Selected option, focus ring, icon badges                                                     |
+| Approved          | `success`                | `#1E8E4A`         | Approved status, passed checks                                                               |
+| Pending           | `warning`                | `#B26A00`         | Pending status                                                                               |
+| Rejected / error  | `danger`                 | `#C93B3B`         | Rejected status, field errors, destructive buttons                                           |
 
 Components use the role tokens above (`bg-primary`, `text-brand`), never `navy-900` directly. That is what lets the dark theme swap them.
 
 ### Dark theme
+
 - **Every setting in Sozlamalar is a row that opens its own screen,** showing the current value on the right: Mavzu and Til. Both screens are a list with a tick on the current option; tapping one applies it at once and goes back.
 
 The user picks Yorugʻ, Qorongʻi or Tizim in Profile. `ThemeProvider` sets `data-theme` on `<html>` and the dark block in `index.css` gives every token a dark value. Components need no dark-specific classes.
 
 Dark is black and neutral grey, like iOS, never dark blue: a black screen, near-black cards and a step lighter for pieces inside them.
 
-| Role | Light | Dark |
-| --- | --- | --- |
-| `page` | `#F2F5F6` | black `#000000` |
-| `canvas` | `#FFFFFF` | `#1C1C1E` |
-| `surface` | `#F2F5F6` | `#2C2C2E` |
-| `raised` (chosen segment) | `#FFFFFF` | `#3A3A3C` |
-| `line` | `#DFE6E9` | `#303033` |
-| `ink` | `#072A3C` | `#F5F5F7` |
-| `primary` / `on-primary` | navy / white | lime `#A3E635` / black |
-| `brand` | navy | near-white `#F5F5F7` |
-| Green tint (`green-200`) | `#E7F4CD` | `#36521A` |
+| Role                      | Light        | Dark                   |
+| ------------------------- | ------------ | ---------------------- |
+| `page`                    | `#F2F5F6`    | black `#000000`        |
+| `canvas`                  | `#FFFFFF`    | `#1C1C1E`              |
+| `surface`                 | `#F2F5F6`    | `#2C2C2E`              |
+| `raised` (chosen segment) | `#FFFFFF`    | `#3A3A3C`              |
+| `line`                    | `#DFE6E9`    | `#303033`              |
+| `ink`                     | `#072A3C`    | `#F5F5F7`              |
+| `primary` / `on-primary`  | navy / white | lime `#A3E635` / black |
+| `brand`                   | navy         | near-white `#F5F5F7`   |
+| Green tint (`green-200`)  | `#E7F4CD`    | `#36521A`              |
 
 - In the dark theme the primary button is a brighter lime than the brand green, with black text, because navy would disappear on black. The rule "one action color per theme, the same on every screen" still holds.
 - The chosen option in a segmented control is `bg-raised`, not `bg-canvas`, so it stays lighter than its track in the dark theme.
@@ -69,13 +70,13 @@ These three rules describe the light theme; the dark theme swaps the action colo
 
 One family: Source Sans 3, standing in for the brandbook's Myriad. Titles are upright, never italic.
 
-| Style | Classes | Used for |
-| --- | --- | --- |
-| Title | `text-2xl font-bold` | One per screen, at the top |
-| Heading | `text-lg font-bold` | Sheet titles, section headings |
-| Body | `text-base` | Body text, input text, button text (`font-semibold`) |
-| Label | `text-sm font-medium text-ink-muted` | Field labels, helper and error text |
-| Caption | `text-xs` | Tab labels, calendar weekdays, overlines |
+| Style   | Classes                              | Used for                                             |
+| ------- | ------------------------------------ | ---------------------------------------------------- |
+| Title   | `text-2xl font-bold`                 | One per screen, at the top                           |
+| Heading | `text-lg font-bold`                  | Sheet titles, section headings                       |
+| Body    | `text-base`                          | Body text, input text, button text (`font-semibold`) |
+| Label   | `text-sm font-medium text-ink-muted` | Field labels, helper and error text                  |
+| Caption | `text-xs`                            | Tab labels, calendar weekdays, overlines             |
 
 - Input text is never smaller than 16px (`text-base`). Smaller text makes iOS zoom the page on focus.
 - Numbers use tabular figures (set globally) so amounts line up in columns.
@@ -93,12 +94,12 @@ One family: Source Sans 3, standing in for the brandbook's Myriad. Titles are up
 
 Use `Button` from `@/shared/ui/Button`. Four variants, each with one job:
 
-| Variant | Look | Use for |
-| --- | --- | --- |
-| `primary` | Navy fill, white text | The main action of the screen. One per screen. |
-| `secondary` | Grey fill, navy text | An alternative next to a primary action |
-| `ghost` | No fill, navy text | Low-priority actions such as "Cancel" or "Skip" |
-| `danger` | Red fill, white text | Destructive actions only, after a confirmation |
+| Variant     | Look                  | Use for                                         |
+| ----------- | --------------------- | ----------------------------------------------- |
+| `primary`   | Navy fill, white text | The main action of the screen. One per screen.  |
+| `secondary` | Grey fill, navy text  | An alternative next to a primary action         |
+| `ghost`     | No fill, navy text    | Low-priority actions such as "Cancel" or "Skip" |
+| `danger`    | Red fill, white text  | Destructive actions only, after a confirmation  |
 
 - Use `loading` while a request is running. It shows the spinner and blocks double taps.
 - Button labels are verbs that say what happens: "Parolni saqlash", not "OK".
@@ -131,6 +132,8 @@ Every form uses `FormScreen`: back arrow at the top left, scrolling body, primar
 - A form that works with totals ends with a summary `InfoList` (limit, total, financed amount) just above the bottom button.
 - When a step offers different ways to continue instead of a form, show them as `ActionCard`s (icon, title, one-line description, chevron) and leave out the bottom button. The MyID step does this for "on this device" and "by QR code".
 - Camera views (`CameraView`) sit in a rounded dark frame with a green guide: an oval for a face, a square for a code. QR codes are navy on white inside a bordered card, with a "waiting" line and spinner below.
+- **The shopper's own QR code** (`/customer/qr`, from the QR round button on Asosiy and "Mening QR kodim" in Profil): one card with the shopper's photo, name and phone, the QR code navy on white with the logo in the middle (white in both themes), and the same code as six digits ("487 468") below it for reading out loud. A line under the card says what it is for, and a note says the merchant sees only the name and phone.
+- **Adding a shopper by QR** (merchant, `/clients/scan`, the scan icon next to "Qoʻshish" on Klientlar): the camera with a square guide and "Kodni qoʻlda kiritish" pinned below, which opens six code boxes. A found shopper is shown with photo, full name, phone, birth date and whether they have a limit, then "Mijozlarga qoʻshish" opens their client page with a toast. Someone already in Klientlar gets a green "allaqachon roʻyxatingizda" line and "Klientni ochish" instead. Shoppers who signed up in the app are not in Klientlar until they are scanned or order from this shop (`listed: false`).
 
 ### Tab bar
 
@@ -149,41 +152,41 @@ Five tabs, always in this order, on every main screen: **Asosiy**, **Klientlar**
 - Stroke width 2. Icons take the color of the text beside them (`currentColor`).
 - The same meaning always uses the same icon:
 
-| Meaning | Icon |
-| --- | --- |
-| Show / hide password | `Eye` / `EyeOff` |
-| Dropdown | `ChevronDown` |
-| Calendar | `CalendarDays` |
-| Previous / next | `ChevronLeft` / `ChevronRight` |
-| Back | `ArrowLeft` |
-| Close | `X` |
-| Selected, passed | `Check` |
-| Error | `CircleAlert` |
-| Language | `Globe` |
-| Home tab | `House` |
-| Clients tab | `Users` |
-| Applications tab | `FileText` |
-| Calculator tab | `Calculator` |
-| Profile tab | `UserRound` |
-| Phone number | `Smartphone` |
-| Passport / client details | `IdCard` |
-| Face check (MyID) | `ScanFace` |
-| QR code | `QrCode` |
-| Bank card | `CreditCard` |
-| Step completed | `CircleCheck` |
-| Calculate limit | `Calculator` |
-| Start a contract | `FileSignature` |
-| Remove an item | `Trash2` |
-| Download a document | `Download` |
-| Notifications | `Bell` |
-| Rejected / cancelled notice | `CircleX` / `Ban` |
-| Change a value or status | `PencilLine` |
-| Decrease / increase | `Minus` / `Plus` |
-| Log out | `LogOut` |
-| SMS code | `MessageSquareText` |
-| Search | `Search` |
-| Add / create | `Plus` |
-| No results | `SearchX` |
+| Meaning                     | Icon                           |
+| --------------------------- | ------------------------------ |
+| Show / hide password        | `Eye` / `EyeOff`               |
+| Dropdown                    | `ChevronDown`                  |
+| Calendar                    | `CalendarDays`                 |
+| Previous / next             | `ChevronLeft` / `ChevronRight` |
+| Back                        | `ArrowLeft`                    |
+| Close                       | `X`                            |
+| Selected, passed            | `Check`                        |
+| Error                       | `CircleAlert`                  |
+| Language                    | `Globe`                        |
+| Home tab                    | `House`                        |
+| Clients tab                 | `Users`                        |
+| Applications tab            | `FileText`                     |
+| Calculator tab              | `Calculator`                   |
+| Profile tab                 | `UserRound`                    |
+| Phone number                | `Smartphone`                   |
+| Passport / client details   | `IdCard`                       |
+| Face check (MyID)           | `ScanFace`                     |
+| QR code                     | `QrCode`                       |
+| Bank card                   | `CreditCard`                   |
+| Step completed              | `CircleCheck`                  |
+| Calculate limit             | `Calculator`                   |
+| Start a contract            | `FileSignature`                |
+| Remove an item              | `Trash2`                       |
+| Download a document         | `Download`                     |
+| Notifications               | `Bell`                         |
+| Rejected / cancelled notice | `CircleX` / `Ban`              |
+| Change a value or status    | `PencilLine`                   |
+| Decrease / increase         | `Minus` / `Plus`               |
+| Log out                     | `LogOut`                       |
+| SMS code                    | `MessageSquareText`            |
+| Search                      | `Search`                       |
+| Add / create                | `Plus`                         |
+| No results                  | `SearchX`                      |
 
 ## Form controls
 
@@ -191,22 +194,25 @@ Every control is built from the same box (`controlClass` in `src/shared/ui/contr
 
 States are the same for all of them:
 
-| State | Look |
-| --- | --- |
-| Default | `line` border |
-| Focused | Navy border with a green-tint ring |
-| Error | `danger` border and a red message below. The message says what to fix. |
-| Disabled | 45% opacity |
+| State    | Look                                                                   |
+| -------- | ---------------------------------------------------------------------- |
+| Default  | `line` border                                                          |
+| Focused  | Navy border with a green-tint ring                                     |
+| Error    | `danger` border and a red message below. The message says what to fix. |
+| Disabled | 45% opacity                                                            |
 
 Placeholders are never used as labels. Every field has a visible label.
 
 ### Text input: `TextField`
+
 Plain text. Pass `autoComplete` and, for logins and codes, `autoCapitalize="none"`.
 
 ### Password input: `PasswordField`
+
 Always has the show/hide eye button on the right. Never build a password field without it.
 
 ### Number input: `NumberField`
+
 - For amounts and counts. Whole numbers only.
 - Groups digits in thousands with spaces as the user types: `12 480 000`.
 - Opens the numeric keypad (`inputMode="numeric"`). Do not use `type="number"`, which adds browser spinners and breaks grouping.
@@ -215,47 +221,57 @@ Always has the show/hide eye button on the right. Never build a password field w
 - Display amounts elsewhere with `formatSum` from `@/shared/lib/format`.
 
 ### Search: `SearchField`
+
 - The same control box with a `Search` icon on the left and a clear `X` on the right once there is text.
 - Sits directly under the screen title and stays in place while the list scrolls.
 - The placeholder lists what can be searched ("Telefon, JSHSHIR yoki pasport"). It filters as the user types; there is no search button.
 - Spaces, `+` and letter case in the query are ignored, so `90 123` and `90123` find the same thing.
 
 ### View tabs: `SegmentedTabs`
+
 - Two or three equal segments in a grey track, directly under the top bar. The selected segment is white (the canvas color) with dark text.
 - Tabs switch between different content on the same screen ("Arizalar" and "Yangiliklar" in notifications). To narrow one list, use `FilterChips` instead.
 - Each tab has its own empty state.
 
 ### List filter: `FilterChips`
+
 - A single row of pills under the search field for filtering a list by one property, such as status. Scrolls sideways when it does not fit.
 - The first chip is always "Hammasi". The selected chip is navy with white text; the rest are grey.
 - One filter row per list. Tapping a chip filters immediately.
 
 ### Date range filter: `DateRangeChip`
+
 - A chip with a `CalendarDays` icon that goes first in the `FilterChips` row, labelled "Sana".
 - Opens a sheet with two `DatePicker`s, "Dan" and "Gacha", a ghost "Tozalash" and a primary "Qoʻllash". Either date may be left empty.
 - Once a range is set the chip turns into the selected style and shows the dates, `01.08.2026 – 05.08.2026`.
 
 ### Pick-one filter chip: `SelectChip`
+
 A chip with an icon and a small chevron that opens the option sheet with an "all" option first. It turns navy while something is chosen. `LocationChip` (filial) and the shop chip in Toʻlovlar tarixi are built on it.
 
 ### Filial filter: `LocationChip`
+
 A chip with a pin icon and a small chevron, first in the chip row on Arizalar and above the period picker on Asosiy. It opens the option sheet with "Barcha filiallar" and the seller's filials, and turns navy while one is chosen. It is hidden for a seller with a single filial.
 
 ### Phone input: `PhoneField`
+
 - `+998` is fixed at the left and cannot be edited. The user types the nine remaining digits.
 - Digits are grouped as `90 123 45 67` while typing. Show a full number elsewhere with `formatPhone`.
 - Opens the numeric keypad.
 
 ### Passport input: `PassportField`
+
 - Two letters, then seven digits, shown as `AB 1234567`. Letters are uppercased automatically and anything else is ignored.
 - Used wherever a passport or ID card series and number is asked for.
 
 ### Bank card: `CardNumberField` and `CardExpiryField`
+
 - Card number: 16 digits shown in groups of four, `8600 1234 5678 9012`.
 - Expiry: `OO/YY`, with the slash added automatically. A month outside 01 to 12 or a past date is an error.
 - Both open the numeric keypad and support the browser's saved-card autofill.
 
 ### Code input: `OtpField`
+
 - Six boxes, one digit each, 56px tall. Used for every SMS or confirmation code.
 - Supports paste and SMS autofill. The code is checked as soon as the last digit is entered; the bottom button stays as a fallback.
 - A wrong code clears the boxes, turns them red and shows the error below.
@@ -263,21 +279,25 @@ A chip with a pin icon and a small chevron, first in the chip row on Arizalar an
 - Do not assemble this by hand. Every code step is the `OtpScreen` component, so login, client phone and card confirmation look and behave the same.
 
 ### Checkbox: `Checkbox`
+
 - 24px box. Checked is a navy fill with a white check mark.
 - The label sits to the right, with an optional one-line description under it. The whole row is tappable.
 - Use for independent yes/no options inside a form. For picking one of several, use `Select`.
 
 ### Choice grid: `ChoiceGrid`
+
 - A few short options that all stay visible: payment day, theme, how goods are received.
 - **The chosen option is light:** a navy border on pale green (`bg-green-200`) with dark text. The others have a grey border and muted text. Never a solid navy block; solid navy is for buttons.
 - An option may carry an icon above its label (pickup and delivery do) and a small description under it.
 - Errors and hints sit under the grid like any field.
 
 ### Quantity: `QuantityField`
+
 - The control box with a minus on the left, the number in the middle and a plus on the right. The number can also be typed.
 - For small counts such as product quantity. Minimum 1. For amounts of money use `NumberField`.
 
 ### Dropdown: `Select`
+
 - Looks like an input with a `ChevronDown` on the right.
 - Opens a bottom sheet titled with the field label. Never a native `<select>` and never a floating menu.
 - Options are 52px rows. The selected one has a green-tint fill and a check mark.
@@ -285,6 +305,7 @@ A chip with a pin icon and a small chevron, first in the chip row on Arizalar an
 - For more than about eight options, add search at the top of the sheet (not built yet).
 
 ### Calendar: `DatePicker`
+
 - A date can be typed or picked. Typing fills the `KK.OO.YYYY` mask and adds the dots automatically.
 - The navy `CalendarDays` icon on the right opens the calendar in the same bottom sheet. Tapping the field itself only focuses it for typing.
 - A typed date that does not exist or is outside the allowed range shows "Sanani toʻgʻri kiriting" under the field.
@@ -340,6 +361,7 @@ Menyu is the merchant's last tab. It holds the signed-in user, then everything t
 - **Categories and brands are never created here.** They come from the Birzum admin panel, so in the product form they are `Select`s. A category may have subcategories (one level); when the chosen one has any, a required "Subkategoriya" `Select` appears under it, and changing the category clears it.
 
 ### Text in two languages
+
 Only what shoppers read and what really differs by language is stored once per language (`LocalizedText`): product photos, names and descriptions, characteristic names and values, variant types and their values, a shop's name and address. Text is shown with `tl()`, which falls back to the other language if one is empty; photos fall back the same way.
 
 - There is no form-wide language switch. Each two-language field carries its own small `LangToggle` (UZ / RU) at the right of its label; use `LocalizedTextField`. Switching it does not lose the other language.
@@ -348,11 +370,13 @@ Only what shoppers read and what really differs by language is stored once per l
 - Names must be filled in both languages. After a failed save the field shows "Ikkala tilda ham kiriting" and a red dot on the language that is still empty. Optional text (description, characteristics) is copied from the other language when left empty.
 
 ### Variant types (the directory)
+
 - Menyu → Katalog → Variant turlari lists what products can vary by (Rang, Xotira, …), each with its values. A type marked "Rang sifatida koʻrsatish" gives each value a color swatch.
 - Types and values are created here, in both languages, and reused on every product. A product never has free-typed variant names.
 - From the product form a missing value can be added on the spot ("Yangi qiymat" opens a sheet with one two-language name field); a whole new type is created in the directory.
 
 ### Product form
+
 - Top to bottom: photos, name, description, category, subcategory (when the category has any), brand, price, variants, combinations, characteristics, visibility.
 - **Photos** (`PhotoTiles`) are 96px square tiles in a wrapping row, each with a small remove button; the last tile is a dashed "Rasm qoʻshish". The first photo is the cover.
 - **Rang rasmlari** appears once a color type is chosen: one card per color with its own, smaller row of photo tiles. While a shopper has that color chosen, its photos replace the product's.
@@ -363,11 +387,13 @@ Only what shoppers read and what really differs by language is stored once per l
 - Stock is not in the product form. It is entered in Ombor.
 
 ### Ombor
+
 - Shops across the top as `FilterChips`; the list below is that shop's stock.
 - One card per product, with one row per combination that is sold ("Qora · 128 GB") and a compact `QuantityStepper`. A product without variations has a single "Qoldiq" row.
 - Changes save as they are made; there is no save button.
 
 ### Arizalar: from order to payments
+
 - Statuses in order: **Tasdiqlash kutilmoqda** (amber, a shopper's order) → **Rasmiylashtirilmoqda** (blue-grey) → **Topshirilgan** (green) → **Nasiya yopilgan** (grey). **Rad etilgan** is red and **Bekor qilingan** grey.
 - The ariza screen's bottom button is the next step: "Rad etish" and "Tasdiqlash" while waiting, then "Mahsulot topshirildi". After that there is none.
 - Stock goes down when an ariza is confirmed, whether a shopper sent it or the merchant filed it.
@@ -389,6 +415,7 @@ Only what shoppers read and what really differs by language is stored once per l
 - **Receiving and card** (`FulfilmentFields`): a two-option `ChoiceGrid` "Doʻkondan olib ketish / Yetkazib berish", an address field only for delivery, and a `Select` of the client's cards. The same block is in the merchant's "Yangi shartnoma" and the shopper's Savat. An ariza shows them as rows in "Toʻlov sozlamalari" (`FulfilmentRows`); the shopper's Xaridlar shows the method and address as one line.
 
 ### Sharhlar
+
 - Each review has a small red trash button at its bottom right. It opens `ConfirmSheet`; a deleted review leaves the client app and the rating.
 - The average in large type with five stars and the number of reviews, then each review: avatar, name, stars, date, the text, and the product it is about.
 - Stars are amber when filled and grey when empty, the same as `StoreRating` in the client app.
@@ -420,6 +447,7 @@ The repo holds the merchant app and the client (shopper) app. They share every t
 - Every camera screen uses `CameraView`: an oval guide and the front camera for a face, a square guide and the back camera for a QR code.
 
 ### Client app: consent, PIN and the first run
+
 - **Agreeing to documents** (`LegalConsent`): a checkbox above the main button whose sentence names the documents as underlined links. A link opens the document in a sheet (title, edition date, short sections, "Tushunarli") and does not tick the box. Pressing the button unticked shows "Davom etish uchun rozilik bering" in red under it.
   - Sign-in: Foydalanish shartlari and Maxfiylik siyosati. It also guards the QR route.
   - Checkout: Ommaviy oferta and Maxfiylik siyosati, above "Buyurtma berish".
@@ -431,6 +459,7 @@ The repo holds the merchant app and the client (shopper) app. They share every t
 - **Intro slides** (`OnboardingPage`), shown once after the first sign-in: three full screens, each a large picture in the empty-state style, a title and two lines. Swipe or "Keyingi"; "Oʻtkazib yuborish" at the top right; the last button is "Boshlash". Limit → shopping → paying.
 
 ### Client app: limit, payments and help
+
 - **Getting a limit** opens its own screen (`ScoringPage`): a picture of a card with a gauge and a magnifier that moves while checking, and three steps that tick off one by one (MyID, kredit tarixi, limit). It ends in the result: "Limitingiz tayyor" with the highest limit and its expiry, or "Hozircha limit ajratib boʻlmadi" with the date to try again.
 - **The limit card** shows the available limit for the chosen term, a bar of how much open purchases use ("Ishlatilgan" and the full limit), and "15.04.2027 gacha amal qiladi". Open purchases take a share of the limit of their term; the shares add up.
 - **Under the limit card**, one line with the next payment, or a red line with the overdue sum. It opens **Toʻlovlar**: the total owed, the overdue sum and the next date, a link to the history, then the next payment of every running purchase, soonest first, each with "Toʻlash" (solid when overdue).
@@ -438,6 +467,7 @@ The repo holds the merchant app and the client (shopper) app. They share every t
 - **Savol-javoblar** (Profil): a question search, the questions as an accordion, then the call-centre number with hours and Telegram. **Yordam chati** is its own row in Profil and its own screen. The chat has quick topics, message bubbles (the shopper's navy on the right), a typing indicator, and a photo button left of the field; a sent photo shows inside the bubble.
 
 ### Client app: from cart to payments
+
 - **Limit on Asosiy** (`LimitTile`): a soft green wash (pale green to light green, deep green in the dark theme) with one faint round shape low on the right, never over the term strip. The six terms sit in a white strip on top, the chosen one solid green and spelled "12 oy"; that term's limit is in large navy type below. Before a limit exists the tile is the pale green "Limitni olish" card. The limit is not a navy tile: navy is kept for buttons.
 - **Product page stock.** The badge above the name is the total for the chosen variant. When the shop has several filials, a "Filiallarda mavjudligi" section after Sotuvchi lists each filial with its address and a badge: green "8 dona" or grey "Tugagan".
 - **Shop page** (`StorePage`), top to bottom: a navy shop tile with name and rating; Filiallar (name, address, hours, then two small pills: "Xaritada koʻrish", which opens the address in a map, and the phone number, which calls it); Mahsulotlar with the count, the first four products and a "Hammasi" link to the listing filtered by that shop. Reviews are not listed here.
@@ -472,6 +502,7 @@ Asosiy reports on one period: a day, a week or a month. It only shows numbers an
 - A period with no arizalar shows `EmptyState` in place of the chart and breakdown.
 
 ### Period picker: `PeriodPicker`
+
 - `SegmentedTabs` for Kun, Hafta, Oy. Switching the kind keeps the same date in view.
 - Under it, a row of three grey pills: a back arrow, the period label with a `CalendarDays` icon, and a forward arrow.
 - The label reads `Bugun, 12.10.2026` for today, `12.10 – 18.10.2026` for a week (Monday to Sunday) and `Oktabr 2026` for a month.
@@ -479,6 +510,7 @@ Asosiy reports on one period: a day, a week or a month. It only shows numbers an
 - The forward arrow is disabled on the current period, and future dates cannot be picked.
 
 ### Charts: `BarChart`
+
 - One series only, as vertical bars in the primary color, rounded at the top and square on the baseline. Up to three faint gridlines; no axis lines.
 - Only the tallest bar carries its number. Hovering, focusing or tapping a bar turns it green and writes its value and name on the line under the chart.
 - A day is drawn in two-hour blocks, a week as seven days, a month as one bar per date with every fifth date labelled.
@@ -506,18 +538,23 @@ Asosiy reports on one period: a day, a week or a month. It only shows numbers an
 - Errors say what is wrong and how to fix it.
 
 ## How "selected" looks
+
 Three kinds of control, three looks. Pick by what the control does, not by taste.
+
 - **A filter that is on** (status chips, a set date range, a chosen filial or shop, an active "Filtr"): solid navy. It changes what the list shows and often scrolls sideways, so it must be seen at a glance.
 - **A view switch** (`SegmentedTabs`, `TermPicker`, `LangToggle`): a white pill on a grey strip. Nothing is filtered away; the same thing is shown another way.
 - **A form choice** (`ChoiceGrid`, the option sheet): a navy border on pale green.
 
 ## Long detail screens use tabs
+
 A detail screen with more than about four sections is split with `SegmentedTabs` right under its header, so nothing important sits three screens down.
+
 - Merchant ariza and shopper purchase: Maʼlumot · Mahsulotlar · Toʻlovlar (the last only once payments run).
 - Merchant client: Maʼlumot · Karta va kontakt · Arizalar.
-The status, title and reject reason stay above the tabs, and the footer button stays on every tab.
+  The status, title and reject reason stay above the tabs, and the footer button stays on every tab.
 
 ## Product photos
+
 - Photos are square, 800px, with the product centered on its plain backdrop and a little margin. Sample ones live in `src/shared/assets/products`.
 - `ProductPicture` draws a photo on a grey tile with `mix-blend-multiply`, so a white backdrop takes the tile's colour and every card keeps the same shape. In the dark theme the photo is shown as it is.
 - A product without a photo falls back to the drawn stand-in for its category.
@@ -527,25 +564,32 @@ The status, title and reject reason stay above the tabs, and the footer button s
 - **Tapping a photo on the product page opens it full screen** (`PhotoViewer`): a dark screen with a counter and a close button on top, the photo in the middle, and the other photos as 64px thumbnails at the bottom, the current one with a green border. Tapping outside the photo or pressing close returns to the product.
 
 ## Category pictures
+
 A category is shown with a photo, on the home tiles and in the category list. The photo follows the product photo rules: one typical product of the category, alone, on a plain white or transparent backdrop, square, at least 600px, no text or logo, filling about 70% of the frame. For now they borrow sample product photos (`categoryImages`); the admin panel will upload one per category.
 
 ## Shops
+
 A shop is always shown with `StoreLogo`: its square logo on white with a thin border (the shop icon on navy when it has none), 28px beside a shop name in Savat and Rasmiylashtirish, 44px in rows, 64px on the shop page. Its rating (`StoreRating`) is the average of its reviews with their count; a shop without reviews says "Hali sharh yoʻq".
 
 ## Loading, errors and confirmations
+
 Open `/states` (Menyu → Dizayn → Holatlar namunasi) to see every one of these as a full screen.
+
 - **Loading** is a skeleton in the shape of what is coming, never a spinner in the middle of the screen: `SkeletonRows` for a list card, `SkeletonGrid` for product cards, `SkeletonCards` for stacked cards, `SkeletonDetail` for a detail screen. Headers, search and filters stay real while the list loads. Buttons show their own spinner (`loading`).
 - **Errors that replace a screen** use `ErrorState`: a picture, a title, one sentence, one button. The picture (`ErrorIllustration`) is the empty-state picture's sibling: the same green ground and tilted card, with the problem drawn on the card in navy lines and one red detail. Never a bare icon. Five kinds: no internet and server error ("Qayta urinish"), session expired ("Qayta kirish"), page not found ("Asosiyga qaytish"), no permission ("Orqaga"). An unknown address shows the not-found one.
 - **Errors inside a form** stay where they are: under the field, or an `Alert` above the button.
 - **Confirmations** are a toast (`toast()` from `shared/lib/toast`): a dark pill at the top with a green check, gone after about two seconds. "Saqlandi" after a save, "Oʻchirildi" after a delete, "Yuborildi" after a review. A failed save is the same pill in red. A toast never asks a question; that is a sheet.
 
 ## Who is reading
+
 Shared pieces that speak about the client must know which app they are in. In the merchant app the client is "klient"; in the client app the same text says "siz" and "sizning": the card form ("Klient kartasi" becomes "Karta qoʻshish"), reject reasons, and who cancelled. These components take an `own` flag for the client app.
 
 ## Fewer words
+
 When a value explains itself, show it without a label: a card's "04/28" needs no "Amal qilish muddati". Labels stay where the value alone could be misread.
 
 ## One primary button per screen
+
 A screen has at most one solid navy button: its main action, in the footer. Everything else on the page (download a contract, leave a review, change status, add a row) is `secondary`.
 
 ## Before opening a merge request

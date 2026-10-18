@@ -141,6 +141,11 @@ export type Client = {
   cards: PaymentCard[]
   contacts: Contact[]
   applications: Application[]
+  /**
+   * False for a shopper who signed up in the client app but is not in this merchant's
+   * clients yet. Scanning their QR code, or their first order here, adds them.
+   */
+  listed?: boolean
 }
 
 type Seed = Pick<
@@ -467,6 +472,41 @@ export const seedClients: Client[] = [
     incomeSource: 'salary',
   }),
 ]
+
+// Shoppers who signed up in the client app on their own and have not bought here yet, so the
+// merchant's Klientlar does not show them until their QR code is scanned
+export const appShoppers: Client[] = [
+  fromSeed({
+    id: '9',
+    lastName: 'Xolmatov',
+    firstName: 'Behruz',
+    middleName: 'Anvar oʻgʻli',
+    phone: '935551122',
+    pinfl: '30811970410055',
+    passport: 'AF3318264',
+    born: [1997, 11, 8],
+    issued: [2022, 9, 14],
+    maritalStatus: 'married',
+    monthlyIncome: 6_200_000,
+    incomeSource: 'salary',
+    cards: [['8600', '4417']],
+  }),
+  fromSeed({
+    id: '10',
+    lastName: 'Sobirova',
+    firstName: 'Nilufar',
+    middleName: 'Ilhom qizi',
+    phone: '997773344',
+    pinfl: '42403010520031',
+    passport: 'AF5520917',
+    born: [2001, 3, 24],
+    issued: [2021, 6, 2],
+    maritalStatus: 'single',
+    monthlyIncome: 3_400_000,
+    incomeSource: 'salary',
+    cards: [['9860', '2208']],
+  }),
+].map((client) => ({ ...client, listed: false }))
 
 export const APPLICATION_STATUSES: ApplicationStatus[] = [
   'pending',

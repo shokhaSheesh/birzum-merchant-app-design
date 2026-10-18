@@ -15,6 +15,7 @@ import {
 import { takeStockFor } from '@/entities/clients/applicationsApi'
 import { toCard } from '@/entities/clients/cardsApi'
 import { clientsStore } from '@/entities/clients/clientsStore'
+import { shopperCode } from '@/entities/clients/shopperCode'
 import { installmentTerms, type InstallmentTerms } from '@/entities/clients/installment'
 
 const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms))
@@ -128,4 +129,30 @@ export async function createApplication(
   }
   takeStockFor(application.details?.products ?? [], application.locationId)
   clientsStore.update(clientId, { applications: [created, ...client.applications] })
+}
+
+export const SHOPPER_SCAN_MOCK_MS = 3000
+
+/**
+ * Mock: the camera "reads" a shopper's QR code after a few seconds. It finds a shopper who is
+ * not a client yet while there is one, then the first sample client, who already is.
+ */
+export async function scanShopper() {
+  await delay(SHOPPER_SCAN_MOCK_MS)
+  const all = clientsStore.getAll()
+  return all.find((client) => client.listed === false) ?? all[0]
+}
+
+/** The shopper with this six-digit code, for when the camera cannot read the screen. */
+export async function findShopper(code: string) {
+  await delay(600)
+  const client = clientsStore.getAll().find((c) => shopperCode(c) === code)
+  if (!client) throw new Error('not_found')
+  return client
+}
+
+/** Puts a shopper into this merchant's clients. */
+export async function addToMyClients(id: string) {
+  await delay(600)
+  clientsStore.update(id, { listed: true })
 }

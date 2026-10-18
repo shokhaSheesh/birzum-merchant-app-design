@@ -1,4 +1,4 @@
-import { Bell, Heart, Search, Sparkles } from 'lucide-react'
+import { Bell, Heart, QrCode, Search, Sparkles } from 'lucide-react'
 import { Link, useNavigate } from 'react-router-dom'
 import { categoryImages } from '@/entities/catalog/categoryImages'
 import { ProductPicture } from '@/entities/catalog/ProductPicture'
@@ -35,6 +35,9 @@ export function CustomerHomePage() {
         <p className="min-w-0 flex-1 truncate pl-1 text-lg font-bold">
           {t('chome.greeting', { name: customer.firstName })}
         </p>
+        <Link to={ROUTES.customerQr} aria-label={t('myqr.title')} className={roundButton}>
+          <QrCode size={22} />
+        </Link>
         <Link to={ROUTES.customerSearch} aria-label={t('search.title')} className={roundButton}>
           <Search size={22} />
         </Link>
