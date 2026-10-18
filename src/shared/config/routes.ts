@@ -33,6 +33,7 @@ export const ROUTES = {
   customerPinSetup: '/customer/pin/new',
   customerSecurity: '/customer/security',
   customerPersonal: '/customer/me',
+  customerChangePhone: '/customer/me/phone',
   customerWelcome: '/customer/welcome',
   customerStores: '/customer/stores',
   customerStore: '/customer/stores/:id',

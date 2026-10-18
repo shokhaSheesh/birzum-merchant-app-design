@@ -1,5 +1,8 @@
+import { ChevronRight } from 'lucide-react'
+import { Link } from 'react-router-dom'
 import { fullName, initials } from '@/entities/clients/clientName'
 import { useCustomer } from '@/entities/session/customer'
+import { ROUTES } from '@/shared/config/routes'
 import { useI18n } from '@/shared/i18n/useI18n'
 import { formatDate } from '@/shared/lib/format'
 import { formatPassport } from '@/shared/lib/passport'
@@ -8,7 +11,7 @@ import { Avatar } from '@/shared/ui/Avatar'
 import { InfoList, InfoRow } from '@/shared/ui/InfoList'
 import { PageHeader } from '@/shared/ui/PageHeader'
 
-/** The shopper's own details, as MyID gave them. Read only. */
+/** The shopper's own details, as MyID gave them. Only the phone number can be changed. */
 export function PersonalPage() {
   const { t } = useI18n()
   const customer = useCustomer()
@@ -23,7 +26,16 @@ export function PersonalPage() {
           <p className="text-xl leading-tight font-bold text-balance">{fullName(customer)}</p>
         </div>
         <InfoList>
-          <InfoRow label={t('field.phone')} value={formatPhone(customer.phone)} />
+          <Link
+            to={ROUTES.customerChangePhone}
+            className="-mx-4 flex items-center justify-between gap-4 border-b border-line px-4 py-3 active:bg-navy-100"
+          >
+            <dt className="shrink-0 text-sm text-ink-muted">{t('field.phone')}</dt>
+            <dd className="flex min-w-0 items-center gap-1 font-semibold">
+              {formatPhone(customer.phone)}
+              <ChevronRight size={18} className="-mr-1 shrink-0 text-ink-subtle" />
+            </dd>
+          </Link>
           <InfoRow label={t('client.passport')} value={formatPassport(customer.passport)} />
           <InfoRow label={t('clients.pinfl')} value={customer.pinfl} />
           <InfoRow label={t('field.birthDate')} value={formatDate(customer.birthDate)} />

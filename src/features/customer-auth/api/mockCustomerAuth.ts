@@ -24,6 +24,16 @@ export async function verifyCustomerCode(phone: string, code: string) {
   return { registered: !!client, clientId: client?.id }
 }
 
+/** Another account already signs in with this number. */
+export const phoneTaken = (phone: string) =>
+  clientsStore.getAll().some((client) => client.phone === phone)
+
+/** After the code to the new number fits: the account signs in with it from now on. */
+export async function changeCustomerPhone(clientId: string, phone: string) {
+  await delay(500)
+  clientsStore.update(clientId, { phone })
+}
+
 export type CustomerDetails = {
   passport: string
   birthDate: Date

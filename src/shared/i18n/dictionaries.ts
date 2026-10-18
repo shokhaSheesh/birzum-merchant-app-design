@@ -782,6 +782,13 @@ const uz = {
   'receipt.module': 'Fiskal modul',
   'receipt.sign': 'Fiskal belgi',
   'receipt.open': 'soliq.uz da tekshirish',
+  'phone.title': 'Yangi telefon raqami',
+  'phone.subtitle': 'Hozirgi raqam: {phone}. Yangi raqamga SMS-kod yuboramiz.',
+  'phone.new': 'Yangi raqam',
+  'phone.send': 'Kod olish',
+  'phone.error.same': 'Bu sizning hozirgi raqamingiz',
+  'phone.error.taken': 'Bu raqam boshqa hisobga ulangan',
+  'phone.changed': 'Telefon raqami oʻzgartirildi',
 } as const
 
 export type TranslationKey = keyof typeof uz
@@ -1555,6 +1562,13 @@ const ru: Record<TranslationKey, string> = {
   'receipt.module': 'Фискальный модуль',
   'receipt.sign': 'Фискальный признак',
   'receipt.open': 'Проверить на soliq.uz',
+  'phone.title': 'Новый номер телефона',
+  'phone.subtitle': 'Текущий номер: {phone}. Отправим SMS-код на новый номер.',
+  'phone.new': 'Новый номер',
+  'phone.send': 'Получить код',
+  'phone.error.same': 'Это ваш текущий номер',
+  'phone.error.taken': 'Этот номер привязан к другому аккаунту',
+  'phone.changed': 'Номер телефона изменён',
 }
 
 export const dictionaries: Record<Lang, Record<TranslationKey, string>> = { uz, ru }

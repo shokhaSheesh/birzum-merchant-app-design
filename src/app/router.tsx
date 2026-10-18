@@ -31,6 +31,7 @@ import { PaymentsPage } from '@/features/customer-app/pages/PaymentsPage'
 import { ScoringPage } from '@/features/customer-app/pages/ScoringPage'
 import { SupportPage } from '@/features/customer-app/pages/SupportPage'
 import { PersonalPage } from '@/features/customer-app/pages/PersonalPage'
+import { ChangePhonePage } from '@/features/customer-app/pages/ChangePhonePage'
 import { PurchasePage } from '@/features/customer-app/pages/PurchasePage'
 import { PurchasesPage } from '@/features/customer-app/pages/PurchasesPage'
 import { SearchPage } from '@/features/customer-app/pages/SearchPage'
@@ -104,6 +105,7 @@ export const router = createBrowserRouter([
       { path: ROUTES.customerPinSetup, element: <PinSetupPage /> },
       { path: ROUTES.customerSecurity, element: <SecurityPage /> },
       { path: ROUTES.customerPersonal, element: <PersonalPage /> },
+      { path: ROUTES.customerChangePhone, element: <ChangePhonePage /> },
       { path: ROUTES.customerWelcome, element: <OnboardingPage /> },
       {
         element: <CustomerTabLayout />,
