@@ -23,7 +23,7 @@ export function SegmentedTabs<T extends string>({ label, options, value, onChang
             onClick={() => onChange(option.value)}
             className={cn(
               'h-10 min-w-0 flex-1 truncate rounded-[10px] px-1.5 text-sm font-semibold transition-colors',
-              selected ? 'bg-canvas text-ink' : 'text-ink-muted',
+              selected ? 'bg-raised text-ink' : 'text-ink-muted',
             )}
           >
             {option.label}

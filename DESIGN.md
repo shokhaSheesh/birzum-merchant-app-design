@@ -37,17 +37,22 @@ Components use the role tokens above (`bg-primary`, `text-brand`), never `navy-9
 
 The user picks Yorugʻ, Qorongʻi or Tizim in Profile. `ThemeProvider` sets `data-theme` on `<html>` and the dark block in `index.css` gives every token a dark value. Components need no dark-specific classes.
 
+Dark is black and neutral grey, like iOS, never dark blue: a black screen, near-black cards and a step lighter for pieces inside them.
+
 | Role | Light | Dark |
 | --- | --- | --- |
-| `page` | `#F2F5F6` | `#0C1E28` (dark pass pending) |
-| `canvas` | `#FFFFFF` | `#0C1E28` |
-| `surface` | `#F2F5F6` | `#14303D` |
-| `ink` | `#072A3C` | `#EAF1F4` |
-| `primary` / `on-primary` | navy / white | green `#85C905` / navy |
-| `brand` | navy | pale blue-grey `#D3E4EC` |
-| Green tint (`green-200`) | `#E7F4CD` | `#223F14` |
+| `page` | `#F2F5F6` | black `#000000` |
+| `canvas` | `#FFFFFF` | `#1C1C1E` |
+| `surface` | `#F2F5F6` | `#2C2C2E` |
+| `raised` (chosen segment) | `#FFFFFF` | `#3A3A3C` |
+| `line` | `#DFE6E9` | `#303033` |
+| `ink` | `#072A3C` | `#F5F5F7` |
+| `primary` / `on-primary` | navy / white | lime `#A3E635` / black |
+| `brand` | navy | near-white `#F5F5F7` |
+| Green tint (`green-200`) | `#E7F4CD` | `#213012` |
 
-- In the dark theme the primary button is green with navy text, because navy would disappear on the dark background. The rule "one action color per theme, the same on every screen" still holds.
+- In the dark theme the primary button is a brighter lime than the brand green, with black text, because navy would disappear on black. The rule "one action color per theme, the same on every screen" still holds.
+- The chosen option in a segmented control is `bg-raised`, not `bg-canvas`, so it stays lighter than its track in the dark theme.
 - Use `logo.svg` on light and `logo-on-dark.svg` (white wordmark) on dark, switched with `dark:hidden` / `hidden dark:block`.
 - A QR code always stays navy on white, in both themes, so phone cameras can read it.
 - Check every new screen in both themes before opening a merge request.

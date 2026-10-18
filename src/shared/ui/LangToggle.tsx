@@ -35,7 +35,7 @@ export function LangToggle({ value, onChange, missing = [] }: Props) {
             onClick={() => onChange(lang)}
             className={cn(
               'relative h-6 rounded-md px-2 text-xs font-bold uppercase transition-colors',
-              selected ? 'bg-canvas text-ink shadow-sm' : 'text-ink-muted',
+              selected ? 'bg-raised text-ink shadow-sm' : 'text-ink-muted',
             )}
           >
             {lang}

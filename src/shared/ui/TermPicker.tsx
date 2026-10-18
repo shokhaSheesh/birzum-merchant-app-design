@@ -30,7 +30,7 @@ export function TermPicker<T extends number>({ terms, value, onChange }: Props<T
             onClick={() => onChange(term)}
             className={cn(
               'h-10 min-w-0 rounded-[10px] font-semibold transition-colors',
-              selected ? 'flex-[1.7] bg-canvas text-ink' : 'flex-1 text-ink-muted',
+              selected ? 'flex-[1.7] bg-raised text-ink' : 'flex-1 text-ink-muted',
             )}
           >
             {selected ? t('term.months', { count: String(term) }) : term}
