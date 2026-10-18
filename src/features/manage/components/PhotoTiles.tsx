@@ -19,7 +19,7 @@ export function PhotoTiles({ images, onChange, size = 'md' }: Props) {
   return (
     <div className="flex flex-wrap gap-3">
       {images.map((src) => (
-        <div key={src} className={cn('relative overflow-hidden rounded-control bg-canvas', tile)}>
+        <div key={src} className={cn('relative overflow-hidden rounded-control bg-surface', tile)}>
           <img src={src} alt="" className="size-full object-cover" />
           <button
             type="button"
@@ -36,7 +36,7 @@ export function PhotoTiles({ images, onChange, size = 'md' }: Props) {
         aria-label={t('product.photos.add')}
         onClick={() => fileInput.current?.click()}
         className={cn(
-          'flex flex-col items-center justify-center gap-1 rounded-control border-[1.5px] border-dashed border-navy-400 px-1 text-center text-xs font-semibold text-brand active:bg-surface',
+          'flex flex-col items-center justify-center gap-1 rounded-control border-[1.5px] border-dashed border-navy-400 px-1 text-center text-xs font-semibold text-brand active:bg-navy-100',
           tile,
         )}
       >

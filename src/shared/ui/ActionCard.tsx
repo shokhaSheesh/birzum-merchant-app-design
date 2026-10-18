@@ -13,9 +13,9 @@ export function ActionCard({ icon: Icon, title, description, onClick }: Props) {
     <button
       type="button"
       onClick={onClick}
-      className="flex w-full items-center gap-4 rounded-card bg-surface p-4 text-left transition-colors focus-visible:ring-3 focus-visible:ring-green-200 focus-visible:outline-none active:bg-navy-100"
+      className="flex w-full items-center gap-4 rounded-card border border-line bg-canvas p-4 text-left transition-colors focus-visible:ring-3 focus-visible:ring-green-200 focus-visible:outline-none active:bg-navy-100"
     >
-      <span className="grid size-12 shrink-0 place-items-center rounded-full bg-canvas text-brand">
+      <span className="grid size-12 shrink-0 place-items-center rounded-full bg-surface text-brand">
         <Icon size={24} />
       </span>
       <span className="flex min-w-0 flex-1 flex-col gap-0.5">

@@ -29,7 +29,7 @@ export function PaymentsPage() {
     <div className="flex h-full flex-col">
       <PageHeader title={t('payments.overview')} />
       <div className="flex min-h-0 flex-1 flex-col gap-6 overflow-y-auto px-5 pt-2 pb-8">
-        <div className="flex flex-col gap-4 rounded-card bg-surface p-4">
+        <div className="flex flex-col gap-4 rounded-card border border-line bg-canvas p-4">
           <div className="flex flex-col">
             <p className="text-sm text-ink-muted">{t('payments.totalDebt')}</p>
             <p className="text-3xl font-bold">{formatSum(total)}</p>
@@ -46,7 +46,7 @@ export function PaymentsPage() {
           </div>
           <Link
             to={ROUTES.customerPaymentHistory}
-            className="flex h-11 items-center justify-center gap-2 rounded-control bg-canvas text-sm font-semibold text-brand active:bg-navy-100"
+            className="flex h-11 items-center justify-center gap-2 rounded-control bg-surface text-sm font-semibold text-brand active:bg-navy-100"
           >
             <History size={18} />
             {t('payhistory.title')}
@@ -65,7 +65,7 @@ export function PaymentsPage() {
                 return (
                   <li
                     key={application.id}
-                    className="flex flex-col gap-3 rounded-card bg-surface p-4"
+                    className="flex flex-col gap-3 rounded-card border border-line bg-canvas p-4"
                   >
                     <Link
                       to={customerPurchasePath(application.id)}

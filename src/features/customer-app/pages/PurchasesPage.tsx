@@ -79,7 +79,7 @@ export function PurchasesPage() {
             <li key={application.id}>
               <Link
                 to={customerPurchasePath(application.id)}
-                className="flex flex-col gap-2 rounded-card bg-surface p-4 active:bg-navy-100"
+                className="flex flex-col gap-2 rounded-card border border-line bg-canvas p-4 active:bg-navy-100"
               >
                 <div className="flex items-start justify-between gap-3">
                   <div className="flex flex-col gap-0.5">

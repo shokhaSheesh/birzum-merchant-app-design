@@ -21,7 +21,7 @@ type Mode = 'days' | 'years' | 'months'
 
 const EARLIEST_YEAR = 1930
 const navButton =
-  'grid size-10 place-items-center rounded-full text-brand active:bg-surface disabled:text-navy-200'
+  'grid size-10 place-items-center rounded-full text-brand active:bg-navy-100 disabled:text-navy-200'
 const cell = 'grid place-items-center rounded-control text-base disabled:text-navy-200'
 const cellSelected = 'bg-primary font-semibold text-on-primary'
 
@@ -82,7 +82,7 @@ export function CalendarSheet({ title, value, onSelect, onClose, min, max, pick 
           aria-label={t('calendar.pickYear')}
           aria-expanded={mode === 'years'}
           onClick={() => setMode(mode === 'years' ? baseMode : 'years')}
-          className="flex h-10 items-center gap-1 rounded-full px-3 text-base font-semibold active:bg-surface"
+          className="flex h-10 items-center gap-1 rounded-full px-3 text-base font-semibold active:bg-navy-100"
         >
           {mode === 'days' ? `${months[month]} ${year}` : year}
           <ChevronDown
@@ -114,7 +114,7 @@ export function CalendarSheet({ title, value, onSelect, onClose, min, max, pick 
                   setView(new Date(y, month, 1))
                   setMode('months')
                 }}
-                className={cn(cell, 'h-11', y === year ? cellSelected : 'active:bg-surface')}
+                className={cn(cell, 'h-11', y === year ? cellSelected : 'active:bg-navy-100')}
               >
                 {y}
               </button>
@@ -135,7 +135,7 @@ export function CalendarSheet({ title, value, onSelect, onClose, min, max, pick 
                 setView(new Date(year, m, 1))
                 setMode('days')
               }}
-              className={cn(cell, 'h-13', m === month ? cellSelected : 'active:bg-surface')}
+              className={cn(cell, 'h-13', m === month ? cellSelected : 'active:bg-navy-100')}
             >
               {name}
             </button>
@@ -169,8 +169,8 @@ export function CalendarSheet({ title, value, onSelect, onClose, min, max, pick 
                   selected
                     ? cellSelected
                     : isToday
-                      ? 'font-semibold ring-[1.5px] ring-green-500 ring-inset active:bg-surface'
-                      : 'active:bg-surface',
+                      ? 'font-semibold ring-[1.5px] ring-green-500 ring-inset active:bg-navy-100'
+                      : 'active:bg-navy-100',
                 )}
               >
                 {i + 1}

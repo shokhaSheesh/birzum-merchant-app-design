@@ -41,7 +41,7 @@ export function SearchField({ label, placeholder, value, onChange, autoFocus, on
           type="button"
           onClick={() => onChange('')}
           aria-label={t('common.clear')}
-          className="-mr-2 grid size-10 shrink-0 place-items-center rounded-full text-ink-subtle active:bg-surface"
+          className="-mr-2 grid size-10 shrink-0 place-items-center rounded-full text-ink-subtle active:bg-navy-100"
         >
           <X size={20} />
         </button>

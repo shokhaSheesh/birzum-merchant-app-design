@@ -101,12 +101,12 @@ function ProductDetails({ product }: { product: Product }) {
       <PageHeader
         end={
           <>
-            <LikeButton productId={product.id} className="active:bg-surface" />
+            <LikeButton productId={product.id} className="active:bg-navy-100" />
             <button
               type="button"
               aria-label={t('product.share')}
               onClick={() => void share()}
-              className="grid size-10 place-items-center rounded-full text-brand active:bg-surface"
+              className="grid size-10 place-items-center rounded-full text-brand active:bg-navy-100"
             >
               {copied ? <Check size={22} /> : <Share2 size={22} />}
             </button>
@@ -159,7 +159,7 @@ function ProductDetails({ product }: { product: Product }) {
           <Section title={t('product.store')}>
             <Link
               to={customerStorePath(store.id)}
-              className="flex items-center gap-3 rounded-card bg-surface p-4 active:bg-navy-100"
+              className="flex items-center gap-3 rounded-card border border-line bg-canvas p-4 active:bg-navy-100"
             >
               <StoreLogo store={store} />
               <div className="flex min-w-0 flex-1 flex-col gap-0.5">
@@ -173,7 +173,7 @@ function ProductDetails({ product }: { product: Product }) {
 
         {points.length > 1 && (
           <Section title={t('product.availability')}>
-            <ul className="rounded-card bg-surface px-4">
+            <ul className="rounded-card border border-line bg-canvas px-4">
               {points.map((point) => {
                 const count = stockOf(product, picked, point.id)
                 return (

@@ -11,7 +11,7 @@ type Props<T extends string> = {
 /** Switches between two or three views of the same screen. Not a filter: use FilterChips for that. */
 export function SegmentedTabs<T extends string>({ label, options, value, onChange }: Props<T>) {
   return (
-    <div role="tablist" aria-label={label} className="flex gap-1 rounded-control bg-surface p-1">
+    <div role="tablist" aria-label={label} className="flex gap-1 rounded-control bg-navy-100 p-1">
       {options.map((option) => {
         const selected = option.value === value
         return (

@@ -53,7 +53,7 @@ export function HandOverSheet({ onClose, onConfirm }: Props) {
             <button
               type="button"
               onClick={() => input.current?.click()}
-              className="flex aspect-square flex-col items-center justify-center gap-1 rounded-control border-[1.5px] border-dashed border-navy-400 text-sm font-semibold text-brand active:bg-surface"
+              className="flex aspect-square flex-col items-center justify-center gap-1 rounded-control border-[1.5px] border-dashed border-navy-400 text-sm font-semibold text-brand active:bg-navy-100"
             >
               <Camera size={26} />
               {t('handover.take')}

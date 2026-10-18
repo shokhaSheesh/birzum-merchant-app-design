@@ -14,9 +14,10 @@ All colors are tokens in `src/shared/styles/index.css`. No hex values in compone
 
 | Role | Token | Value | Used for |
 | --- | --- | --- | --- |
-| Screen background | `canvas` | `#FFFFFF` | Every screen, sheets, the tab bar, input fill |
-| Card background | `surface` | `#F2F5F6` | Cards, list groups, secondary buttons, chips |
-| Divider | `line` | `#DFE6E9` | Input borders, list dividers |
+| Screen background | `page` | `#F2F5F6` | Behind everything on a screen, like the admin panel |
+| Card background | `canvas` | `#FFFFFF` | Cards, list groups, sheets, inputs, chips and secondary buttons, always with a `line` border |
+| Inset fill | `surface` | `#F2F5F6` | Small things inside a white card: icon circles, picture tiles, number badges |
+| Divider | `line` | `#DFE6E9` | Card and input borders, list dividers |
 | Text | `ink` | `#072A3C` | Titles and body text |
 | Secondary text | `ink-muted` | `#56707F` | Labels, subtitles, descriptions |
 | Placeholder text | `ink-subtle` | `#8499A4` | Placeholders, inactive tabs, decorative icons |
@@ -38,6 +39,7 @@ The user picks Yorugʻ, Qorongʻi or Tizim in Profile. `ThemeProvider` sets `dat
 
 | Role | Light | Dark |
 | --- | --- | --- |
+| `page` | `#F2F5F6` | `#0C1E28` (dark pass pending) |
 | `canvas` | `#FFFFFF` | `#0C1E28` |
 | `surface` | `#F2F5F6` | `#14303D` |
 | `ink` | `#072A3C` | `#EAF1F4` |
@@ -80,7 +82,7 @@ One family: Source Sans 3, standing in for the brandbook's Myriad. Titles are up
 - Controls (buttons, inputs, option rows): 52px tall (`h-13`), 14px radius (`rounded-control`).
 - Cards: 20px radius (`rounded-card`). Sheets: 28px top corners.
 - Tap targets are at least 40px, including icon-only buttons.
-- No drop shadows on cards. Separate with the `surface` fill or a `line` divider.
+- **Grey screen, white cards.** The screen is `page` grey; every card, list group, chip, search box and secondary button on it is white (`canvas`) with a 1px `line` border, as in the admin panel. No drop shadows. Pressed states are `navy-100`, so they show on grey and on white. Segmented tracks (`SegmentedTabs`, `TermPicker`, `LangToggle`) are `navy-100` with a white chosen pill.
 
 ## Buttons
 
@@ -120,7 +122,7 @@ Every form uses `FormScreen`: back arrow at the top left, scrolling body, primar
 - Limits that depend on amounts are the exception to "validate on tap": going over the limit shows the `Alert` immediately, while typing, and names the limit.
 - A calculated result (the installment terms) appears as a new section at the end of the form after the first tap on the button, and the screen scrolls to it. Changing any number it was based on removes it until it is calculated again.
 - The last step before something is created is a review screen: read-only sections of what was entered, a ghost "Bekor qilish" above, and a primary button that names the result ("Arizani yaratish").
-- Long forms are split into `Section`s with a title and a one-line hint. Repeating groups such as products are each a `surface` card with a numbered heading, a red `Trash2` button at its top right when more than one exists, and a `secondary` "add" button under the last card.
+- Long forms are split into `Section`s with a title and a one-line hint. Repeating groups such as products are each a white bordered card with a numbered heading, a red `Trash2` button at its top right when more than one exists, and a `secondary` "add" button under the last card.
 - A form that works with totals ends with a summary `InfoList` (limit, total, financed amount) just above the bottom button.
 - When a step offers different ways to continue instead of a form, show them as `ActionCard`s (icon, title, one-line description, chevron) and leave out the bottom button. The MyID step does this for "on this device" and "by QR code".
 - Camera views (`CameraView`) sit in a rounded dark frame with a green guide: an oval for a face, a square for a code. QR codes are navy on white inside a bordered card, with a "waiting" line and spinner below.
@@ -290,7 +292,7 @@ A chip with a pin icon and a small chevron, first in the chip row on Arizalar an
 
 ## Lists and empty states
 
-- A list is a group of rows inside one `surface` card, separated by `line` dividers. Rows are at least 64px tall.
+- A list is a group of rows inside one white bordered card, separated by `line` dividers. Rows are at least 64px tall.
 - Row layout: initials avatar on the left, name in `font-semibold`, details under it in `text-sm text-ink-muted`.
 - Above the list, a small count line ("8 ta klient") in `text-sm text-ink-muted`.
 - A row that opens a detail screen ends with a `ChevronRight`; the whole row is the tap target.
@@ -324,7 +326,7 @@ Menyu is the merchant's last tab. It holds the signed-in user, then everything t
 
 - Two groups of rows (`MenuList` / `MenuRow`: icon, label, chevron): **Katalog** with Mahsulotlar and Ombor, and **Doʻkon** with Filiallar, Xodimlar, Rollar va ruxsatlar. Settings follow below them.
 - **A row only shows if the user's role allows it** (`usePermissions().can(...)`). A group with no visible rows is hidden.
-- Every management list uses `ListScreen`: back arrow, title, the small "Qoʻshish" button at the top right, then rows in one `surface` card. A row (`ListRow`) is a title, up to two muted lines, and a chevron; it opens the record's form.
+- Every management list uses `ListScreen`: back arrow, title, the small "Qoʻshish" button at the top right, then rows in one white bordered card. A row (`ListRow`) is a title, up to two muted lines, and a chevron; it opens the record's form.
 - **Switching off and deleting are different things.** A form has a checkbox to switch a record off ("Filial ishlayapti", "Hisob faol", "Klient ilovasida koʻrsatish"); a switched-off record shows a grey badge in its list.
 - **Filiallar, Xodimlar and Rollar can also be deleted.** The edit form ends with a quiet red "Oʻchirish" (`DeleteRecord`), which opens a `ConfirmSheet`: a ghost "Bekor qilish" above a red "Oʻchirish". No delete happens without that sheet. Products are hidden, never deleted.
 - When a record cannot be deleted, the button is replaced by an `Alert` saying why: a role that staff still hold, or your own account.
@@ -349,7 +351,7 @@ Only what shoppers read and what really differs by language is stored once per l
 - Top to bottom: photos, name, description, category, subcategory (when the category has any), brand, price, variants, combinations, characteristics, visibility.
 - **Photos** (`PhotoTiles`) are 96px square tiles in a wrapping row, each with a small remove button; the last tile is a dashed "Rasm qoʻshish". The first photo is the cover.
 - **Rang rasmlari** appears once a color type is chosen: one card per color with its own, smaller row of photo tiles. While a shopper has that color chosen, its photos replace the product's.
-- **Variantlar:** one `surface` card per variant type: a `Select` of the type, then its values as outline chips that are ticked on and off (navy border when on, with the swatch for colors).
+- **Variantlar:** one white bordered card per variant type: a `Select` of the type, then its values as outline chips that are ticked on and off (navy border when on, with the swatch for colors).
 - **Kombinatsiyalar** appears once values are chosen and lists every combination of them. The merchant ticks the ones that are actually sold; a ticked row opens a price field, pre-filled with the product's price. The title counts them ("4 / 6") and "Hammasini tanlash" ticks all. With two or more types the rows are grouped under the first type's values, each group with its own count.
 - A combination that is not ticked does not exist: it has no price, no stock row in Ombor, and in the client app that choice is faded and struck through.
 - **Characteristics** are rows of two fields, name and value, each with a remove button.
@@ -370,7 +372,6 @@ Only what shoppers read and what really differs by language is stored once per l
 - **Starting an ariza.** From a client's limit card, or from "+ Qoʻshish" on Arizalar, which first asks which client (a sheet with search; a client without a limit is opened to calculate it).
 - **"Yangi shartnoma" top to bottom:** Qabul qilish usuli and Filial first, then the products, then Toʻlov sozlamalari (card, down payment, payment day).
 - **A product card stays compact:** the two selects, then one row with the line sum and stock on the left and a small quantity stepper on the right, then the term strip with that term's limit under it. No separate quantity field or total row.
-- A `TermPicker` inside a grey card takes `inset`, which draws its strip a shade darker so it does not disappear into the card.
 - **Terms are per product** in "Yangi shartnoma" too: each product card has its own `TermPicker` and shows that term's limit. An ariza has one term, so products with different terms become separate arizalar; the review step says so and shows one block per term. The down payment is shared out by each block's part of the total.
 - **Cancelling asks why** (`CancelSheet`), for the merchant and the shopper alike. A cancelled ariza shows `CancelNote` under its status: who cancelled and their comment.
 - **Tarix** is the last tab of the merchant's ariza (`HistoryList`): every status change, newest first, with the date and time, who made it (seller by name, client, or system) and their comment.
@@ -462,7 +463,7 @@ Asosiy reports on one period: a day, a week or a month. It only shows numbers an
 - Top row: the user's `Avatar`, a greeting with the store and branch, and a round bell button on the right with a green dot while there are unread notifications.
 - `PeriodPicker` comes next. Everything below it describes the chosen period.
 - One headline figure in plain large text (not on a colored tile), with a single muted line of counts under it.
-- One chart in a `surface` card, then the status breakdown as a list of `StatusBadge`s with their counts.
+- One chart in a white bordered card, then the status breakdown as a list of `StatusBadge`s with their counts.
 - A period with no arizalar shows `EmptyState` in place of the chart and breakdown.
 
 ### Period picker: `PeriodPicker`

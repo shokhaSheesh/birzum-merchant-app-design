@@ -14,7 +14,7 @@ export function HistoryList({ application }: { application: Application }) {
     return <p className="text-sm text-ink-muted">{t('history.empty')}</p>
   }
   return (
-    <ol className="rounded-card bg-surface px-4">
+    <ol className="rounded-card border border-line bg-canvas px-4">
       {entries.map((entry, i) => (
         <li key={i} className="flex flex-col gap-1.5 border-b border-line py-3 last:border-b-0">
           <div className="flex items-center justify-between gap-3">

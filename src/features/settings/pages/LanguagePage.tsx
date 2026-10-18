@@ -16,7 +16,7 @@ export function LanguagePage() {
       <ul
         role="radiogroup"
         aria-label={t('profile.language')}
-        className="mx-5 mt-2 rounded-card bg-surface px-4"
+        className="mx-5 mt-2 rounded-card border border-line bg-canvas px-4"
       >
         {LANGS.map((value) => {
           const selected = value === lang

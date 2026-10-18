@@ -92,7 +92,10 @@ export function AttributeFormPage() {
         }
       >
         {values.map((value) => (
-          <div key={value.id} className="flex flex-col gap-3 rounded-card bg-surface p-4">
+          <div
+            key={value.id}
+            className="flex flex-col gap-3 rounded-card border border-line bg-canvas p-4"
+          >
             <div className="flex items-end gap-2">
               <div className="min-w-0 flex-1">
                 <LocalizedTextField

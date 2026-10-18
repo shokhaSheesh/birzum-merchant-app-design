@@ -81,7 +81,7 @@ export function PaySheet({ application, payment, cards, onClose }: Props) {
                 onClick={() => setKind(option.kind)}
                 className={cn(
                   'flex items-start gap-3 rounded-control border-[1.5px] p-3.5 text-left transition-colors',
-                  selected ? 'border-primary bg-green-200' : 'border-line active:bg-surface',
+                  selected ? 'border-primary bg-green-200' : 'border-line active:bg-navy-100',
                 )}
               >
                 <span

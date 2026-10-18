@@ -12,7 +12,7 @@ import { StoreLogo } from '../components/StoreLogo'
 import { StoreRating } from '../components/StoreRating'
 
 const pill =
-  'flex h-9 items-center gap-1.5 rounded-full bg-canvas px-3 text-sm font-semibold text-brand active:bg-navy-100'
+  'flex h-9 items-center gap-1.5 rounded-full bg-surface px-3 text-sm font-semibold text-brand active:bg-navy-100'
 
 /** How many products the shop page shows before "Hammasi" opens the full listing. */
 const PREVIEW = 4
@@ -42,7 +42,7 @@ export function StorePage() {
         </div>
 
         <Section title={t('manage.locations')}>
-          <ul className="rounded-card bg-surface px-4">
+          <ul className="rounded-card border border-line bg-canvas px-4">
             {points.map((point) => (
               <li
                 key={point.id}

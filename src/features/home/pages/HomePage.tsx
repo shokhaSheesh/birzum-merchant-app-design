@@ -99,7 +99,7 @@ export function HomePage() {
         <Link
           to={ROUTES.notifications}
           aria-label={t('notifications.title')}
-          className="relative grid size-11 shrink-0 place-items-center rounded-full bg-surface text-brand active:bg-navy-100"
+          className="relative grid size-11 shrink-0 place-items-center rounded-full border border-line bg-canvas text-brand active:bg-navy-100"
         >
           <Bell size={22} />
           {unreadCount > 0 && (
@@ -140,7 +140,7 @@ export function HomePage() {
         <EmptyState title={t('home.empty.title')} hint={t('home.empty.hint')} />
       ) : (
         <>
-          <div className="flex flex-col gap-2 rounded-card bg-surface p-4">
+          <div className="flex flex-col gap-2 rounded-card border border-line bg-canvas p-4">
             <h2 className="font-semibold">{t('home.chart.title')}</h2>
             <BarChart
               label={t('home.chart.title')}
@@ -151,7 +151,7 @@ export function HomePage() {
           </div>
 
           <Section title={t('home.statuses')}>
-            <ul className="rounded-card bg-surface px-4">
+            <ul className="rounded-card border border-line bg-canvas px-4">
               {APPLICATION_STATUSES.map((status) => (
                 <li
                   key={status}

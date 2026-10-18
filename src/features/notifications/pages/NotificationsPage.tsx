@@ -84,7 +84,7 @@ export function NotificationsPage() {
             type="button"
             onClick={() => navigate(-1)}
             aria-label={t('common.back')}
-            className="-ml-2 grid size-10 place-items-center rounded-full text-brand active:bg-surface"
+            className="-ml-2 grid size-10 place-items-center rounded-full text-brand active:bg-navy-100"
           >
             <ArrowLeft size={24} />
           </button>
@@ -108,7 +108,7 @@ export function NotificationsPage() {
             hint={t('notifications.news.empty.hint')}
           />
         ) : (
-          <ul className="rounded-card bg-surface px-4">
+          <ul className="rounded-card border border-line bg-canvas px-4">
             {items.map(({ key, ...item }) => (
               <NotificationRow key={key} {...item} />
             ))}

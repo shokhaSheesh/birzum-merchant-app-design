@@ -27,7 +27,7 @@ export function ReviewsPage() {
           <EmptyState title={t('manage.empty.title')} />
         ) : (
           <>
-            <div className="flex items-center gap-4 rounded-card bg-surface p-4">
+            <div className="flex items-center gap-4 rounded-card border border-line bg-canvas p-4">
               <p className="text-4xl font-bold">{average.toFixed(1)}</p>
               <div className="flex flex-col gap-1">
                 <Stars rating={average} size={20} />
@@ -36,7 +36,7 @@ export function ReviewsPage() {
                 </p>
               </div>
             </div>
-            <ul className="rounded-card bg-surface px-4">
+            <ul className="rounded-card border border-line bg-canvas px-4">
               {own.map((review) => (
                 <ReviewItem
                   key={review.id}

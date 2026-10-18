@@ -20,7 +20,7 @@ export function PageHeader({ title, end }: Props) {
         type="button"
         onClick={() => navigate(-1)}
         aria-label={t('common.back')}
-        className="-ml-2 grid size-10 shrink-0 place-items-center rounded-full text-brand active:bg-surface"
+        className="-ml-2 grid size-10 shrink-0 place-items-center rounded-full text-brand active:bg-navy-100"
       >
         <ArrowLeft size={24} />
       </button>

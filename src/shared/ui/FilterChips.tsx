@@ -37,7 +37,9 @@ export function FilterChips<T extends string>({
             onClick={() => onChange(option.value)}
             className={cn(
               'h-10 shrink-0 rounded-full px-4 text-sm font-semibold whitespace-nowrap transition-colors',
-              selected ? 'bg-primary text-on-primary' : 'bg-surface text-brand active:bg-navy-100',
+              selected
+                ? 'bg-primary text-on-primary'
+                : 'border border-line bg-canvas text-brand active:bg-navy-100',
             )}
           >
             {option.label}

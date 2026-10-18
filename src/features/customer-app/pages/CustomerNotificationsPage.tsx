@@ -155,7 +155,7 @@ export function CustomerNotificationsPage() {
             hint={t('notifications.news.empty.hint')}
           />
         ) : (
-          <ul className="rounded-card bg-surface px-4">
+          <ul className="rounded-card border border-line bg-canvas px-4">
             {items.map(({ key, ...item }) => (
               <NotificationRow key={key} {...item} />
             ))}

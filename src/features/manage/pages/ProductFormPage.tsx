@@ -273,7 +273,10 @@ export function ProductFormPage() {
           const attribute = attributeOf(group)
           const taken = groups.filter((g) => g.id !== group.id).map((g) => g.attributeId)
           return (
-            <div key={group.id} className="flex flex-col gap-3 rounded-card bg-surface p-4">
+            <div
+              key={group.id}
+              className="flex flex-col gap-3 rounded-card border border-line bg-canvas p-4"
+            >
               <div className="flex items-end gap-2">
                 <div className="min-w-0 flex-1">
                   <Select
@@ -369,7 +372,10 @@ export function ProductFormPage() {
       {colorValues.length > 0 && (
         <Section title={t('product.variantPhotos')} hint={t('product.variantPhotos.hint')}>
           {colorValues.map((value) => (
-            <div key={value.id} className="flex flex-col gap-2 rounded-card bg-surface p-4">
+            <div
+              key={value.id}
+              className="flex flex-col gap-2 rounded-card border border-line bg-canvas p-4"
+            >
               <p className="flex items-center gap-2 font-semibold">
                 <span
                   className="size-4 rounded-full border border-line"
@@ -406,7 +412,10 @@ export function ProductFormPage() {
           }
         >
           {sections.map((section) => (
-            <div key={section.heading ?? 'all'} className="rounded-card bg-surface px-4 py-1">
+            <div
+              key={section.heading ?? 'all'}
+              className="rounded-card border border-line bg-canvas px-4 py-1"
+            >
               {section.heading && (
                 <p className="flex items-baseline justify-between border-b border-line py-2.5 font-semibold">
                   {section.heading}

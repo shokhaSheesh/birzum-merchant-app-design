@@ -56,7 +56,7 @@ export function ChoiceGrid<T extends string | number>({
                 'focus-visible:ring-3 focus-visible:ring-green-200 focus-visible:outline-none',
                 selected
                   ? 'border-primary bg-green-200'
-                  : 'border-line bg-canvas text-ink-muted active:bg-surface',
+                  : 'border-line bg-canvas text-ink-muted active:bg-navy-100',
               )}
             >
               {option.icon && <option.icon size={22} className="mb-1 text-brand" />}

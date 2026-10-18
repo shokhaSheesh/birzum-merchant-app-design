@@ -41,7 +41,7 @@ export function Sheet({ open, onClose, title, children }: Props) {
             type="button"
             onClick={onClose}
             aria-label={t('common.close')}
-            className="-mr-2 grid size-10 place-items-center rounded-full text-ink-muted active:bg-surface"
+            className="-mr-2 grid size-10 place-items-center rounded-full text-ink-muted active:bg-navy-100"
           >
             <X size={22} />
           </button>

@@ -2,7 +2,7 @@ import type { ReactNode } from 'react'
 
 /** Label and value pairs in one card. Used for read-only details. */
 export function InfoList({ children }: { children: ReactNode }) {
-  return <dl className="rounded-card bg-surface px-4">{children}</dl>
+  return <dl className="rounded-card border border-line bg-canvas px-4">{children}</dl>
 }
 
 export function InfoRow({ label, value }: { label: string; value: string }) {

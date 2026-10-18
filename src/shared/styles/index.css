@@ -33,6 +33,8 @@
 
   /* Surfaces and text: white screens, grey cards */
   --color-canvas: #ffffff;
+  /* The screen behind cards: light grey, so white cards with a border stand out */
+  --color-page: #f2f5f6;
   --color-surface: #f2f5f6;
   --color-line: #dfe6e9;
   --color-ink: #072a3c;
@@ -56,6 +58,7 @@
   color-scheme: dark;
 
   --color-canvas: #0c1e28;
+  --color-page: #0c1e28;
   --color-surface: #14303d;
   --color-line: #27485a;
   --color-ink: #eaf1f4;

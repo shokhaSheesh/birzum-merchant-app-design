@@ -21,7 +21,7 @@ export function LangToggle({ value, onChange, missing = [] }: Props) {
     <div
       role="tablist"
       aria-label={t('form.language')}
-      className="flex shrink-0 gap-0.5 rounded-lg bg-surface p-0.5"
+      className="flex shrink-0 gap-0.5 rounded-lg bg-navy-100 p-0.5"
     >
       {LANGS.map((lang) => {
         const selected = lang === value

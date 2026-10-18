@@ -44,14 +44,14 @@ export function SubcategoriesPage() {
     <div className="flex h-full flex-col">
       <PageHeader title={t(`catalog.category.${category}`)} />
       <div className="min-h-0 flex-1 overflow-y-auto px-5 pt-2 pb-6">
-        <ul className="rounded-card bg-surface px-3">
+        <ul className="rounded-card border border-line bg-canvas px-3">
           {rows.map((row) => (
             <li key={row.key} className="border-b border-line last:border-b-0">
               <Link to={row.to} className="flex items-center gap-3 py-2.5">
                 <ProductPicture
                   category={category}
                   src={row.image}
-                  className="w-14 shrink-0 rounded-control bg-canvas!"
+                  className="w-14 shrink-0 rounded-control bg-surface!"
                 />
                 <div className="flex min-w-0 flex-1 flex-col gap-0.5">
                   <p className="truncate font-semibold">{row.title}</p>

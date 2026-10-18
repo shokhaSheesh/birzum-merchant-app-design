@@ -60,7 +60,7 @@ export function SettlementsPage() {
           {payouts.length === 0 ? (
             <EmptyState title={t('settle.none')} />
           ) : (
-            <ul className="rounded-card bg-surface px-4">
+            <ul className="rounded-card border border-line bg-canvas px-4">
               {payouts.map((payout) => (
                 <li key={payout.id} className="border-b border-line last:border-b-0">
                   <button
@@ -97,7 +97,7 @@ export function SettlementsPage() {
               <InfoRow label={t('settle.date')} value={formatDate(open.date)} />
               <InfoRow label={t('settle.amount')} value={formatSum(open.amount)} />
             </InfoList>
-            <ul className="rounded-card bg-surface px-4">
+            <ul className="rounded-card border border-line bg-canvas px-4">
               {open.sales.map((sale) => (
                 <li
                   key={sale.application.id}

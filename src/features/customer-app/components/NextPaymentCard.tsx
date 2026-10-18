@@ -19,13 +19,13 @@ export function NextPaymentCard({ client }: { client: Client }) {
       to={ROUTES.customerPayments}
       className={cn(
         '-mt-2 flex items-center gap-3 rounded-card p-4',
-        late ? 'bg-danger-soft' : 'bg-surface active:bg-navy-100',
+        late ? 'bg-danger-soft' : 'border border-line bg-canvas active:bg-navy-100',
       )}
     >
       <span
         className={cn(
           'grid size-10 shrink-0 place-items-center rounded-full',
-          late ? 'bg-danger text-white' : 'bg-canvas text-brand',
+          late ? 'bg-danger text-white' : 'bg-surface text-brand',
         )}
       >
         {late ? <CircleAlert size={20} /> : <CalendarClock size={20} />}

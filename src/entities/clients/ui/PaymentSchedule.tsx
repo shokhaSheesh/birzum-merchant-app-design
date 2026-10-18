@@ -28,7 +28,7 @@ export function PaymentSchedule({ application }: { application: Application }) {
       {overdue > 0 && (
         <Alert message={t('payments.overdueAlert', { amount: formatSum(overdue) })} />
       )}
-      <div className="flex flex-col gap-2 rounded-card bg-surface p-4">
+      <div className="flex flex-col gap-2 rounded-card border border-line bg-canvas p-4">
         <div
           role="progressbar"
           aria-valuemin={0}
@@ -54,7 +54,7 @@ export function PaymentSchedule({ application }: { application: Application }) {
           </p>
         </div>
       </div>
-      <ul className="rounded-card bg-surface px-4">
+      <ul className="rounded-card border border-line bg-canvas px-4">
         {payments.map((payment) => (
           <li
             key={payment.number}

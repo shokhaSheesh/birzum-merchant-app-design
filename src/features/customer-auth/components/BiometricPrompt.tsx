@@ -46,7 +46,7 @@ export function BiometricPrompt({ onSuccess, onCancel }: Props) {
         <button
           type="button"
           onClick={onCancel}
-          className="h-11 w-full rounded-full text-sm font-semibold text-brand active:bg-surface"
+          className="h-11 w-full rounded-full text-sm font-semibold text-brand active:bg-navy-100"
         >
           {t('common.cancel')}
         </button>

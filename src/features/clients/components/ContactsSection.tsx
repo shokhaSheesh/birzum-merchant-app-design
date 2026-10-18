@@ -54,7 +54,7 @@ export function ContactsSection({ client }: { client: Client }) {
       {client.contacts.length === 0 ? (
         <p className="text-sm text-ink-muted">{t('client.contacts.empty')}</p>
       ) : (
-        <ul className="rounded-card bg-surface px-4">
+        <ul className="rounded-card border border-line bg-canvas px-4">
           {client.contacts.map((contact) => (
             <li key={contact.id} className="border-b border-line last:border-b-0">
               <button

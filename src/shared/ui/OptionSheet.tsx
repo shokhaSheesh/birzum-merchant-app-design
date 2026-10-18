@@ -37,7 +37,7 @@ export function OptionSheet<T extends string>({
                 }}
                 className={cn(
                   'flex h-13 w-full items-center justify-between rounded-control px-4 text-left text-base',
-                  selected ? 'bg-green-200 font-semibold' : 'active:bg-surface',
+                  selected ? 'bg-green-200 font-semibold' : 'active:bg-navy-100',
                 )}
               >
                 {option.label}

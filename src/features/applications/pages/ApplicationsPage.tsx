@@ -95,7 +95,7 @@ export function ApplicationsPage() {
             <p className="text-sm text-ink-muted">
               {t('applications.count', { count: String(items.length) })}
             </p>
-            <ul className="rounded-card bg-surface px-4">
+            <ul className="rounded-card border border-line bg-canvas px-4">
               {items.map(({ application, client }) => (
                 <ApplicationRow
                   key={application.id}

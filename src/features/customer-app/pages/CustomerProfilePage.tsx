@@ -39,7 +39,7 @@ export function CustomerProfilePage() {
       {customer && (
         <Link
           to={ROUTES.customerPersonal}
-          className="flex items-center gap-4 rounded-card bg-surface p-4 active:bg-navy-100"
+          className="flex items-center gap-4 rounded-card border border-line bg-canvas p-4 active:bg-navy-100"
         >
           <Avatar initials={initials(customer)} photoUrl={customer.photoUrl} size="lg" />
           <div className="flex min-w-0 flex-1 flex-col gap-1">

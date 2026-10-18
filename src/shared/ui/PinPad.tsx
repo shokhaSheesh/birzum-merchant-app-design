@@ -14,7 +14,7 @@ type Props = {
 }
 
 const key =
-  'grid size-20 place-items-center justify-self-center rounded-full text-[28px] transition-colors active:bg-surface'
+  'grid size-20 place-items-center justify-self-center rounded-full text-[28px] transition-colors active:bg-navy-100'
 // Digits sit in an outlined circle; the Face ID and delete keys stand bare
 const digit = `${key} border-[1.5px] border-line`
 

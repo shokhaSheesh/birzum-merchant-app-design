@@ -59,7 +59,7 @@ export function ChatPage() {
     <div className="flex h-full flex-col">
       <PageHeader title={t('support.chat.title')} />
       <div className="flex min-h-0 flex-1 flex-col gap-3 overflow-y-auto px-5 pt-2 pb-4">
-        <p className="self-center rounded-full bg-surface px-3 py-1 text-xs text-ink-muted">
+        <p className="self-center rounded-full border border-line bg-canvas px-3 py-1 text-xs text-ink-muted">
           {t('chat.online')}
         </p>
         {messages.map((message) => (
@@ -77,7 +77,7 @@ export function ChatPage() {
                 'flex flex-col gap-1 rounded-[18px] px-3.5 py-2.5',
                 message.from === 'me'
                   ? 'rounded-br-md bg-primary text-on-primary'
-                  : 'rounded-bl-md bg-surface',
+                  : 'rounded-bl-md border border-line bg-canvas',
               )}
             >
               {message.image && (
@@ -99,7 +99,7 @@ export function ChatPage() {
                 key={topic}
                 type="button"
                 onClick={() => send(t(topic))}
-                className="h-9 rounded-full border-[1.5px] border-primary px-3.5 text-sm font-semibold text-brand active:bg-surface"
+                className="h-9 rounded-full border-[1.5px] border-primary px-3.5 text-sm font-semibold text-brand active:bg-navy-100"
               >
                 {t(topic)}
               </button>
@@ -111,7 +111,7 @@ export function ChatPage() {
             <span className="grid size-8 place-items-center rounded-full bg-green-200 text-brand">
               <Headset size={16} />
             </span>
-            <span className="flex gap-1 rounded-[18px] rounded-bl-md bg-surface px-4 py-3.5">
+            <span className="flex gap-1 rounded-[18px] rounded-bl-md border border-line bg-canvas px-4 py-3.5">
               {[0, 1, 2].map((i) => (
                 <span
                   key={i}
@@ -132,7 +132,7 @@ export function ChatPage() {
           type="button"
           aria-label={t('chat.attach')}
           onClick={() => picker.current?.click()}
-          className="grid size-12 shrink-0 place-items-center rounded-full text-brand active:bg-surface"
+          className="grid size-12 shrink-0 place-items-center rounded-full text-brand active:bg-navy-100"
         >
           <ImagePlus size={22} />
         </button>
@@ -156,7 +156,7 @@ export function ChatPage() {
           onChange={(e) => setDraft(e.target.value)}
           placeholder={t('chat.placeholder')}
           autoComplete="off"
-          className="h-12 min-w-0 flex-1 rounded-full bg-surface px-4 outline-none placeholder:text-ink-subtle focus-visible:ring-3 focus-visible:ring-green-200"
+          className="h-12 min-w-0 flex-1 rounded-full border border-line bg-canvas px-4 outline-none placeholder:text-ink-subtle focus-visible:ring-3 focus-visible:ring-green-200"
         />
         <button
           type="submit"

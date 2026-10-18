@@ -32,7 +32,7 @@ export function StoresPage() {
         onChange={setQuery}
       />
       {found.length === 0 && <EmptyState title={t('stores.notFound')} />}
-      <ul className="rounded-card bg-surface px-4 empty:hidden">
+      <ul className="rounded-card border border-line bg-canvas px-4 empty:hidden">
         {found.map((store) => (
           <li key={store.id} className="border-b border-line last:border-b-0">
             <Link to={customerStorePath(store.id)} className="flex items-center gap-3 py-3">

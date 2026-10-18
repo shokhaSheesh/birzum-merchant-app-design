@@ -53,7 +53,7 @@ export function CustomerCardsPage() {
         <li>
           <Link
             to={ROUTES.customerAddCard}
-            className="flex h-[76px] items-center justify-center gap-2 rounded-card border-[1.5px] border-dashed border-navy-400 font-semibold text-brand active:bg-surface"
+            className="flex h-[76px] items-center justify-center gap-2 rounded-card border-[1.5px] border-dashed border-navy-400 font-semibold text-brand active:bg-navy-100"
           >
             <Plus size={22} />
             {t('client.cards.add')}

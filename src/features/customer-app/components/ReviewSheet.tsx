@@ -41,7 +41,7 @@ export function ReviewSheet({ shopName, onClose, onSend }: Props) {
                 aria-checked={rating === n}
                 aria-label={`${n} / 5`}
                 onClick={() => setRating(n)}
-                className="grid size-12 place-items-center rounded-full active:bg-surface"
+                className="grid size-12 place-items-center rounded-full active:bg-navy-100"
               >
                 <Star
                   size={32}

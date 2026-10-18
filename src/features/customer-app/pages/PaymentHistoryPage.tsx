@@ -68,14 +68,14 @@ export function PaymentHistoryPage() {
           <EmptyState title={t('payhistory.empty')} />
         ) : (
           <>
-            <div className="flex flex-col rounded-card bg-surface p-4">
+            <div className="flex flex-col rounded-card border border-line bg-canvas p-4">
               <p className="text-sm text-ink-muted">{t('payhistory.total')}</p>
               <p className="text-2xl font-bold">{formatSum(total)}</p>
               <p className="text-sm text-ink-muted">
                 {t('payhistory.count', { count: String(payments.length) })}
               </p>
             </div>
-            <ul className="rounded-card bg-surface px-4">
+            <ul className="rounded-card border border-line bg-canvas px-4">
               {payments.map(({ application, paidOn, amount }) => {
                 const card = customer?.cards.find((item) => item.id === application.details?.cardId)
                 return (

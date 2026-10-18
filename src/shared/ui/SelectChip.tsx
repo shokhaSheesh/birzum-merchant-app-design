@@ -31,7 +31,9 @@ export function SelectChip({ icon: Icon, title, allLabel, options, value, onChan
         onClick={() => setOpen(true)}
         className={cn(
           'flex h-10 shrink-0 items-center gap-1.5 rounded-full px-3 text-sm font-semibold whitespace-nowrap transition-colors',
-          current ? 'bg-primary text-on-primary' : 'bg-surface text-brand active:bg-navy-100',
+          current
+            ? 'bg-primary text-on-primary'
+            : 'border border-line bg-canvas text-brand active:bg-navy-100',
         )}
       >
         <Icon size={18} />

@@ -34,7 +34,7 @@ export function ClientDetailPage() {
           type="button"
           onClick={() => navigate(-1)}
           aria-label={t('common.back')}
-          className="-ml-2 grid size-10 place-items-center rounded-full text-brand active:bg-surface"
+          className="-ml-2 grid size-10 place-items-center rounded-full text-brand active:bg-navy-100"
         >
           <ArrowLeft size={24} />
         </button>
@@ -120,7 +120,7 @@ export function ClientDetailPage() {
             (ownApplications.length === 0 ? (
               <p className="text-sm text-ink-muted">{t('client.applications.empty')}</p>
             ) : (
-              <ul className="rounded-card bg-surface px-4">
+              <ul className="rounded-card border border-line bg-canvas px-4">
                 {ownApplications.map((application) => (
                   <ApplicationRow key={application.id} application={application} />
                 ))}

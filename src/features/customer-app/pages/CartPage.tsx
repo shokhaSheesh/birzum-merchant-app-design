@@ -75,7 +75,10 @@ export function CartPage() {
               .map(({ key, product, valueIds, unitPrice, quantity }) => {
                 const variant = names(product, valueIds)
                 return (
-                  <li key={key} className="flex gap-3 rounded-card bg-surface p-3">
+                  <li
+                    key={key}
+                    className="flex gap-3 rounded-card border border-line bg-canvas p-3"
+                  >
                     <ProductPicture
                       category={product.category}
                       color={color(product, valueIds)}

@@ -92,7 +92,7 @@ export function ApplicationDetailPage() {
           type="button"
           onClick={() => navigate(-1)}
           aria-label={t('common.back')}
-          className="-ml-2 grid size-10 place-items-center rounded-full text-brand active:bg-surface"
+          className="-ml-2 grid size-10 place-items-center rounded-full text-brand active:bg-navy-100"
         >
           <ArrowLeft size={24} />
         </button>
@@ -204,7 +204,7 @@ export function ApplicationDetailPage() {
               <Section title={t('client.title')}>
                 <Link
                   to={clientPath(found.client.id)}
-                  className="flex items-center gap-3 rounded-card bg-surface p-4 active:bg-navy-100"
+                  className="flex items-center gap-3 rounded-card border border-line bg-canvas p-4 active:bg-navy-100"
                 >
                   <Avatar initials={initials(found.client)} photoUrl={found.client.photoUrl} />
                   <div className="flex min-w-0 flex-1 flex-col gap-0.5">

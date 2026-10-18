@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom'
 
 /** A card of navigation rows, e.g. the sections of the Menyu tab. */
 export function MenuList({ children }: { children: ReactNode }) {
-  return <ul className="rounded-card bg-surface px-4">{children}</ul>
+  return <ul className="rounded-card border border-line bg-canvas px-4">{children}</ul>
 }
 
 type RowProps = {

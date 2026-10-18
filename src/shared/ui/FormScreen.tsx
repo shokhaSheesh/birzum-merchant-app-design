@@ -26,14 +26,14 @@ export function FormScreen({ onSubmit, onBack, headerEnd, progress, footer, chil
   }
 
   return (
-    <form onSubmit={handleSubmit} noValidate className="flex h-full flex-col bg-canvas">
+    <form onSubmit={handleSubmit} noValidate className="flex h-full flex-col bg-page">
       <header className="flex min-h-10 shrink-0 items-center justify-between gap-4 px-5 pt-[max(0.75rem,env(safe-area-inset-top))]">
         {onBack ? (
           <button
             type="button"
             onClick={onBack}
             aria-label={t('common.back')}
-            className="-ml-2 grid size-10 shrink-0 place-items-center rounded-full text-brand active:bg-surface"
+            className="-ml-2 grid size-10 shrink-0 place-items-center rounded-full text-brand active:bg-navy-100"
           >
             <ArrowLeft size={24} />
           </button>

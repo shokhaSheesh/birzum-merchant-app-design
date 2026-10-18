@@ -64,7 +64,7 @@ export function ScoringPage() {
               <h1 className="text-2xl font-bold text-balance">{t('scoring.title')}</h1>
               <p className="text-ink-muted">{t('scoring.hint')}</p>
             </div>
-            <ol className="flex w-full max-w-80 flex-col gap-3 rounded-card bg-surface p-4 text-left">
+            <ol className="flex w-full max-w-80 flex-col gap-3 rounded-card border border-line bg-canvas p-4 text-left">
               {STEPS.map((key, i) => {
                 const done = i < step
                 const current = i === step

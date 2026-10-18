@@ -20,7 +20,7 @@ export function ProductGallery({ images, category, color }: Props) {
         images={images}
         category={category}
         color={color}
-        tileClassName="aspect-[1/0.8]! rounded-card"
+        tileClassName="aspect-[1/0.8]! rounded-card border border-line bg-canvas!"
         onOpen={setOpened}
       />
       {opened !== null && (

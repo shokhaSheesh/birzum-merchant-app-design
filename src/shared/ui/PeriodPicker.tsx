@@ -19,7 +19,7 @@ type Props = {
 }
 
 const arrow =
-  'grid size-11 shrink-0 place-items-center rounded-full bg-surface text-brand active:bg-navy-100 disabled:text-navy-200'
+  'grid size-11 shrink-0 place-items-center rounded-full border border-line bg-canvas text-brand active:bg-navy-100 disabled:text-navy-200'
 
 /**
  * Chooses a day, week or month to report on: tabs for the kind of period, arrows to step
@@ -55,7 +55,7 @@ export function PeriodPicker({ value, onChange }: Props) {
           aria-label={`${t('period.pick')}: ${label}`}
           aria-haspopup="dialog"
           onClick={() => setOpen(true)}
-          className="flex h-11 min-w-0 flex-1 items-center justify-center gap-2 rounded-full bg-surface px-4 font-semibold active:bg-navy-100"
+          className="flex h-11 min-w-0 flex-1 items-center justify-center gap-2 rounded-full border border-line bg-canvas px-4 font-semibold active:bg-navy-100"
         >
           <CalendarDays size={18} className="shrink-0 text-brand" />
           <span className="truncate">

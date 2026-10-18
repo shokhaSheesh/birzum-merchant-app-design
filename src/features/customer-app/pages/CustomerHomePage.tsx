@@ -16,7 +16,7 @@ import { NextPaymentCard } from '../components/NextPaymentCard'
 import { ProductCard } from '../components/ProductCard'
 
 const roundButton =
-  'relative grid size-11 shrink-0 place-items-center rounded-full bg-surface text-brand active:bg-navy-100'
+  'relative grid size-11 shrink-0 place-items-center rounded-full border border-line bg-canvas text-brand active:bg-navy-100'
 
 /** Shopper home, top to bottom: search and notifications, the limit, categories, products. */
 export function CustomerHomePage() {
@@ -91,7 +91,7 @@ export function CustomerHomePage() {
               <ProductPicture
                 category={category}
                 src={categoryImages[category]}
-                className="w-full rounded-card"
+                className="w-full rounded-card border border-line bg-canvas!"
               />
               {t(`catalog.category.${category}`)}
             </Link>

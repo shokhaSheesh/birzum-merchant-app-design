@@ -14,7 +14,7 @@ export function ProductsSummary({ products }: { products: ApplicationProduct[] }
   const total = products.reduce((sum, product) => sum + product.price * product.quantity, 0)
 
   return (
-    <ul className="rounded-card bg-surface px-4">
+    <ul className="rounded-card border border-line bg-canvas px-4">
       {products.map((line, index) => {
         const product = line.productId ? getProduct(line.productId) : undefined
         const valueIds = line.valueIds ?? []
@@ -29,7 +29,7 @@ export function ProductsSummary({ products }: { products: ApplicationProduct[] }
               />
             ) : (
               // A line typed by hand has no catalogue picture
-              <span className="grid size-14 shrink-0 place-items-center rounded-control bg-canvas text-ink-subtle">
+              <span className="grid size-14 shrink-0 place-items-center rounded-control bg-surface text-ink-subtle">
                 <Package size={24} />
               </span>
             )}

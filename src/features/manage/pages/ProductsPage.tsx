@@ -42,7 +42,7 @@ export function ProductsPage() {
         />
       }
     >
-      <ul className="rounded-card bg-surface px-3">
+      <ul className="rounded-card border border-line bg-canvas px-3">
         {products.map((product) => (
           <ListRow
             key={product.id}

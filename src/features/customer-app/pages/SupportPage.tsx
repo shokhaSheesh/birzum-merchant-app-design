@@ -39,7 +39,7 @@ export function SupportPage() {
           {found.length === 0 ? (
             <EmptyState title={t('support.notFound')} />
           ) : (
-            <ul className="rounded-card bg-surface px-4">
+            <ul className="rounded-card border border-line bg-canvas px-4">
               {found.map((item) => {
                 const index = faq.indexOf(item)
                 const expanded = open === index
@@ -69,7 +69,7 @@ export function SupportPage() {
         </Section>
 
         <Section title={t('support.contacts')}>
-          <ul className="rounded-card bg-surface px-4">
+          <ul className="rounded-card border border-line bg-canvas px-4">
             <li className="flex items-center gap-3 border-b border-line py-3">
               <Phone size={22} className="shrink-0 text-brand" />
               <div className="flex min-w-0 flex-1 flex-col">

@@ -18,7 +18,7 @@ export function LanguageSwitcher() {
         aria-expanded={open}
         aria-label={t('lang.title')}
         onClick={() => setOpen(true)}
-        className="flex h-10 items-center gap-1.5 rounded-full bg-surface pr-3 pl-3.5 text-sm font-semibold text-brand active:bg-navy-100"
+        className="flex h-10 items-center gap-1.5 rounded-full border border-line bg-canvas pr-3 pl-3.5 text-sm font-semibold text-brand active:bg-navy-100"
       >
         <Globe size={18} />
         {LANG_NAMES[lang]}

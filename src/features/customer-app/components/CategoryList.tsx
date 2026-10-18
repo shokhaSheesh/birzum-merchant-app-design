@@ -13,7 +13,7 @@ export function CategoryList() {
   const products = useCatalog()
 
   return (
-    <ul className="rounded-card bg-surface px-3">
+    <ul className="rounded-card border border-line bg-canvas px-3">
       {CATEGORIES.map((category) => (
         <li key={category} className="border-b border-line last:border-b-0">
           <Link
@@ -23,7 +23,7 @@ export function CategoryList() {
             <ProductPicture
               category={category}
               src={categoryImages[category]}
-              className="w-14 shrink-0 rounded-control bg-canvas!"
+              className="w-14 shrink-0 rounded-control bg-surface!"
             />
             <div className="flex min-w-0 flex-1 flex-col gap-0.5">
               <p className="truncate font-semibold">{t(`catalog.category.${category}`)}</p>

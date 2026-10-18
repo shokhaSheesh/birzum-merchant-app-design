@@ -56,14 +56,14 @@ export function PinLock({ onUnlock, onSignIn }: Props) {
           type="button"
           aria-label={t('pin.otherAccount')}
           onClick={signIn}
-          className="-ml-2 grid size-11 place-items-center rounded-full text-ink-muted active:bg-surface"
+          className="-ml-2 grid size-11 place-items-center rounded-full text-ink-muted active:bg-navy-100"
         >
           <LogOut size={24} />
         </button>
         <button
           type="button"
           onClick={signIn}
-          className="-mr-2 h-11 rounded-full px-2 font-semibold text-brand active:bg-surface"
+          className="-mr-2 h-11 rounded-full px-2 font-semibold text-brand active:bg-navy-100"
         >
           {t('pin.forgot')}
         </button>

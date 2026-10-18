@@ -60,7 +60,10 @@ export function InventoryPage() {
               const here = product.stock[locationId] ?? {}
               const combos = soldCombos(product)
               return (
-                <li key={product.id} className="flex flex-col gap-1 rounded-card bg-surface p-3">
+                <li
+                  key={product.id}
+                  className="flex flex-col gap-1 rounded-card border border-line bg-canvas p-3"
+                >
                   <div className="flex items-center gap-3">
                     <ProductPicture
                       category={product.category}

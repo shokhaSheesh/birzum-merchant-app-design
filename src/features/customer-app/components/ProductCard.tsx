@@ -18,12 +18,12 @@ export function ProductCard({ product }: { product: Product }) {
   const lowestMonthly = installmentTerms(product.price, 24).monthlyPayment
 
   return (
-    <div className="relative min-w-0">
+    <div className="relative min-w-0 rounded-card border border-line bg-canvas p-2">
       <Link to={customerProductPath(product.id)} className="flex min-w-0 flex-col gap-1.5">
         <PhotoSwiper
           images={galleryOf(product, lang)}
           category={product.category}
-          tileClassName="rounded-card"
+          tileClassName="rounded-control"
           size="sm"
         />
         <div className="flex min-w-0 flex-col gap-0.5">

@@ -17,7 +17,7 @@ export function PasswordField(props: Omit<TextFieldProps, 'type' | 'trailing'>) 
           type="button"
           onClick={() => setVisible((v) => !v)}
           aria-label={t(visible ? 'password.hide' : 'password.show')}
-          className="-mr-2 grid size-10 place-items-center rounded-full text-ink-subtle active:bg-surface"
+          className="-mr-2 grid size-10 place-items-center rounded-full text-ink-subtle active:bg-navy-100"
         >
           <Icon size={20} />
         </button>

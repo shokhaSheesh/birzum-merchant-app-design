@@ -14,7 +14,7 @@ export function AttributesPage() {
       createTo={managePath('attributes', 'new')}
       empty={attributes.length === 0}
     >
-      <ul className="rounded-card bg-surface px-4">
+      <ul className="rounded-card border border-line bg-canvas px-4">
         {attributes.map((attribute) => (
           <ListRow
             key={attribute.id}

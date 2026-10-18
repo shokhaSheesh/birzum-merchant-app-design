@@ -210,7 +210,10 @@ export function CheckoutPage() {
               {shop.lines.map((line) => {
                 const variant = names(line.product, line.valueIds)
                 return (
-                  <li key={line.key} className="flex flex-col gap-3 rounded-card bg-surface p-3">
+                  <li
+                    key={line.key}
+                    className="flex flex-col gap-3 rounded-card border border-line bg-canvas p-3"
+                  >
                     <div className="flex gap-3">
                       <ProductPicture
                         category={line.product.category}
@@ -233,7 +236,6 @@ export function CheckoutPage() {
                       </div>
                     </div>
                     <TermPicker
-                      inset
                       terms={TERMS}
                       value={termOf(line.key)}
                       onChange={(term) => setTerms((all) => ({ ...all, [line.key]: term }))}

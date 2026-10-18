@@ -42,7 +42,7 @@ export function PickClientSheet({ onClose }: { onClose: () => void }) {
         {clients.length === 0 ? (
           <EmptyState title={t('clients.empty.title')} />
         ) : (
-          <ul className="rounded-card bg-surface px-4">
+          <ul className="rounded-card border border-line bg-canvas px-4">
             {clients.map((client) => (
               <li key={client.id} className="border-b border-line last:border-b-0">
                 <button

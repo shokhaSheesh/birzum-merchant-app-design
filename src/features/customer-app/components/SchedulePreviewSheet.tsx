@@ -37,13 +37,13 @@ export function SchedulePreviewSheet({ title, amount, term, onClose }: Props) {
             {t('term.months', { count: String(term) })} · {t('schedule.hint')}
           </p>
         </div>
-        <ol className="rounded-card bg-surface px-4">
+        <ol className="rounded-card border border-line bg-canvas px-4">
           {payments.map((payment, i) => (
             <li
               key={i}
               className="flex items-center gap-3 border-b border-line py-2.5 last:border-b-0"
             >
-              <span className="grid size-7 shrink-0 place-items-center rounded-full bg-canvas text-xs font-bold text-ink-muted">
+              <span className="grid size-7 shrink-0 place-items-center rounded-full bg-surface text-xs font-bold text-ink-muted">
                 {i + 1}
               </span>
               <span className="flex-1">{formatDate(payment.date)}</span>

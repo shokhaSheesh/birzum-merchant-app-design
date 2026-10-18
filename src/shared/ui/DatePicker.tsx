@@ -76,7 +76,7 @@ export function DatePicker({ label, value, onChange, min, max, error, hint }: Pr
           aria-haspopup="dialog"
           aria-expanded={open}
           onClick={() => setOpen(true)}
-          className="-mr-2 grid size-10 shrink-0 place-items-center rounded-full text-brand active:bg-surface"
+          className="-mr-2 grid size-10 shrink-0 place-items-center rounded-full text-brand active:bg-navy-100"
         >
           <CalendarDays size={20} />
         </button>

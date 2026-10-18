@@ -18,7 +18,7 @@ type StepperProps = {
 }
 
 const stepButton =
-  'grid shrink-0 place-items-center rounded-full text-brand active:bg-surface disabled:text-navy-200'
+  'grid shrink-0 place-items-center rounded-full text-brand active:bg-navy-100 disabled:text-navy-200'
 
 /** Minus, number, plus in one control box. Use `QuantityField` when it needs a visible label. */
 export function QuantityStepper({

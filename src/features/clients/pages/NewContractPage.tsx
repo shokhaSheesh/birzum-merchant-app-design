@@ -348,7 +348,10 @@ export function NewContractPage() {
 
       <Section title={t('contract.products')} hint={t('contract.products.hint')}>
         {rows.map(({ line, product, needsVariant, valueIds, price, stock }, index) => (
-          <div key={line.id} className="flex flex-col gap-3 rounded-card bg-surface p-4">
+          <div
+            key={line.id}
+            className="flex flex-col gap-3 rounded-card border border-line bg-canvas p-4"
+          >
             <div className="flex min-h-10 items-center justify-between">
               <p className="font-semibold">{t('contract.product', { n: String(index + 1) })}</p>
               {products.length > 1 && (
@@ -407,7 +410,6 @@ export function NewContractPage() {
                 </div>
                 <div className="flex flex-col gap-1.5">
                   <TermPicker
-                    inset
                     terms={TERMS}
                     value={line.term}
                     onChange={(term) => updateProduct(line.id, { term })}

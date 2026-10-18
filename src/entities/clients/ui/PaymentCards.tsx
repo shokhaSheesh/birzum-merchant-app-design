@@ -51,7 +51,7 @@ export function PaymentCards({ client, addTo }: Props) {
         ))}
         <Link
           to={addTo}
-          className={`${tile} items-center justify-center! gap-2 border-[1.5px] border-dashed border-navy-400 font-semibold text-brand active:bg-surface`}
+          className={`${tile} items-center justify-center! gap-2 border-[1.5px] border-dashed border-navy-400 font-semibold text-brand active:bg-navy-100`}
         >
           <Plus size={24} />
           {t('client.cards.add')}

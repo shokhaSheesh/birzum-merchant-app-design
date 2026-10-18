@@ -139,7 +139,7 @@ export function ProductsPage() {
             'flex h-10 shrink-0 items-center gap-1.5 rounded-full pr-4 pl-3 text-sm font-semibold transition-colors',
             activeCount > 0
               ? 'bg-primary text-on-primary'
-              : 'bg-surface text-brand active:bg-navy-100',
+              : 'border border-line bg-canvas text-brand active:bg-navy-100',
           )}
         >
           <SlidersHorizontal size={18} />

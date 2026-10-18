@@ -6,19 +6,17 @@ type Props<T extends number> = {
   terms: readonly T[]
   value: T
   onChange: (term: T) => void
-  /** Set when the strip sits inside a grey card, so it is drawn a shade darker and stays visible. */
-  inset?: boolean
 }
 
 /** Installment length as one compact strip. Only the chosen term spells out "oy". */
-export function TermPicker<T extends number>({ terms, value, onChange, inset }: Props<T>) {
+export function TermPicker<T extends number>({ terms, value, onChange }: Props<T>) {
   const { t } = useI18n()
 
   return (
     <div
       role="radiogroup"
       aria-label={t('cart.term')}
-      className={cn('flex gap-1 rounded-control p-1', inset ? 'bg-navy-100' : 'bg-surface')}
+      className="flex gap-1 rounded-control bg-navy-100 p-1"
     >
       {terms.map((term) => {
         const selected = term === value

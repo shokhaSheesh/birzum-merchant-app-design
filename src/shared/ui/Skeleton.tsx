@@ -8,7 +8,7 @@ export function Skeleton({ className }: { className?: string }) {
 /** Stands in for a list card: rows with a round picture and two lines of text. */
 export function SkeletonRows({ count = 6, avatar = true }: { count?: number; avatar?: boolean }) {
   return (
-    <div role="status" aria-busy="true" className="rounded-card bg-surface px-4">
+    <div role="status" aria-busy="true" className="rounded-card border border-line bg-canvas px-4">
       {Array.from({ length: count }, (_, i) => (
         <div
           key={i}
@@ -47,7 +47,7 @@ export function SkeletonCards({ count = 3 }: { count?: number }) {
   return (
     <div role="status" aria-busy="true" className="flex flex-col gap-3">
       {Array.from({ length: count }, (_, i) => (
-        <div key={i} className="flex flex-col gap-3 rounded-card bg-surface p-4">
+        <div key={i} className="flex flex-col gap-3 rounded-card border border-line bg-canvas p-4">
           <div className="flex items-center justify-between gap-3">
             <Skeleton className="h-4 w-2/5 bg-navy-200" />
             <Skeleton className="h-5 w-24 rounded-full bg-navy-200" />
@@ -68,7 +68,7 @@ export function SkeletonDetail() {
         <Skeleton className="h-5 w-24 rounded-full" />
         <Skeleton className="h-7 w-3/5" />
       </div>
-      <div className="rounded-card bg-surface px-4">
+      <div className="rounded-card border border-line bg-canvas px-4">
         {Array.from({ length: 4 }, (_, i) => (
           <div
             key={i}

@@ -18,7 +18,7 @@ export function ThemePage() {
       <ul
         role="radiogroup"
         aria-label={t('profile.theme')}
-        className="mx-5 mt-2 rounded-card bg-surface px-4"
+        className="mx-5 mt-2 rounded-card border border-line bg-canvas px-4"
       >
         {THEMES.map((value) => {
           const selected = value === theme

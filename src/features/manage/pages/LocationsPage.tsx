@@ -14,7 +14,7 @@ export function LocationsPage() {
       createTo={managePath('locations', 'new')}
       empty={locations.length === 0}
     >
-      <ul className="rounded-card bg-surface px-4">
+      <ul className="rounded-card border border-line bg-canvas px-4">
         {locations.map((location) => (
           <ListRow
             key={location.id}

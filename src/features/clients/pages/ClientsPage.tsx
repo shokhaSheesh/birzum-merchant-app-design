@@ -47,7 +47,7 @@ export function ClientsPage() {
             <p className="text-sm text-ink-muted">
               {t('clients.count', { count: String(clients.length) })}
             </p>
-            <ul className="rounded-card bg-surface px-4">
+            <ul className="rounded-card border border-line bg-canvas px-4">
               {clients.map((client) => (
                 <ClientRow key={client.id} client={client} />
               ))}

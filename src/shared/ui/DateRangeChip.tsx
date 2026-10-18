@@ -56,7 +56,9 @@ export function DateRangeChip({ label, value, onChange }: Props) {
         onClick={openSheet}
         className={cn(
           'flex h-10 shrink-0 items-center gap-1.5 rounded-full pr-4 pl-3 text-sm font-semibold whitespace-nowrap transition-colors',
-          active ? 'bg-primary text-on-primary' : 'bg-surface text-brand active:bg-navy-100',
+          active
+            ? 'bg-primary text-on-primary'
+            : 'border border-line bg-canvas text-brand active:bg-navy-100',
         )}
       >
         <CalendarDays size={18} />

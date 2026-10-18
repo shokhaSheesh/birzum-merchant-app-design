@@ -34,7 +34,7 @@ export function OnboardingPage() {
           <button
             type="button"
             onClick={done}
-            className="h-10 rounded-full px-3 text-sm font-semibold text-ink-muted active:bg-surface"
+            className="h-10 rounded-full px-3 text-sm font-semibold text-ink-muted active:bg-navy-100"
           >
             {t('onboarding.skip')}
           </button>

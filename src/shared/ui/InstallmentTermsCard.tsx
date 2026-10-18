@@ -20,7 +20,7 @@ export function InstallmentTermsCard({ terms, showMarkup = true }: Props) {
   const { t } = useI18n()
 
   return (
-    <div className="overflow-hidden rounded-card bg-surface">
+    <div className="overflow-hidden rounded-card border border-line bg-canvas">
       <div className="flex items-end justify-between gap-4 bg-green-200 p-4">
         <div className="flex min-w-0 flex-col">
           <p className="text-sm text-navy-700">{t('contract.monthly')}</p>
