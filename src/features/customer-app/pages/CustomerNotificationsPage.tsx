@@ -9,7 +9,6 @@ import {
   type LucideIcon,
   Megaphone,
   Send,
-  ShieldCheck,
   ThumbsUp,
 } from 'lucide-react'
 import { useState } from 'react'
@@ -25,7 +24,7 @@ import { EmptyState } from '@/shared/ui/EmptyState'
 import { PageHeader } from '@/shared/ui/PageHeader'
 
 const looks: Record<ApplicationStatus, { icon: LucideIcon; tone: string; text: string }> = {
-  checking: { icon: ShieldCheck, tone: 'bg-navy-100 text-brand', text: 'cnotif.checking' },
+  checking: { icon: Send, tone: 'bg-warning-soft text-warning', text: 'cnotif.pending' },
   pending: { icon: Send, tone: 'bg-warning-soft text-warning', text: 'cnotif.pending' },
   processing: { icon: ThumbsUp, tone: 'bg-green-200 text-brand', text: 'cnotif.processing' },
   handed: { icon: CircleCheck, tone: 'bg-success-soft text-success', text: 'cnotif.processing' },

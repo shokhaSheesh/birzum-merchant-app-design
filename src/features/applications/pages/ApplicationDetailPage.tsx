@@ -1,4 +1,11 @@
-import { ArrowLeft, ChevronRight, Download, PencilLine, PackageCheck } from 'lucide-react'
+import {
+  ArrowLeft,
+  ChevronRight,
+  Download,
+  PackageCheck,
+  PencilLine,
+  ShieldCheck,
+} from 'lucide-react'
 import { useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import { applicationStatusTone } from '@/entities/clients/applicationStatus'
@@ -283,6 +290,18 @@ export function ApplicationDetailPage() {
 
           {tab === 'history' && <HistoryList application={found.application} />}
         </div>
+      )}
+
+      {found?.application.status === 'checking' && (
+        <footer className="shrink-0 px-5 pt-3 pb-[max(1.25rem,env(safe-area-inset-bottom))]">
+          <p
+            role="status"
+            className="flex items-center gap-2.5 rounded-control border border-line bg-canvas px-4 py-3 text-sm text-ink-muted"
+          >
+            <ShieldCheck size={20} className="shrink-0 text-brand" />
+            {t('checking.merchant')}
+          </p>
+        </footer>
       )}
 
       {found?.application.status === 'pending' && (

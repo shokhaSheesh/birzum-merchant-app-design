@@ -142,8 +142,7 @@ const uz = {
   'cnotif.news.app.title': 'Ilovada yangilik',
   'cnotif.news.app.body': 'Endi nasiyani muddatidan oldin ilovada yopish mumkin.',
   'states.scoringDeclined': 'Limit rad etildi',
-  'cstatus.checking': 'Birzum tekshirmoqda',
-  'cstatus.review': 'Doʻkon tasdiqlashi kutilmoqda',
+  'cstatus.review': 'Tasdiqlash kutilmoqda',
   'cstatus.approved': 'Tasdiqlandi',
   'cstatus.active': 'Faol',
   'cstatus.overdue': 'Muddati oʻtgan',
@@ -441,7 +440,7 @@ const uz = {
   'product.availability': 'Filiallarda mavjudligi',
   'product.inCart': 'Savatga oʻtish',
   'cnotif.pending.title': 'Ariza yuborildi',
-  'cnotif.pending.body': '№ {number} ariza sotuvchiga yuborildi.',
+  'cnotif.pending.body': '№ {number} ariza yuborildi va tasdiqlanishini kutmoqda.',
   'cnotif.processing.title': 'Ariza tasdiqlandi',
   'cnotif.processing.body': 'Sotuvchi № {number} arizani tasdiqladi.',
   'notifications.empty.title': 'Bildirishnomalar yoʻq',
@@ -758,9 +757,8 @@ const uz = {
   'checking.hint': 'Odatda bir necha soniya. Tasdiqlangach shartnoma tuziladi.',
   'checking.approved': 'Birzum tasdiqladi, shartnoma tuzildi',
   'checking.next': 'Tasdiqlaganingizdan keyin ariza Birzum tekshiruvidan oʻtadi.',
-  'cnotif.checking.title': 'Ariza tekshirilmoqda',
-  'cnotif.checking.body':
-    '№ {number} ariza Birzum tekshiruvida. Tasdiqlangach sotuvchiga yuboriladi.',
+  'checking.merchant':
+    'Birzum arizani tekshirmoqda. Tasdiqlangach shu yerda “Tasdiqlash” tugmasi chiqadi.',
 } as const
 
 export type TranslationKey = keyof typeof uz
@@ -897,8 +895,7 @@ const ru: Record<TranslationKey, string> = {
   'cnotif.news.app.title': 'Новое в приложении',
   'cnotif.news.app.body': 'Теперь рассрочку можно погасить досрочно прямо в приложении.',
   'states.scoringDeclined': 'Лимит отклонён',
-  'cstatus.checking': 'Проверка Birzum',
-  'cstatus.review': 'Ждёт подтверждения магазина',
+  'cstatus.review': 'Ожидает подтверждения',
   'cstatus.approved': 'Одобрена',
   'cstatus.active': 'Активная',
   'cstatus.overdue': 'Просрочена',
@@ -1193,7 +1190,7 @@ const ru: Record<TranslationKey, string> = {
   'product.availability': 'Наличие в филиалах',
   'product.inCart': 'Перейти в корзину',
   'cnotif.pending.title': 'Заявка отправлена',
-  'cnotif.pending.body': 'Заявка № {number} отправлена продавцу.',
+  'cnotif.pending.body': 'Заявка № {number} отправлена и ждёт подтверждения.',
   'cnotif.processing.title': 'Заявка подтверждена',
   'cnotif.processing.body': 'Продавец подтвердил заявку № {number}.',
   'notifications.empty.title': 'Уведомлений нет',
@@ -1510,8 +1507,8 @@ const ru: Record<TranslationKey, string> = {
   'checking.hint': 'Обычно несколько секунд. После одобрения оформим договор.',
   'checking.approved': 'Birzum одобрил, договор оформлен',
   'checking.next': 'После подтверждения заявка пройдёт проверку Birzum.',
-  'cnotif.checking.title': 'Заявка на проверке',
-  'cnotif.checking.body': 'Заявка № {number} на проверке Birzum. После одобрения уйдёт продавцу.',
+  'checking.merchant':
+    'Birzum проверяет заявку. После одобрения здесь появится кнопка «Подтвердить».',
 }
 
 export const dictionaries: Record<Lang, Record<TranslationKey, string>> = { uz, ru }

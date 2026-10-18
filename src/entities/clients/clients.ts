@@ -512,8 +512,9 @@ export const appShoppers: Client[] = [
   }),
 ].map((client) => ({ ...client, listed: false }))
 
-/** The statuses a merchant sees; Birzum's check comes before them. */
+/** Every status, in order; the shopper sees `checking` and `pending` as one. */
 export const APPLICATION_STATUSES: ApplicationStatus[] = [
+  'checking',
   'pending',
   'processing',
   'handed',
