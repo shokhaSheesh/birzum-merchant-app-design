@@ -49,7 +49,7 @@ Dark is black and neutral grey, like iOS, never dark blue: a black screen, near-
 | `ink` | `#072A3C` | `#F5F5F7` |
 | `primary` / `on-primary` | navy / white | lime `#A3E635` / black |
 | `brand` | navy | near-white `#F5F5F7` |
-| Green tint (`green-200`) | `#E7F4CD` | `#213012` |
+| Green tint (`green-200`) | `#E7F4CD` | `#36521A` |
 
 - In the dark theme the primary button is a brighter lime than the brand green, with black text, because navy would disappear on black. The rule "one action color per theme, the same on every screen" still holds.
 - The chosen option in a segmented control is `bg-raised`, not `bg-canvas`, so it stays lighter than its track in the dark theme.
