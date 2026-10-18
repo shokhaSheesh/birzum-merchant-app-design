@@ -142,7 +142,8 @@ const uz = {
   'cnotif.news.app.title': 'Ilovada yangilik',
   'cnotif.news.app.body': 'Endi nasiyani muddatidan oldin ilovada yopish mumkin.',
   'states.scoringDeclined': 'Limit rad etildi',
-  'cstatus.review': 'Koʻrib chiqilmoqda',
+  'cstatus.checking': 'Birzum tekshirmoqda',
+  'cstatus.review': 'Doʻkon tasdiqlashi kutilmoqda',
   'cstatus.approved': 'Tasdiqlandi',
   'cstatus.active': 'Faol',
   'cstatus.overdue': 'Muddati oʻtgan',
@@ -753,6 +754,13 @@ const uz = {
   'scan.open': 'Klientni ochish',
   'scan.again': 'Boshqasini skanerlash',
   'scan.added': 'Mijozlarga qoʻshildi',
+  'application.status.checking': 'Birzum tekshirmoqda',
+  'checking.hint': 'Odatda bir necha soniya. Tasdiqlangach shartnoma tuziladi.',
+  'checking.approved': 'Birzum tasdiqladi, shartnoma tuzildi',
+  'checking.next': 'Tasdiqlaganingizdan keyin ariza Birzum tekshiruvidan oʻtadi.',
+  'cnotif.checking.title': 'Ariza tekshirilmoqda',
+  'cnotif.checking.body':
+    '№ {number} ariza Birzum tekshiruvida. Tasdiqlangach sotuvchiga yuboriladi.',
 } as const
 
 export type TranslationKey = keyof typeof uz
@@ -889,7 +897,8 @@ const ru: Record<TranslationKey, string> = {
   'cnotif.news.app.title': 'Новое в приложении',
   'cnotif.news.app.body': 'Теперь рассрочку можно погасить досрочно прямо в приложении.',
   'states.scoringDeclined': 'Лимит отклонён',
-  'cstatus.review': 'На рассмотрении',
+  'cstatus.checking': 'Проверка Birzum',
+  'cstatus.review': 'Ждёт подтверждения магазина',
   'cstatus.approved': 'Одобрена',
   'cstatus.active': 'Активная',
   'cstatus.overdue': 'Просрочена',
@@ -1497,6 +1506,12 @@ const ru: Record<TranslationKey, string> = {
   'scan.open': 'Открыть клиента',
   'scan.again': 'Сканировать другого',
   'scan.added': 'Добавлен в клиенты',
+  'application.status.checking': 'Проверка Birzum',
+  'checking.hint': 'Обычно несколько секунд. После одобрения оформим договор.',
+  'checking.approved': 'Birzum одобрил, договор оформлен',
+  'checking.next': 'После подтверждения заявка пройдёт проверку Birzum.',
+  'cnotif.checking.title': 'Заявка на проверке',
+  'cnotif.checking.body': 'Заявка № {number} на проверке Birzum. После одобрения уйдёт продавцу.',
 }
 
 export const dictionaries: Record<Lang, Record<TranslationKey, string>> = { uz, ru }

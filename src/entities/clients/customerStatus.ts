@@ -7,6 +7,7 @@ import { paymentSchedule } from './payments'
  * merchant's; "overdue" is a running nasiya with a late payment, picked out so it is noticed.
  */
 export const CUSTOMER_STATUSES = [
+  'checking',
   'review',
   'approved',
   'active',
@@ -18,6 +19,7 @@ export const CUSTOMER_STATUSES = [
 export type CustomerStatus = (typeof CUSTOMER_STATUSES)[number]
 
 const fromStage: Record<ApplicationStatus, CustomerStatus> = {
+  checking: 'checking',
   pending: 'review',
   processing: 'approved',
   handed: 'active',
@@ -37,6 +39,7 @@ export function customerStatus(application: Application): CustomerStatus {
 }
 
 export const customerStatusTone: Record<CustomerStatus, StatusTone> = {
+  checking: 'info',
   review: 'warning',
   approved: 'info',
   active: 'success',

@@ -6,9 +6,12 @@ export const MARITAL_STATUSES = ['single', 'married', 'divorced', 'widowed'] as 
 export type MaritalStatus = (typeof MARITAL_STATUSES)[number]
 
 export type IncomeSource = 'salary' | 'business' | 'pension' | 'other'
-/** `pending` is an application a shopper sent from the client app, waiting for the merchant. */
+/**
+ * `checking`: Birzum is checking a shopper's order; the merchant does not see it yet.
+ * `pending`: Birzum approved it and it waits for the merchant to confirm.
+ */
 export type ApplicationStatus =
-  'pending' | 'processing' | 'handed' | 'rejected' | 'closed' | 'cancelled'
+  'checking' | 'pending' | 'processing' | 'handed' | 'rejected' | 'closed' | 'cancelled'
 
 export const TERMS = [3, 6, 9, 12, 18, 24] as const
 /** Installment length in months. */
@@ -68,6 +71,7 @@ export type Rejection = { reason: RejectReason; comment: string }
 
 /** The statuses an application can move to from each one. Empty means it is final. */
 export const NEXT_STATUSES: Record<ApplicationStatus, ApplicationStatus[]> = {
+  checking: [],
   pending: ['processing', 'rejected'],
   processing: ['handed', 'rejected', 'cancelled'],
   handed: ['closed'],
@@ -508,6 +512,7 @@ export const appShoppers: Client[] = [
   }),
 ].map((client) => ({ ...client, listed: false }))
 
+/** The statuses a merchant sees; Birzum's check comes before them. */
 export const APPLICATION_STATUSES: ApplicationStatus[] = [
   'pending',
   'processing',

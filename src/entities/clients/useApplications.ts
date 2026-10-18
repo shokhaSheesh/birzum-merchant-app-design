@@ -9,7 +9,10 @@ export type ApplicationWithClient = { application: Application; client: Client }
 export const isOwn = (application: Application) =>
   (application.storeId ?? OWN_STORE_ID) === OWN_STORE_ID
 
-/** Every client's applications with the merchant's shop in one list, newest first. */
+/**
+ * Every client's applications with the merchant's shop in one list, newest first. Orders still
+ * in Birzum's check are left out: the merchant only sees what Birzum approved.
+ */
 export function useApplications() {
   const clients = useClients()
 
@@ -17,7 +20,9 @@ export function useApplications() {
     () =>
       clients
         .flatMap((client) =>
-          client.applications.filter(isOwn).map((application) => ({ application, client })),
+          client.applications
+            .filter((application) => isOwn(application) && application.status !== 'checking')
+            .map((application) => ({ application, client })),
         )
         .sort(
           (a, b) =>
