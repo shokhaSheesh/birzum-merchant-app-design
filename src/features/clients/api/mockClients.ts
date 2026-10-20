@@ -12,7 +12,7 @@ import {
   type MaritalStatus,
   type Term,
 } from '@/entities/clients/clients'
-import { BIRZUM, takeStockFor } from '@/entities/clients/applicationsApi'
+import { takeStockFor } from '@/entities/clients/applicationsApi'
 import { toCard } from '@/entities/clients/cardsApi'
 import { clientsStore } from '@/entities/clients/clientsStore'
 import { shopperCode } from '@/entities/clients/shopperCode'
@@ -121,27 +121,15 @@ export async function createApplication(
   const client = clientsStore.get(clientId)
   if (!client) return
   const now = new Date()
-  // FlexSoft checked it first (checkApplication); its approval starts the contract
+  // Made in the shop, so the merchant's own confirmation starts the contract
   const created: Application = {
     ...application,
     date: now,
     status: 'processing',
-    history: [
-      { status: 'checking', at: new Date(now.getTime() - 3000), by },
-      { status: 'processing', at: now, by: BIRZUM },
-    ],
+    history: [{ status: 'processing', at: now, by }],
   }
   takeStockFor(application.details?.products ?? [], application.locationId)
   clientsStore.update(clientId, { applications: [created, ...client.applications] })
-}
-
-/**
- * Mock: Birzum's check of an ariza made in the shop, before its contract is drawn up. The
- * real one answers in seconds from the rules, or waits for an admin; here it always approves.
- */
-export async function checkApplication() {
-  await delay(2800)
-  return { approved: true }
 }
 
 export const SHOPPER_SCAN_MOCK_MS = 3000

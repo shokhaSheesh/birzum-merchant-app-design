@@ -17,11 +17,6 @@ import { installmentTerms } from './installment'
 const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms))
 
 /** Moves an application to a status and writes the move into its change log. */
-/** Birzum, as the one who approves or rejects in its check. */
-export const BIRZUM: Actor = { kind: 'system', name: 'Birzum' }
-/** Mock: how long Birzum's check of a shopper's order takes before it approves. */
-export const CHECK_MOCK_MS = 6000
-
 function move(
   number: number,
   status: ApplicationStatus,
@@ -66,10 +61,10 @@ export async function submitApplication(
       {
         id,
         date: new Date(),
-        status: 'checking',
+        status: 'pending',
         history: [
           {
-            status: 'checking',
+            status: 'pending',
             at: new Date(),
             by: { kind: 'customer', name: shortName(client) },
           },
@@ -90,11 +85,6 @@ export async function submitApplication(
       ...client.applications,
     ],
   })
-  // Mock: Birzum's check approves it a few seconds later and the merchant gets it
-  setTimeout(() => {
-    // Unless the shopper cancelled meanwhile
-    if (find(id)?.status === 'checking') move(id, 'pending', BIRZUM)
-  }, CHECK_MOCK_MS)
   return id
 }
 

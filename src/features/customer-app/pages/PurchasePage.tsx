@@ -189,7 +189,7 @@ export function PurchasePage() {
           </Button>
         </footer>
       )}
-      {(status === 'checking' || status === 'pending') && (
+      {status === 'pending' && (
         <footer className="shrink-0 px-5 pt-3 pb-[max(1.25rem,env(safe-area-inset-bottom))]">
           <Button
             variant="ghost"

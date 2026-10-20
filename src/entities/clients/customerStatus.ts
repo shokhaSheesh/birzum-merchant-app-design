@@ -18,8 +18,6 @@ export const CUSTOMER_STATUSES = [
 export type CustomerStatus = (typeof CUSTOMER_STATUSES)[number]
 
 const fromStage: Record<ApplicationStatus, CustomerStatus> = {
-  // The shopper sees one waiting step; Birzum's check and the shop's are the merchant's detail
-  checking: 'review',
   pending: 'review',
   processing: 'approved',
   handed: 'active',

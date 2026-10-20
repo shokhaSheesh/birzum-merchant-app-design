@@ -1,4 +1,4 @@
-import { LoaderCircle, Plus, ShieldCheck, Trash2 } from 'lucide-react'
+import { Plus, Trash2 } from 'lucide-react'
 import { useCallback, useState } from 'react'
 import { Navigate, useNavigate, useParams, useSearchParams } from 'react-router-dom'
 import { clientPath, ROUTES } from '@/shared/config/routes'
@@ -16,12 +16,7 @@ import { QuantityStepper } from '@/shared/ui/QuantityField'
 import { Section } from '@/shared/ui/Section'
 import { TermPicker } from '@/shared/ui/TermPicker'
 import { Select } from '@/shared/ui/Select'
-import {
-  calculateTerms,
-  checkApplication,
-  createApplication,
-  nextApplicationNumber,
-} from '../api/mockClients'
+import { calculateTerms, createApplication, nextApplicationNumber } from '../api/mockClients'
 import { InstallmentTermsCard } from '@/shared/ui/InstallmentTermsCard'
 import { TERMS, type Fulfilment, type Term } from '@/entities/clients/clients'
 import { fulfilmentValid } from '@/entities/clients/fulfilment'
@@ -95,7 +90,6 @@ export function NewContractPage() {
   const [pickedCard, setPickedCard] = useState<string | null>(null)
   const [submitted, setSubmitted] = useState(false)
   const [loading, setLoading] = useState(false)
-  const [checking, setChecking] = useState(false)
   const [calculated, setCalculated] = useState<{ plans: Plan[]; inputs: string } | null>(null)
   const [review, setReview] = useState<{ number: number } | null>(null)
   const me = useActor()
@@ -215,9 +209,6 @@ export function NewContractPage() {
   const confirm = async () => {
     if (!plans || !review) return
     setLoading(true)
-    // FlexSoft checks the ariza before its contract is drawn up
-    setChecking(true)
-    await checkApplication()
     for (const [i, plan] of plans.entries()) {
       const group = groups.find((item) => item.term === plan.term)
       if (!group) continue
@@ -242,7 +233,7 @@ export function NewContractPage() {
         me,
       )
     }
-    toast(t('checking.approved'))
+    toast(t('contract.created'))
     backToClient()
   }
 
@@ -263,28 +254,6 @@ export function NewContractPage() {
       <InstallmentTermsCard terms={plan.terms} />
     </Section>
   ))
-
-  if (checking) {
-    return (
-      <FormScreen onSubmit={() => {}}>
-        <div className="flex flex-1 flex-col items-center justify-center gap-5 py-10 text-center">
-          <span className="relative grid size-24 place-items-center rounded-full bg-green-200 text-brand">
-            <ShieldCheck size={40} />
-            <LoaderCircle
-              size={96}
-              strokeWidth={1.2}
-              className="absolute inset-0 animate-spin text-green-500"
-              aria-hidden
-            />
-          </span>
-          <div className="flex flex-col gap-1.5" role="status">
-            <h1 className="text-2xl font-bold">{t('application.status.checking')}</h1>
-            <p className="text-ink-muted">{t('checking.hint')}</p>
-          </div>
-        </div>
-      </FormScreen>
-    )
-  }
 
   if (review && plans) {
     return (
@@ -308,10 +277,6 @@ export function NewContractPage() {
             {plans.length > 1
               ? t('review.several', { count: String(plans.length) })
               : t('review.number', { number: groupDigits(review.number) })}
-          </p>
-          <p className="flex items-center gap-2 text-sm text-ink-muted">
-            <ShieldCheck size={16} className="shrink-0 text-success" />
-            {t('checking.next')}
           </p>
         </div>
 
