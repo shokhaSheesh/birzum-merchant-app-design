@@ -121,7 +121,7 @@ export async function createApplication(
   const client = clientsStore.get(clientId)
   if (!client) return
   const now = new Date()
-  // Birzum checked it first (checkApplication); its approval starts the contract
+  // FlexSoft checked it first (checkApplication); its approval starts the contract
   const created: Application = {
     ...application,
     date: now,

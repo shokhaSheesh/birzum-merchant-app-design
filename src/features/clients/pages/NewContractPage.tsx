@@ -215,7 +215,7 @@ export function NewContractPage() {
   const confirm = async () => {
     if (!plans || !review) return
     setLoading(true)
-    // Birzum checks the ariza before its contract is drawn up
+    // FlexSoft checks the ariza before its contract is drawn up
     setChecking(true)
     await checkApplication()
     for (const [i, plan] of plans.entries()) {
