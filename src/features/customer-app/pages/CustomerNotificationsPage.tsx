@@ -17,7 +17,7 @@ import { upcomingPayments } from '@/entities/clients/upcoming'
 import { NotificationRow } from '@/entities/notifications/ui/NotificationRow'
 import { useCustomer } from '@/entities/session/customer'
 import type { TranslationKey } from '@/shared/i18n/dictionaries'
-import { customerPurchasePath, ROUTES } from '@/shared/config/routes'
+import { customerCatalogPath, customerPurchasePath, ROUTES } from '@/shared/config/routes'
 import { useI18n } from '@/shared/i18n/useI18n'
 import { formatDate, formatSum, groupDigits } from '@/shared/lib/format'
 import { EmptyState } from '@/shared/ui/EmptyState'
@@ -118,7 +118,7 @@ export function CustomerNotificationsPage() {
       body: t('cnotif.news.sale.body'),
       date: new Date(now - 1 * DAY),
       unread: true,
-      to: ROUTES.customerStores,
+      to: customerCatalogPath('stores'),
     },
     {
       key: 'news-app',

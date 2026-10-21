@@ -5,6 +5,7 @@ import { toast } from '@/shared/lib/toast'
 import { formatPhone, PHONE_DIGITS } from '@/shared/lib/phone'
 import { Button } from '@/shared/ui/Button'
 import { ConfirmSheet } from '@/shared/ui/ConfirmSheet'
+import { EmptyState } from '@/shared/ui/EmptyState'
 import { PhoneField } from '@/shared/ui/PhoneField'
 import { Section } from '@/shared/ui/Section'
 import { Select } from '@/shared/ui/Select'
@@ -13,8 +14,12 @@ import { TextField } from '@/shared/ui/TextField'
 import { addContact, removeContact, updateContact } from '../api/mockClients'
 import { RELATIONS, type Client, type Contact, type Relation } from '@/entities/clients/clients'
 
-/** A client's extra contacts. Tapping one opens it for editing, where it can also be deleted. */
-export function ContactsSection({ client }: { client: Client }) {
+/**
+ * A client's extra contacts. Tapping one opens it for editing, where it can also be deleted.
+ * The merchant sees it on the client screen; the shopper edits the same list on Profil →
+ * Kontaktlar, where the screen's own title replaces the section's (`untitled`).
+ */
+export function ContactsSection({ client, untitled }: { client: Client; untitled?: boolean }) {
   const { t } = useI18n()
   const [open, setOpen] = useState(false)
   /** The contact being edited; null while a new one is being added. */
@@ -49,10 +54,14 @@ export function ContactsSection({ client }: { client: Client }) {
     toast(t('toast.saved'))
   }
 
-  return (
-    <Section title={t('client.contacts')}>
+  const body = (
+    <>
       {client.contacts.length === 0 ? (
-        <p className="text-sm text-ink-muted">{t('client.contacts.empty')}</p>
+        untitled ? (
+          <EmptyState title={t('contacts.empty.title')} hint={t('contacts.empty.hint')} />
+        ) : (
+          <p className="text-sm text-ink-muted">{t('client.contacts.empty')}</p>
+        )
       ) : (
         <ul className="rounded-card border border-line bg-canvas px-4">
           {client.contacts.map((contact) => (
@@ -142,6 +151,11 @@ export function ContactsSection({ client }: { client: Client }) {
           toast(t('toast.deleted'))
         }}
       />
-    </Section>
+    </>
+  )
+  return untitled ? (
+    <div className="flex flex-col gap-3">{body}</div>
+  ) : (
+    <Section title={t('client.contacts')}>{body}</Section>
   )
 }

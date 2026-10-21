@@ -66,6 +66,14 @@ export function ProductsPage() {
   const requestedSub = searchParams.get('sub') ?? ''
   const requestedBrand = searchParams.get('brand') ?? ''
   const requestedStore = searchParams.get('store') ?? ''
+  // A banner's picked products or categories; the filters then work inside that set
+  const pickedIds = searchParams.get('ids')?.split(',').filter(Boolean)
+  const pickedCats = searchParams.get('cats')?.split(',').filter(Boolean)
+  const pool = products.filter(
+    (product) =>
+      (!pickedIds || pickedIds.includes(product.id)) &&
+      (!pickedCats || pickedCats.includes(product.category)),
+  )
 
   const [filters, setFilters] = useState<Filters>({
     category: CATEGORIES.includes(requestedCategory) ? requestedCategory : ALL,
@@ -79,9 +87,9 @@ export function ProductsPage() {
   const [open, setOpen] = useState(false)
 
   const needle = query.toLowerCase()
-  const items = products.filter((product) => matches(product, tl(product.name), needle, filters))
+  const items = pool.filter((product) => matches(product, tl(product.name), needle, filters))
   // What "Qoʻllash" would show, so the shopper sees the effect before applying
-  const draftCount = products.filter((product) =>
+  const draftCount = pool.filter((product) =>
     matches(product, tl(product.name), needle, draft),
   ).length
   const activeCount = [

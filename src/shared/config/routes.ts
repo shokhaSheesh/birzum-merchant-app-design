@@ -35,7 +35,7 @@ export const ROUTES = {
   customerPersonal: '/customer/me',
   customerChangePhone: '/customer/me/phone',
   customerWelcome: '/customer/welcome',
-  customerStores: '/customer/stores',
+  customerCatalog: '/customer/catalog',
   customerStore: '/customer/stores/:id',
   customerSearch: '/customer/search',
   customerCategories: '/customer/categories',
@@ -54,6 +54,7 @@ export const ROUTES = {
   customerPurchases: '/customer/purchases',
   customerPurchase: '/customer/purchases/:number',
   customerCards: '/customer/cards',
+  customerContacts: '/customer/contacts',
   customerAddCard: '/customer/cards/new',
   customerProfile: '/customer/profile',
   customerQr: '/customer/qr',
@@ -76,14 +77,39 @@ export const applicationPath = (number: number) => `/applications/${number}`
 export const customerProductPath = (id: string) => `/customer/product/${id}`
 export const customerPurchasePath = (number: number) => `/customer/purchases/${number}`
 export const customerStorePath = (id: string) => `/customer/stores/${id}`
+/**
+ * Katalog, on its products tab or its shops tab. The shops tab can open on "Yaqinimda" or
+ * narrowed to some shops (a banner's).
+ */
+export function customerCatalogPath(
+  tab: 'products' | 'stores' = 'products',
+  shops: { near?: boolean; ids?: string[] } = {},
+) {
+  if (tab === 'products') return '/customer/catalog'
+  const query = new URLSearchParams({ tab })
+  if (shops.near) query.set('near', '1')
+  if (shops.ids?.length) query.set('shops', shops.ids.join(','))
+  return `/customer/catalog?${query}`
+}
 /** A category's subcategories, for a category that has any. */
 export const customerCategoryPath = (category: string) => `/customer/categories/${category}`
 /** Where tapping a category goes: its subcategories when it has any, else its products. */
 export const customerCategoryTarget = (category: string, hasSubcategories: boolean) =>
   hasSubcategories ? customerCategoryPath(category) : customerProductsPath({ category })
-/** The product listing, optionally narrowed by a search text, category, subcategory, brand or shop. */
+/**
+ * The product listing, optionally narrowed by a search text, category, subcategory, brand or
+ * shop, or to a banner's picked products (`ids`) or categories (`cats`), comma-separated.
+ */
 export function customerProductsPath(
-  filter: { q?: string; category?: string; sub?: string; brand?: string; store?: string } = {},
+  filter: {
+    q?: string
+    category?: string
+    sub?: string
+    brand?: string
+    store?: string
+    ids?: string
+    cats?: string
+  } = {},
 ) {
   const query = new URLSearchParams(
     Object.entries(filter).filter((entry): entry is [string, string] => !!entry[1]),

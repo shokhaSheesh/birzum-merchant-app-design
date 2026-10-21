@@ -12,6 +12,7 @@ import { NewClientPage } from '@/features/clients/pages/NewClientPage'
 import { ScanClientPage } from '@/features/clients/pages/ScanClientPage'
 import { NewContractPage } from '@/features/clients/pages/NewContractPage'
 import { CustomerCardsPage } from '@/features/customer-app/pages/CustomerCardsPage'
+import { CustomerContactsPage } from '@/features/customer-app/pages/CustomerContactsPage'
 import { CustomerAddCardPage } from '@/features/customer-app/pages/CustomerAddCardPage'
 import { CustomerProfilePage } from '@/features/customer-app/pages/CustomerProfilePage'
 import { MyQrPage } from '@/features/customer-app/pages/MyQrPage'
@@ -36,7 +37,7 @@ import { PurchasePage } from '@/features/customer-app/pages/PurchasePage'
 import { PurchasesPage } from '@/features/customer-app/pages/PurchasesPage'
 import { SearchPage } from '@/features/customer-app/pages/SearchPage'
 import { StorePage } from '@/features/customer-app/pages/StorePage'
-import { StoresPage } from '@/features/customer-app/pages/StoresPage'
+import { CatalogPage } from '@/features/customer-app/pages/CatalogPage'
 import { CustomerAuthPage } from '@/features/customer-auth/pages/CustomerAuthPage'
 import { OnboardingPage } from '@/features/customer-auth/pages/OnboardingPage'
 import { PinSetupPage } from '@/features/customer-auth/pages/PinSetupPage'
@@ -111,7 +112,7 @@ export const router = createBrowserRouter([
         element: <CustomerTabLayout />,
         children: [
           { path: ROUTES.customerHome, element: <CustomerHomePage /> },
-          { path: ROUTES.customerStores, element: <StoresPage /> },
+          { path: ROUTES.customerCatalog, element: <CatalogPage /> },
           { path: ROUTES.customerCart, element: <CartPage /> },
           { path: ROUTES.customerPurchases, element: <PurchasesPage /> },
           { path: ROUTES.customerProfile, element: <CustomerProfilePage /> },
@@ -126,6 +127,7 @@ export const router = createBrowserRouter([
       { path: ROUTES.customerChat, element: <ChatPage /> },
       { path: ROUTES.customerPurchase, element: <PurchasePage /> },
       { path: ROUTES.customerCards, element: <CustomerCardsPage /> },
+      { path: ROUTES.customerContacts, element: <CustomerContactsPage /> },
       { path: ROUTES.customerQr, element: <MyQrPage /> },
       { path: ROUTES.customerAddCard, element: <CustomerAddCardPage /> },
       { path: ROUTES.customerStore, element: <StorePage /> },

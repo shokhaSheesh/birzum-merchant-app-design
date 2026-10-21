@@ -7,7 +7,7 @@ import { useI18n } from '@/shared/i18n/useI18n'
 import { cn } from '@/shared/lib/cn'
 import { formatDate, formatSum } from '@/shared/lib/format'
 
-/** One line on Asosiy: the next payment, or what is overdue. Opens the payments overview. */
+/** One line on Bosh sahifa: the next payment, or what is overdue. Opens the payments overview. */
 export function NextPaymentCard({ client }: { client: Client }) {
   const { t } = useI18n()
   const { next, overdue } = upcomingPayments(client)
@@ -18,7 +18,7 @@ export function NextPaymentCard({ client }: { client: Client }) {
     <Link
       to={ROUTES.customerPayments}
       className={cn(
-        '-mt-2 flex items-center gap-3 rounded-card p-4',
+        'flex items-center gap-3 rounded-card p-4',
         late ? 'bg-danger-soft' : 'border border-line bg-canvas active:bg-navy-100',
       )}
     >

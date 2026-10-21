@@ -13,6 +13,8 @@ import { formatPhone, PHONE_DIGITS } from '@/shared/lib/phone'
 import { ActionCard } from '@/shared/ui/ActionCard'
 import { Button } from '@/shared/ui/Button'
 import { CameraView } from '@/shared/ui/CameraView'
+import type { Place } from '@/shared/lib/geocode'
+import { AddressField } from '@/shared/ui/AddressField'
 import { DatePicker } from '@/shared/ui/DatePicker'
 import { FormScreen } from '@/shared/ui/FormScreen'
 import { IconBadge } from '@/shared/ui/IconBadge'
@@ -60,6 +62,7 @@ export function CustomerAuthPage() {
   const [birthDate, setBirthDate] = useState<Date | null>(null)
   const [maritalStatus, setMaritalStatus] = useState<MaritalStatus | null>(null)
   const [monthlyIncome, setMonthlyIncome] = useState<number | null>(null)
+  const [address, setAddress] = useState<Place | null>(null)
   const [latestBirthDate] = useState(() => {
     const now = new Date()
     return new Date(now.getFullYear() - MIN_AGE, now.getMonth(), now.getDate())
@@ -91,9 +94,9 @@ export function CustomerAuthPage() {
 
   const submitDetails = async () => {
     setSubmitted(true)
-    if (!isPassport(passport) || !birthDate || !maritalStatus || !monthlyIncome) return
+    if (!isPassport(passport) || !birthDate || !address || !maritalStatus || !monthlyIncome) return
     setLoading(true)
-    await registerCustomer(phone, { passport, birthDate, maritalStatus, monthlyIncome })
+    await registerCustomer(phone, { passport, birthDate, address, maritalStatus, monthlyIncome })
     setCameFromQr(false)
     goTo('face')
   }
@@ -162,6 +165,14 @@ export function CustomerAuthPage() {
             onChange={setBirthDate}
             max={latestBirthDate}
             error={required(birthDate !== null)}
+          />
+          <AddressField
+            label={t('field.propiska')}
+            hint={t('field.propiska.hint')}
+            placeholder={t('field.propiska.placeholder')}
+            value={address}
+            onChange={setAddress}
+            error={required(address !== null)}
           />
           <Select
             label={t('field.maritalStatus')}

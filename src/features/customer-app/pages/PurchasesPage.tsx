@@ -18,12 +18,12 @@ import { EmptyState } from '@/shared/ui/EmptyState'
 import { FilterChips } from '@/shared/ui/FilterChips'
 import { StatusBadge } from '@/shared/ui/StatusBadge'
 
-/** The shopper's own arizalar and where each one stands. */
+/** Shartnomalar: the shopper's own arizalar and where each one stands, running ones (Faol) first. */
 export function PurchasesPage() {
   const { t } = useI18n()
   const loaded = useLoaded()
   const all = useCustomer()?.applications ?? []
-  const [status, setStatus] = useState<'all' | CustomerStatus>('all')
+  const [status, setStatus] = useState<'all' | CustomerStatus>('active')
   const [range, setRange] = useState<DateRange>({ from: null, to: null })
 
   const dayStart = range.from ? new Date(range.from).setHours(0, 0, 0, 0) : -Infinity
@@ -52,8 +52,10 @@ export function PurchasesPage() {
             />
           }
           options={[
+            // Faol comes first and is chosen when the screen opens
+            { value: 'active', label: t('cstatus.active') },
             { value: 'all', label: t('applications.filter.all') },
-            ...CUSTOMER_STATUSES.map((value) => ({
+            ...CUSTOMER_STATUSES.filter((value) => value !== 'active').map((value) => ({
               value,
               label: t(`cstatus.${value}`),
             })),
@@ -83,9 +85,7 @@ export function PurchasesPage() {
               >
                 <div className="flex items-start justify-between gap-3">
                   <div className="flex flex-col gap-0.5">
-                    <p className="font-semibold">
-                      {t('review.number', { number: groupDigits(application.id) })}
-                    </p>
+                    <p className="font-semibold">№ {groupDigits(application.id)}</p>
                     <p className="text-sm text-ink-muted">
                       {getStore(application.storeId ?? OWN_STORE_ID)?.name} ·{' '}
                       {formatDateTime(application.date)}

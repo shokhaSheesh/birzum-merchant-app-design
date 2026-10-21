@@ -1,15 +1,16 @@
 import {
   ArrowLeftRight,
   ChevronRight,
+  Contact,
   CreditCard,
+  Globe,
   LifeBuoy,
   LogOut,
   MessageCircle,
-  Receipt,
-  ShieldCheck,
-  Globe,
   Palette,
   QrCode,
+  Receipt,
+  ShieldCheck,
 } from 'lucide-react'
 import { Link, useNavigate } from 'react-router-dom'
 import { fullName, initials } from '@/entities/clients/clientName'
@@ -56,6 +57,7 @@ export function CustomerProfilePage() {
           <MenuRow icon={QrCode} label={t('myqr.title')} to={ROUTES.customerQr} />
           <MenuRow icon={Receipt} label={t('payments.overview')} to={ROUTES.customerPayments} />
           <MenuRow icon={CreditCard} label={t('client.cards')} to={ROUTES.customerCards} />
+          <MenuRow icon={Contact} label={t('contacts.title')} to={ROUTES.customerContacts} />
         </MenuList>
       </Section>
 

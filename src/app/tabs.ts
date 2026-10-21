@@ -2,10 +2,9 @@ import {
   Calculator,
   FileText,
   House,
+  LayoutGrid,
   Menu,
-  ShoppingBag,
   ShoppingCart,
-  Store,
   UserRound,
   Users,
 } from 'lucide-react'
@@ -21,9 +20,9 @@ export const merchantTabs: Tab[] = [
 ]
 
 export const customerTabs: Tab[] = [
-  { to: ROUTES.customerHome, label: 'nav.home', icon: House },
-  { to: ROUTES.customerStores, label: 'customer.nav.stores', icon: Store },
+  { to: ROUTES.customerHome, label: 'customer.nav.home', icon: House },
+  { to: ROUTES.customerCatalog, label: 'customer.nav.catalog', icon: LayoutGrid },
   { to: ROUTES.customerCart, label: 'customer.nav.cart', icon: ShoppingCart, center: true },
-  { to: ROUTES.customerPurchases, label: 'customer.nav.purchases', icon: ShoppingBag },
+  { to: ROUTES.customerPurchases, label: 'customer.nav.purchases', icon: FileText },
   { to: ROUTES.customerProfile, label: 'nav.profile', icon: UserRound },
 ]

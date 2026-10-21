@@ -13,8 +13,13 @@ export type Tab = {
   badge?: number
 }
 
-/** Floating glass tab bar. A tab marked `center` is drawn as a raised round button. */
-export function TabBar({ tabs }: { tabs: Tab[] }) {
+/**
+ * Floating glass tab bar. A tab marked `center` is drawn as a raised round button. The client
+ * app uses the green tone: a light green middle button and a green tint on the current tab.
+ */
+export function TabBar({ tabs, tone = 'brand' }: { tabs: Tab[]; tone?: 'brand' | 'green' }) {
+  const green = tone === 'green'
+
   const { t } = useI18n()
 
   return (
@@ -23,10 +28,22 @@ export function TabBar({ tabs }: { tabs: Tab[] }) {
         {tabs.map(({ to, label, icon: Icon, center, badge }) =>
           center ? (
             <NavLink key={to} to={to} aria-label={t(label)} className="flex flex-1 justify-center">
-              <span className="relative grid size-14 -translate-y-3 place-items-center rounded-full bg-primary text-on-primary shadow-[0_8px_18px_-6px_rgb(7_42_60/0.55)] ring-4 ring-canvas transition-transform active:scale-95">
+              <span
+                className={cn(
+                  'relative grid size-14 -translate-y-3 place-items-center rounded-full ring-4 ring-canvas transition-transform active:scale-95',
+                  green
+                    ? 'bg-green-300 text-ink shadow-[0_8px_18px_-6px_rgb(116_175_4/0.55)]'
+                    : 'bg-primary text-on-primary shadow-[0_8px_18px_-6px_rgb(7_42_60/0.55)]',
+                )}
+              >
                 <Icon size={26} />
                 {!!badge && (
-                  <span className="absolute -top-1 -right-1 grid h-5.5 min-w-5.5 place-items-center rounded-full bg-green-500 px-1 text-xs font-bold text-navy-950 ring-2 ring-canvas">
+                  <span
+                    className={cn(
+                      'absolute -top-1 -right-1 grid h-5.5 min-w-5.5 place-items-center rounded-full px-1 text-xs font-bold ring-2 ring-canvas',
+                      green ? 'bg-primary text-on-primary' : 'bg-green-500 text-navy-950',
+                    )}
+                  >
                     {badge}
                   </span>
                 )}
@@ -40,12 +57,14 @@ export function TabBar({ tabs }: { tabs: Tab[] }) {
               className={({ isActive }) =>
                 cn(
                   'flex h-12 min-w-0 flex-1 flex-col items-center justify-center gap-0.5 rounded-full text-[11px] font-medium transition-colors',
-                  isActive ? 'bg-primary/10 font-semibold text-brand' : 'text-ink-muted',
+                  isActive
+                    ? cn('font-semibold text-brand', green ? 'bg-green-200' : 'bg-primary/10')
+                    : 'text-ink-muted',
                 )
               }
             >
               <Icon size={22} strokeWidth={2} />
-              <span className="max-w-full truncate px-1">{t(label)}</span>
+              <span className="max-w-full truncate tracking-tight">{t(label)}</span>
             </NavLink>
           ),
         )}

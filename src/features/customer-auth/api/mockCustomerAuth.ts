@@ -1,3 +1,4 @@
+import type { Place } from '@/shared/lib/geocode'
 // Stand-in for the shopper's auth API. There is one entry for sign-in and sign-up:
 // the backend decides which it is from the phone number.
 // - Any 6-digit code works except "000000".
@@ -37,6 +38,8 @@ export async function changeCustomerPhone(clientId: string, phone: string) {
 export type CustomerDetails = {
   passport: string
   birthDate: Date
+  /** The propiska (permanent registration) address, typed or picked on the map. */
+  address: Place
   maritalStatus: MaritalStatus
   monthlyIncome: number
 }

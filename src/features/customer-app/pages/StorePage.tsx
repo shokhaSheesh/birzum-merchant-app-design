@@ -2,7 +2,7 @@ import { Clock, Map, MapPin, Phone } from 'lucide-react'
 import { Link, Navigate, useParams } from 'react-router-dom'
 import { getStore, useCatalog } from '@/entities/catalog/products'
 import { usePickupPoints } from '@/entities/merchant/usePickupPoints'
-import { customerProductsPath, ROUTES } from '@/shared/config/routes'
+import { customerCatalogPath, customerProductsPath } from '@/shared/config/routes'
 import { useI18n } from '@/shared/i18n/useI18n'
 import { formatPhone } from '@/shared/lib/phone'
 import { PageHeader } from '@/shared/ui/PageHeader'
@@ -25,7 +25,7 @@ export function StorePage() {
   const { id } = useParams()
   const store = getStore(id)
 
-  if (!store) return <Navigate to={ROUTES.customerStores} replace />
+  if (!store) return <Navigate to={customerCatalogPath('stores')} replace />
   const items = products.filter((product) => product.storeId === store.id)
   const points = pickupPoints(store.id)
 

@@ -1,27 +1,25 @@
-import { Bell, Heart, Search, Sparkles } from 'lucide-react'
+import { ArrowRight, Bell, ShoppingBag, Sparkles } from 'lucide-react'
 import { Link, useNavigate } from 'react-router-dom'
-import { categoryImages } from '@/entities/catalog/categoryImages'
-import { ProductPicture } from '@/entities/catalog/ProductPicture'
-import { CATEGORIES, useCatalog } from '@/entities/catalog/products'
 import { initials } from '@/entities/clients/clientName'
 import { useCustomer } from '@/entities/session/customer'
-import { customerCategoryTarget, customerProductsPath, ROUTES } from '@/shared/config/routes'
-import { subcategoriesOf } from '@/entities/catalog/subcategories'
+import { customerCatalogPath, ROUTES } from '@/shared/config/routes'
 import { useI18n } from '@/shared/i18n/useI18n'
 import { Avatar } from '@/shared/ui/Avatar'
 import { Button } from '@/shared/ui/Button'
-import { Section } from '@/shared/ui/Section'
+import { BannerCarousel } from '../components/BannerCarousel'
 import { LimitTile } from '../components/LimitTile'
 import { NextPaymentCard } from '../components/NextPaymentCard'
-import { ProductCard } from '../components/ProductCard'
 
 const roundButton =
   'relative grid size-11 shrink-0 place-items-center rounded-full border border-line bg-canvas text-brand active:bg-navy-100'
 
-/** Shopper home, top to bottom: search and notifications, the limit, categories, products. */
+/**
+ * Bosh sahifa keeps only the main things, top to bottom: notifications, the limit,
+ * "Xaridni hoziroq amalga oshiring" (opens Katalog), the next payment and the banners.
+ * Categories and products live in Katalog.
+ */
 export function CustomerHomePage() {
   const { t } = useI18n()
-  const products = useCatalog()
   const customer = useCustomer()
   const navigate = useNavigate()
 
@@ -29,22 +27,12 @@ export function CustomerHomePage() {
   const hasNews = customer.applications.length > 0
 
   return (
-    <div className="flex min-h-full flex-col gap-6 px-5 pt-[max(1rem,env(safe-area-inset-top))] pb-tabbar">
+    <div className="flex min-h-full flex-col gap-4.5 px-5 pt-[max(1rem,env(safe-area-inset-top))] pb-tabbar">
       <header className="flex items-center gap-2">
         <Avatar initials={initials(customer)} photoUrl={customer.photoUrl} />
         <p className="min-w-0 flex-1 truncate pl-1 text-lg font-bold">
           {t('chome.greeting', { name: customer.firstName })}
         </p>
-        <Link to={ROUTES.customerSearch} aria-label={t('search.title')} className={roundButton}>
-          <Search size={22} />
-        </Link>
-        <Link
-          to={ROUTES.customerFavorites}
-          aria-label={t('favorites.title')}
-          className={roundButton}
-        >
-          <Heart size={22} />
-        </Link>
         <Link
           to={ROUTES.customerNotifications}
           aria-label={t('notifications.title')}
@@ -71,48 +59,24 @@ export function CustomerHomePage() {
       ) : (
         <LimitTile client={customer} limits={customer.limits} />
       )}
+
+      <Link
+        to={customerCatalogPath()}
+        className="flex items-center gap-3.5 rounded-card border border-line bg-canvas px-4.5 py-4 text-ink active:bg-navy-100"
+      >
+        <span className="grid size-12 shrink-0 place-items-center rounded-full bg-green-300">
+          <ShoppingBag size={24} />
+        </span>
+        <span className="flex min-w-0 flex-1 flex-col gap-0.5">
+          <span className="text-lg leading-tight font-bold">{t('chome.buyNow')}</span>
+          <span className="text-sm font-semibold text-navy-700">{t('chome.buyNow.hint')}</span>
+        </span>
+        <ArrowRight size={22} className="shrink-0" />
+      </Link>
+
       {customer.limits !== null && <NextPaymentCard client={customer} />}
 
-      <Section
-        title={t('chome.categories')}
-        action={
-          <Link to={ROUTES.customerCategories} className="text-sm font-semibold text-brand">
-            {t('catalog.all')}
-          </Link>
-        }
-      >
-        <div className="grid grid-cols-4 gap-2">
-          {CATEGORIES.map((category) => (
-            <Link
-              key={category}
-              to={customerCategoryTarget(category, subcategoriesOf(category).length > 0)}
-              className="flex min-w-0 flex-col items-center gap-1.5 text-center text-xs leading-tight font-medium"
-            >
-              <ProductPicture
-                category={category}
-                src={categoryImages[category]}
-                className="w-full rounded-card border border-line bg-canvas!"
-              />
-              {t(`catalog.category.${category}`)}
-            </Link>
-          ))}
-        </div>
-      </Section>
-
-      <Section
-        title={t('catalog.popular')}
-        action={
-          <Link to={customerProductsPath()} className="text-sm font-semibold text-brand">
-            {t('catalog.all')}
-          </Link>
-        }
-      >
-        <div className="grid grid-cols-2 gap-x-3 gap-y-5">
-          {products.map((product) => (
-            <ProductCard key={product.id} product={product} />
-          ))}
-        </div>
-      </Section>
+      <BannerCarousel />
     </div>
   )
 }
