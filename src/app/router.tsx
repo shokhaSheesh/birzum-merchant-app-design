@@ -11,6 +11,7 @@ import { ClientsPage } from '@/features/clients/pages/ClientsPage'
 import { NewClientPage } from '@/features/clients/pages/NewClientPage'
 import { ScanClientPage } from '@/features/clients/pages/ScanClientPage'
 import { NewContractPage } from '@/features/clients/pages/NewContractPage'
+import { LimitRequestPage } from '@/features/clients/pages/LimitRequestPage'
 import { CustomerCardsPage } from '@/features/customer-app/pages/CustomerCardsPage'
 import { CustomerContactsPage } from '@/features/customer-app/pages/CustomerContactsPage'
 import { CustomerAddCardPage } from '@/features/customer-app/pages/CustomerAddCardPage'
@@ -84,6 +85,7 @@ export const router = createBrowserRouter([
       { path: ROUTES.clientDetail, element: <ClientDetailPage /> },
       { path: ROUTES.clientAddCard, element: <AddCardPage /> },
       { path: ROUTES.clientContract, element: <NewContractPage /> },
+      { path: ROUTES.clientLimit, element: <LimitRequestPage /> },
       { path: ROUTES.applicationDetail, element: <ApplicationDetailPage /> },
       { path: ROUTES.notifications, element: <NotificationsPage /> },
       { path: ROUTES.manageProducts, element: <ManageProductsPage /> },

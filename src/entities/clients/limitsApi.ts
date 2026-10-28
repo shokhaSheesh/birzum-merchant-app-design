@@ -8,7 +8,9 @@ const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms))
  * Limits are made up: five times the monthly income, lower for the shortest terms.
  */
 export async function calculateLimit(clientId: string) {
-  await delay(4200) // the client app shows its checking steps meanwhile
+  // The request waits in FlexSoft; the client's page shows it as being checked
+  clientsStore.update(clientId, { limitRequestedAt: new Date() })
+  await delay(4200) // the apps show the checking steps meanwhile
   const client = clientsStore.get(clientId)
   if (!client) return
   const share: Record<Term, number> = { 3: 0.6, 6: 0.8, 9: 0.9, 12: 1, 18: 1, 24: 1 }
@@ -18,5 +20,5 @@ export async function calculateLimit(clientId: string) {
   const now = new Date()
   // A calculated limit is valid for six months
   const limitExpiresOn = new Date(now.getFullYear(), now.getMonth() + 6, now.getDate())
-  clientsStore.update(clientId, { limits, limitExpiresOn })
+  clientsStore.update(clientId, { limits, limitExpiresOn, limitRequestedAt: undefined })
 }

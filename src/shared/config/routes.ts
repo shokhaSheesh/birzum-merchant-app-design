@@ -9,6 +9,7 @@ export const ROUTES = {
   clientDetail: '/clients/:id',
   clientAddCard: '/clients/:id/cards/new',
   clientContract: '/clients/:id/contract/new',
+  clientLimit: '/clients/:id/limit',
   applications: '/applications',
   applicationDetail: '/applications/:number',
   calculator: '/calculator',
@@ -67,6 +68,7 @@ export const ROUTES = {
 
 export const stateDemoPath = (kind: string) => `/states/${kind}`
 export const clientPath = (id: string) => `/clients/${id}`
+export const clientLimitPath = (id: string) => `/clients/${id}/limit`
 export const clientAddCardPath = (id: string) => `/clients/${id}/cards/new`
 export const clientContractPath = (id: string, term: number) =>
   `/clients/${id}/contract/new?term=${term}`

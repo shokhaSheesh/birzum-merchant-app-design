@@ -165,6 +165,8 @@ export type Client = {
   limits: Record<Term, number> | null
   /** The day the limit stops being valid and has to be calculated again. */
   limitExpiresOn?: Date
+  /** Set while FlexSoft is checking a limit request; cleared when it answers. */
+  limitRequestedAt?: Date
   cards: PaymentCard[]
   contacts: Contact[]
   applications: Application[]

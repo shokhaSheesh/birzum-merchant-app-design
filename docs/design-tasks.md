@@ -37,10 +37,10 @@ The background is in [design-todo-bpmn-nizom.md](design-todo-bpmn-nizom.md).
   - confirmed
   - closed
   - cancelled (return)
-- [ ] **C10. "Firibgarlik haqida xabar berish":**
+- [~] **C10. Skipped (28.10):** "Firibgarlik haqida xabar berish":**
   - a form: full name, passport, date of birth, phone, what happened, amount lost, date and time
   - a "Sent" screen after submitting
-- [ ] **C11. "Firibgarlik sxemalari":** a section in Profile with schemes and protection tips
+- [~] **C11. Skipped (28.10):** "Firibgarlik sxemalari":** a section in Profile with schemes and protection tips
 - [x] **C12. Card owner's name** shown as "Ism F." wherever it appears
 
 Nothing to draw (backend or mobile only):
@@ -57,7 +57,7 @@ Nothing to draw (backend or mobile only):
   - MyID on the same phone, with no QR code
   - the address by propiska
   - the seller enters the card, and the client reads out the SMS code
-- [ ] **M4. Limit for a client:** a separate process started from the client's card ("Limit so'rash"), then the result by term or a refusal
+- [x] **M4. Limit for a client:** a separate process started from the client's card ("Limit so'rash"), then the result by term or a refusal
 - [x] **M5. Catalogue:**
   - variant types and their values (UZ / RU), made by the merchant
   - a product status: "Tekshiruvda" / "Rad etildi: sabab"
@@ -71,7 +71,7 @@ Nothing to draw (backend or mobile only):
 
 ## Admin
 
-- [ ] **A1. Merchants:**
+- [x] **A1. Merchants:**
   - a read-only list from FlexSoft (branches, tariff, status)
   - remove the create form and the tariff selector
 - [x] **A2. Remove "Merchantlarga o'tkazmalar"**
