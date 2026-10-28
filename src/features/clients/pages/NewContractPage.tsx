@@ -31,6 +31,7 @@ import {
   productsStore,
   soldCombos,
   stockOf,
+  tariffOf,
   variantIds,
   variantKey,
 } from '@/entities/catalog/products'
@@ -85,6 +86,8 @@ export function NewContractPage() {
   const locationId = pickedLocation ?? (locations.length === 1 ? locations[0].id : null)
   const [nextProductId, setNextProductId] = useState(2)
   const [downPayment, setDownPayment] = useState<number | null>(null)
+  // The shop's tariff from FlexSoft, which sets the markup on every term
+  const tariff = tariffOf(OWN_STORE_ID)
   const [paymentDay, setPaymentDay] = useState<number | null>(null)
   const [fulfilment, setFulfilment] = useState<Fulfilment>({ method: 'pickup', address: '' })
   const [pickedCard, setPickedCard] = useState<string | null>(null)
@@ -251,7 +254,7 @@ export function NewContractPage() {
       }
     >
       <ProductsSummary products={summaryOf(plan.term)} />
-      <InstallmentTermsCard terms={plan.terms} />
+      <InstallmentTermsCard terms={plan.terms} tariff={tariff} />
     </Section>
   ))
 
@@ -302,7 +305,7 @@ export function NewContractPage() {
               details={{ fulfilment, cardId: cardId ?? undefined }}
               cards={client.cards}
             />
-            <InfoRow label={t('field.downPayment')} value={formatSum(downPayment ?? 0)} />
+            <InfoRow label={t('contract.down.cash')} value={formatSum(downPayment ?? 0)} />
             <InfoRow label={t('field.paymentDay')} value={String(paymentDay)} />
           </InfoList>
         </Section>
@@ -441,6 +444,7 @@ export function NewContractPage() {
           onChange={setDownPayment}
           suffix={t('common.currency')}
           maxDigits={10}
+          hint={t('contract.down.hint')}
         />
         <ChoiceGrid
           label={t('field.paymentDay')}
@@ -466,7 +470,7 @@ export function NewContractPage() {
               key={plan.term}
               title={`${t('contract.conditions')} · ${t('term.months', { count: String(plan.term) })}`}
             >
-              <InstallmentTermsCard terms={plan.terms} />
+              <InstallmentTermsCard terms={plan.terms} tariff={tariff} />
             </Section>
           ))}
         </div>

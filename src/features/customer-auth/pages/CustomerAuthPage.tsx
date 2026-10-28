@@ -1,6 +1,8 @@
 import { Check, IdCard, LoaderCircle, ScanLine } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { propiskaComplete, type Propiska } from '@/entities/address/regions'
+import { PropiskaFields } from '@/entities/address/ui/PropiskaFields'
 import { MARITAL_STATUSES, type MaritalStatus } from '@/entities/clients/clients'
 import { LegalConsent } from '@/entities/legal/ui/LegalConsent'
 import { setCustomerId } from '@/entities/session/customer'
@@ -13,8 +15,6 @@ import { formatPhone, PHONE_DIGITS } from '@/shared/lib/phone'
 import { ActionCard } from '@/shared/ui/ActionCard'
 import { Button } from '@/shared/ui/Button'
 import { CameraView } from '@/shared/ui/CameraView'
-import type { Place } from '@/shared/lib/geocode'
-import { AddressField } from '@/shared/ui/AddressField'
 import { DatePicker } from '@/shared/ui/DatePicker'
 import { FormScreen } from '@/shared/ui/FormScreen'
 import { IconBadge } from '@/shared/ui/IconBadge'
@@ -62,7 +62,7 @@ export function CustomerAuthPage() {
   const [birthDate, setBirthDate] = useState<Date | null>(null)
   const [maritalStatus, setMaritalStatus] = useState<MaritalStatus | null>(null)
   const [monthlyIncome, setMonthlyIncome] = useState<number | null>(null)
-  const [address, setAddress] = useState<Place | null>(null)
+  const [address, setAddress] = useState<Partial<Propiska>>({})
   const [latestBirthDate] = useState(() => {
     const now = new Date()
     return new Date(now.getFullYear() - MIN_AGE, now.getMonth(), now.getDate())
@@ -94,7 +94,14 @@ export function CustomerAuthPage() {
 
   const submitDetails = async () => {
     setSubmitted(true)
-    if (!isPassport(passport) || !birthDate || !address || !maritalStatus || !monthlyIncome) return
+    if (
+      !isPassport(passport) ||
+      !birthDate ||
+      !propiskaComplete(address) ||
+      !maritalStatus ||
+      !monthlyIncome
+    )
+      return
     setLoading(true)
     await registerCustomer(phone, { passport, birthDate, address, maritalStatus, monthlyIncome })
     setCameFromQr(false)
@@ -166,14 +173,6 @@ export function CustomerAuthPage() {
             max={latestBirthDate}
             error={required(birthDate !== null)}
           />
-          <AddressField
-            label={t('field.propiska')}
-            hint={t('field.propiska.hint')}
-            placeholder={t('field.propiska.placeholder')}
-            value={address}
-            onChange={setAddress}
-            error={required(address !== null)}
-          />
           <Select
             label={t('field.maritalStatus')}
             options={MARITAL_STATUSES.map((value) => ({ value, label: t(`marital.${value}`) }))}
@@ -189,6 +188,7 @@ export function CustomerAuthPage() {
             error={required(!!monthlyIncome)}
           />
         </div>
+        <PropiskaFields value={address} onChange={setAddress} showErrors={submitted} whose="own" />
       </FormScreen>
     )
   }

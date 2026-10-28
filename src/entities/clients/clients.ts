@@ -1,5 +1,6 @@
 import user1Photo from '@/shared/assets/people/user-1.jpg'
 import user2Photo from '@/shared/assets/people/user-2.jpg'
+import type { Propiska } from '../address/regions'
 import user3Photo from '@/shared/assets/people/user-3.jpg'
 
 export const MARITAL_STATUSES = ['single', 'married', 'divorced', 'widowed'] as const
@@ -156,6 +157,8 @@ export type Client = {
   /** In UZS. */
   monthlyIncome: number
   incomeSource?: IncomeSource
+  /** The propiska address, entered when the client is added in the shop. */
+  propiska?: Propiska
   /** Credit limit in UZS for each term; null until it has been calculated. */
   limits: Record<Term, number> | null
   /** The day the limit stops being valid and has to be calculated again. */

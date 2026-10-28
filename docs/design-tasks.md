@@ -21,7 +21,7 @@ The background is in [design-todo-bpmn-nizom.md](design-todo-bpmn-nizom.md).
   - device, OS, browser, IP, start time
   - the current session is marked
   - a "Sessiyani tugatish" button for each session
-- [ ] **C4. Propiska address:** region → district → city selectors plus street and house (still to confirm instead of the map)
+- [x] **C4. Propiska address:** viloyat → shahar → tuman selectors, then street and house, in the client sign-up and the merchant's new client
 - [x] **C5. Cart:** products from one shop only, with a warning when a product from another shop is added
 - [x] **C6. Checkout:**
   - delivery address on a Yandex map
@@ -51,11 +51,9 @@ Nothing to draw (backend or mobile only):
 
 ## Merchant app
 
-- [ ] **M1. Sign-in:** login and password (from FlexSoft) → SMS code → password change on first sign-in. Pages are shown by role (administrator / seller).
-- [ ] **M2. Staff:**
-  - the owner adds a member: name, phone, branches, login, password, and one of the two FlexSoft roles
-  - remove the dynamic role builder
-- [ ] **M3. New client in the shop:**
+- [x] **M1. Sign-in:** login and password (from FlexSoft) → SMS code → password change on first sign-in. Pages are shown by role (administrator / seller).
+- [x] **M2. Staff:** not needed in the merchant app. The two FlexSoft roles' permissions are set in the admin («Merchant rollari», A5).
+- [x] **M3. New client in the shop:**
   - MyID on the same phone, with no QR code
   - the address by propiska
   - the seller enters the card, and the client reads out the SMS code
@@ -67,8 +65,8 @@ Nothing to draw (backend or mobile only):
 - [x] **M6. A client's ariza within 24 h:**
   - a "Yangi arizalar" tab with a timer
   - check stock → "Tasdiqlash" / "Rad etish" with a reason
-- [ ] **M7. Contract statuses** (being created, created, confirmed) on the ariza page
-- [ ] **M8. Sale in the shop:** the markup comes from the saved tariff, and the down payment is "naqd"
+- [x] **M7. Contract statuses** (being created, created, confirmed) on the ariza page
+- [x] **M8. Sale in the shop:** the markup comes from the saved tariff, and the down payment is "naqd"
 - [ ] **M9. Reports:** only the administrator role downloads them. Remove "O'zaro hisob-kitob".
 
 ## Admin
@@ -81,7 +79,7 @@ Nothing to draw (backend or mobile only):
 - [x] **A4. New: product moderation:**
   - a queue with photo, name, description and price
   - "Tasdiqlash" / "Rad etish" with a reason
-- [ ] **A5. New: roles → pages:** for each of FlexSoft's roles, which pages and actions it gets in the merchant app
+- [x] **A5. New: roles → pages:** for each of FlexSoft's roles, which pages and actions it gets in the merchant app
 - [ ] **A6. Reference lists:** remove "Variant turlari" (the merchant makes these)
 - [x] **A7. Arizalar:** the new statuses and the filter for them
 - [ ] **A8. Blocking a client:** the note "FlexSoft'da ham bloklanadi" in the confirmation

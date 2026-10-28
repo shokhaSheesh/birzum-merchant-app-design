@@ -24,6 +24,8 @@ import {
 } from '../api/mockClients'
 import { CardForm } from '@/entities/clients/ui/CardForm'
 import { MyIdStep } from '../components/MyIdStep'
+import { propiskaComplete, type Propiska } from '@/entities/address/regions'
+import { PropiskaFields } from '@/entities/address/ui/PropiskaFields'
 import { MARITAL_STATUSES, type MaritalStatus } from '@/entities/clients/clients'
 
 const STEPS = ['phone', 'phoneCode', 'details', 'myid', 'card', 'cardCode'] as const
@@ -47,6 +49,7 @@ export function NewClientPage() {
   const [birthDate, setBirthDate] = useState<Date | null>(null)
   const [maritalStatus, setMaritalStatus] = useState<MaritalStatus | null>(null)
   const [monthlyIncome, setMonthlyIncome] = useState<number | null>(null)
+  const [propiska, setPropiska] = useState<Partial<Propiska>>({})
   const [cardNumber, setCardNumber] = useState('')
   const [cardExpiry, setCardExpiry] = useState('')
   const [latestBirthDate] = useState(() => {
@@ -74,17 +77,25 @@ export function NewClientPage() {
 
   const submitDetails = () => {
     setSubmitted(true)
-    if (isPassport(passport) && birthDate && maritalStatus && monthlyIncome) goTo('myid')
+    if (
+      isPassport(passport) &&
+      birthDate &&
+      maritalStatus &&
+      monthlyIncome &&
+      propiskaComplete(propiska)
+    )
+      goTo('myid')
   }
 
   const saveClient = async () => {
-    if (!birthDate || !maritalStatus || !monthlyIncome) return
+    if (!birthDate || !maritalStatus || !monthlyIncome || !propiskaComplete(propiska)) return
     const client = await createClient({
       phone,
       passport,
       birthDate,
       maritalStatus,
       monthlyIncome,
+      propiska,
       cardNumber,
       cardExpiry,
     })
@@ -214,6 +225,12 @@ export function NewClientPage() {
           error={required(!!monthlyIncome)}
         />
       </div>
+      <PropiskaFields
+        value={propiska}
+        onChange={setPropiska}
+        showErrors={submitted}
+        whose="client"
+      />
     </FormScreen>
   )
 }

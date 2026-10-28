@@ -5,6 +5,7 @@ import { clientAddCardPath } from '@/shared/config/routes'
 import { useI18n } from '@/shared/i18n/useI18n'
 import { formatDate, formatSum } from '@/shared/lib/format'
 import { formatPassport } from '@/shared/lib/passport'
+import { formatPropiska } from '@/entities/address/regions'
 import { formatPhone } from '@/shared/lib/phone'
 import { Avatar } from '@/shared/ui/Avatar'
 import { EmptyState } from '@/shared/ui/EmptyState'
@@ -20,7 +21,7 @@ import { useClient } from '@/entities/clients/useClients'
 import { fullName, initials } from '@/entities/clients/clientName'
 
 export function ClientDetailPage() {
-  const { t } = useI18n()
+  const { t, lang } = useI18n()
   const navigate = useNavigate()
   const { id } = useParams()
   const client = useClient(id)
@@ -82,6 +83,12 @@ export function ClientDetailPage() {
                   <InfoRow label={t('field.birthDate')} value={formatDate(client.birthDate)} />
                   <InfoRow label={t('clients.pinfl')} value={client.pinfl} />
                   <InfoRow label={t('field.phone')} value={formatPhone(client.phone)} />
+                  {client.propiska && (
+                    <InfoRow
+                      label={t('field.propiska')}
+                      value={formatPropiska(client.propiska, lang)}
+                    />
+                  )}
                 </InfoList>
               </Section>
 

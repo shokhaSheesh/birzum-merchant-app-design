@@ -18,6 +18,7 @@ import { clientsStore } from '@/entities/clients/clientsStore'
 import { shopperCode } from '@/entities/clients/shopperCode'
 import { installmentTerms, type InstallmentTerms } from '@/entities/clients/installment'
 import { OWN_STORE_ID, tariffOf } from '@/entities/catalog/products'
+import type { Propiska } from '@/entities/address/regions'
 
 const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms))
 const newId = () => String(Date.now())
@@ -38,16 +39,13 @@ export async function verifyFace() {
   await delay(1800)
 }
 
-/** Placeholder link for the QR code. The real one comes from the MyID session. */
-export const MYID_QR_URL = 'https://birzum.example/myid/session/demo'
-export const MYID_QR_MOCK_WAIT_MS = 8000
-
 export type NewClient = {
   phone: string
   passport: string
   birthDate: Date
   maritalStatus: MaritalStatus
   monthlyIncome: number
+  propiska: Propiska
   cardNumber: string
   cardExpiry: string
 }
