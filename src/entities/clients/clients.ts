@@ -29,6 +29,8 @@ export type PaymentCard = {
   last4: string
   /** Four digits, month then year, as typed: "0828" is 08/28. */
   expiry?: string
+  /** The owner's name as the bank (Atmos) returns it. Shown only as "Ism F.", see `cardHolder`. */
+  holder?: string
 }
 
 export type Contact = {
@@ -211,6 +213,7 @@ function fromSeed({ born, issued, cards = [], applications = [], ...rest }: Seed
       first4,
       last4,
       expiry: `${String(((Number(last4) + i * 5) % 12) + 1).padStart(2, '0')}${28 + ((Number(last4) + i) % 3)}`,
+      holder: `${rest.firstName} ${rest.lastName}`,
     })),
     contacts: [],
     applications,

@@ -9,20 +9,20 @@ export const PERMISSIONS = [
   'inventory',
   'locations',
   'staff',
-  'roles',
   'analytics',
 ] as const
 export type Permission = (typeof PERMISSIONS)[number]
 
-export type Role = { id: string; name: string; permissions: Permission[] }
+/**
+ * FlexSoft gives every staff member one of two roles at sign-in; the roles cannot be added or
+ * renamed. What each one may do is set by Birzum in the admin panel («Merchant rollari»).
+ */
+export const ROLE_IDS = ['admin', 'seller'] as const
+export type RoleId = (typeof ROLE_IDS)[number]
+export type Role = { id: RoleId; permissions: Permission[] }
 
-// Invented sample roles. Replace with the API.
+// The admin panel's defaults. Replace with the API.
 export const rolesStore = createStore<Role>([
-  { id: 'r1', name: 'Egasi', permissions: [...PERMISSIONS] },
-  {
-    id: 'r2',
-    name: 'Menejer',
-    permissions: ['clients', 'approve', 'status', 'products', 'inventory', 'analytics'],
-  },
-  { id: 'r3', name: 'Sotuvchi', permissions: ['clients', 'approve'] },
+  { id: 'admin', permissions: [...PERMISSIONS] },
+  { id: 'seller', permissions: ['clients', 'approve', 'status', 'inventory'] },
 ])

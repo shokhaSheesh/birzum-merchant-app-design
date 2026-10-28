@@ -2,7 +2,7 @@ import { UserRound } from 'lucide-react'
 import { useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { locationsStore } from '@/entities/merchant/locations'
-import { rolesStore } from '@/entities/merchant/roles'
+import { ROLE_IDS, type RoleId } from '@/entities/merchant/roles'
 import { CURRENT_STAFF_ID, staffStore } from '@/entities/merchant/staff'
 import { useI18n } from '@/shared/i18n/useI18n'
 import { toast } from '@/shared/lib/toast'
@@ -25,14 +25,13 @@ export function StaffFormPage() {
   const navigate = useNavigate()
   const { id } = useParams()
   const existing = staffStore.get(id)
-  const roles = rolesStore.useAll()
   const locations = locationsStore.useAll()
 
   const [firstName, setFirstName] = useState(existing?.firstName ?? '')
   const [lastName, setLastName] = useState(existing?.lastName ?? '')
   const [phone, setPhone] = useState(existing?.phone ?? '')
   const [login, setLogin] = useState(existing?.login ?? '')
-  const [roleId, setRoleId] = useState<string | null>(existing?.roleId ?? null)
+  const [roleId, setRoleId] = useState<RoleId | null>(existing?.roleId ?? null)
   const [locationIds, setLocationIds] = useState<string[]>(existing?.locationIds ?? [])
   const [active, setActive] = useState(existing?.active ?? true)
   const [submitted, setSubmitted] = useState(false)
@@ -104,9 +103,10 @@ export function StaffFormPage() {
         />
         <Select
           label={t('field.role')}
-          options={roles.map((role) => ({ value: role.id, label: role.name }))}
+          options={ROLE_IDS.map((id) => ({ value: id, label: t(`staff.role.${id}`) }))}
           value={roleId}
           onChange={setRoleId}
+          hint={t('staff.role.hint')}
           error={submitted && !roleId ? t('error.required') : undefined}
         />
       </div>

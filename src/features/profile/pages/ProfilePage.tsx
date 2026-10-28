@@ -2,12 +2,10 @@ import {
   ArrowLeftRight,
   Boxes,
   LoaderCircle,
-  Landmark,
   LogOut,
   MapPin,
   Package,
   Shapes,
-  ShieldCheck,
   Star,
   Tags,
   UsersRound,
@@ -58,7 +56,7 @@ export function ProfilePage() {
           <p className="text-xl leading-tight font-bold">
             {user.firstName} {user.lastName}
           </p>
-          <p className="text-ink-muted">{role?.name ?? t('profile.role')}</p>
+          <p className="text-ink-muted">{role ? t(`staff.role.${role.id}`) : t('profile.role')}</p>
         </div>
       </div>
 
@@ -88,7 +86,7 @@ export function ProfilePage() {
         </Section>
       )}
 
-      {(can('locations') || can('staff') || can('roles')) && (
+      {(can('locations') || can('staff')) && (
         <Section title={t('menu.shop')}>
           <MenuList>
             {can('locations') && (
@@ -97,13 +95,7 @@ export function ProfilePage() {
             {can('staff') && (
               <MenuRow icon={UsersRound} label={t('manage.staff')} to={ROUTES.manageStaff} />
             )}
-            {can('roles') && (
-              <MenuRow icon={ShieldCheck} label={t('manage.roles')} to={ROUTES.manageRoles} />
-            )}
             <MenuRow icon={Star} label={t('manage.reviews')} to={ROUTES.manageReviews} />
-            {can('analytics') && (
-              <MenuRow icon={Landmark} label={t('settle.title')} to={ROUTES.settlements} />
-            )}
           </MenuList>
         </Section>
       )}

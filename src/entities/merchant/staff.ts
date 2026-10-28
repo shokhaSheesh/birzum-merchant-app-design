@@ -1,3 +1,4 @@
+import type { RoleId } from './roles'
 import user4Photo from '@/shared/assets/people/user-4.jpg'
 import { createStore } from '@/shared/lib/createStore'
 
@@ -9,7 +10,7 @@ export type StaffMember = {
   /** Nine digits after +998. */
   phone: string
   login: string
-  roleId: string
+  roleId: RoleId
   locationIds: string[]
   photoUrl?: string
   active: boolean
@@ -26,7 +27,7 @@ export const staffStore = createStore<StaffMember>([
     lastName: 'Karimov',
     phone: '901112233',
     login: 'aziz.karimov',
-    roleId: 'r1',
+    roleId: 'admin',
     locationIds: ['l1', 'l2', 'l3'],
     photoUrl: user4Photo,
     active: true,
@@ -37,7 +38,7 @@ export const staffStore = createStore<StaffMember>([
     lastName: 'Sobirova',
     phone: '935004411',
     login: 'madina.sobirova',
-    roleId: 'r2',
+    roleId: 'admin',
     locationIds: ['l1'],
     active: true,
   },
@@ -47,7 +48,7 @@ export const staffStore = createStore<StaffMember>([
     lastName: 'Umarov',
     phone: '977203090',
     login: 'sherzod.umarov',
-    roleId: 'r3',
+    roleId: 'seller',
     locationIds: ['l2'],
     active: true,
   },
@@ -57,7 +58,7 @@ export const staffStore = createStore<StaffMember>([
     lastName: 'Aliyeva',
     phone: '901458899',
     login: 'nodira.aliyeva',
-    roleId: 'r3',
+    roleId: 'seller',
     locationIds: ['l1'],
     active: false,
   },

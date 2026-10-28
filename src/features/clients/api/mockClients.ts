@@ -62,7 +62,7 @@ export async function createClient({ cardNumber, cardExpiry, ...data }: NewClien
     passportIssuedOn: new Date(2021, 4, 18),
     passportExpiresOn: new Date(2031, 4, 18),
     limits: null,
-    cards: [toCard(cardNumber, cardExpiry)],
+    cards: [toCard(cardNumber, cardExpiry, 'Aziza Tursunova')],
     contacts: [],
     applications: [],
   }

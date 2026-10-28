@@ -41,7 +41,7 @@ The background is in [design-todo-bpmn-nizom.md](design-todo-bpmn-nizom.md).
   - a form: full name, passport, date of birth, phone, what happened, amount lost, date and time
   - a "Sent" screen after submitting
 - [ ] **C11. "Firibgarlik sxemalari":** a section in Profile with schemes and protection tips
-- [ ] **C12. Card owner's name** shown as "Ism F." wherever it appears
+- [x] **C12. Card owner's name** shown as "Ism F." wherever it appears
 
 Nothing to draw (backend or mobile only):
 - the 3-minute lock (reuses the PIN screen)
@@ -67,22 +67,22 @@ Nothing to draw (backend or mobile only):
   - check stock → "Tasdiqlash" / "Rad etish" with a reason
 - [x] **M7. Contract statuses** (being created, created, confirmed) on the ariza page
 - [x] **M8. Sale in the shop:** the markup comes from the saved tariff, and the down payment is "naqd"
-- [ ] **M9. Reports:** only the administrator role downloads them. Remove "O'zaro hisob-kitob".
+- [x] **M9. Reports:** only the administrator role downloads them. Remove "O'zaro hisob-kitob".
 
 ## Admin
 
 - [ ] **A1. Merchants:**
   - a read-only list from FlexSoft (branches, tariff, status)
   - remove the create form and the tariff selector
-- [ ] **A2. Remove "Merchantlarga o'tkazmalar"**
-- [ ] **A3. Ustama:** read only (tariff × term × rate from FlexSoft)
+- [x] **A2. Remove "Merchantlarga o'tkazmalar"**
+- [x] **A3. Ustama:** read only (tariff × term × rate from FlexSoft)
 - [x] **A4. New: product moderation:**
   - a queue with photo, name, description and price
   - "Tasdiqlash" / "Rad etish" with a reason
 - [x] **A5. New: roles → pages:** for each of FlexSoft's roles, which pages and actions it gets in the merchant app
-- [ ] **A6. Reference lists:** remove "Variant turlari" (the merchant makes these)
+- [x] **A6. Reference lists:** remove "Variant turlari" (the merchant makes these)
 - [x] **A7. Arizalar:** the new statuses and the filter for them
-- [ ] **A8. Blocking a client:** the note "FlexSoft'da ham bloklanadi" in the confirmation
+- [x] **A8. Blocking a client:** the note "FlexSoft'da ham bloklanadi" in the confirmation
 
 ## Open questions (we can design without them)
 - PlayMobile: does it check phone ↔ PINFL?

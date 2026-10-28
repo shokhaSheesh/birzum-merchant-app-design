@@ -24,9 +24,6 @@ export const ROUTES = {
   manageStaff: '/manage/staff',
   manageStaffMember: '/manage/staff/:id',
   manageReviews: '/manage/reviews',
-  settlements: '/settlements',
-  manageRoles: '/manage/roles',
-  manageRole: '/manage/roles/:id',
   /** The separate app for shoppers. Its screens will live under this path. */
   customerApp: '/customer',
   customerHome: '/customer/home',
@@ -118,6 +115,6 @@ export function customerProductsPath(
 }
 /** A management record's form. Pass "new" as the id to create one. */
 export const managePath = (
-  section: 'products' | 'attributes' | 'locations' | 'staff' | 'roles',
+  section: 'products' | 'attributes' | 'locations' | 'staff',
   id: string,
 ) => `/manage/${section}/${id}`

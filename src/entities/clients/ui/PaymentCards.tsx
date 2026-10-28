@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom'
 import { useI18n } from '@/shared/i18n/useI18n'
 import { toast } from '@/shared/lib/toast'
 import { ConfirmSheet } from '@/shared/ui/ConfirmSheet'
-import { cardLabel } from '../cardBrand'
+import { cardHolder, cardLabel } from '../cardBrand'
 import { removeCard } from '../cardsApi'
 import type { Client, PaymentCard } from '../clients'
 import { CardLogo } from './CardLogo'
@@ -34,7 +34,7 @@ export function PaymentCards({ client, addTo }: Props) {
               {card.first4} •••• •••• {card.last4}
             </p>
             <div className="flex items-end justify-between text-sm">
-              <span className="opacity-60">••/••</span>
+              <span className="opacity-60">{cardHolder(card) || '••/••'}</span>
               <CardLogo card={card} />
             </div>
             {client.cards.length > 1 && (

@@ -1,4 +1,4 @@
-import { Bell, FileClock } from 'lucide-react'
+import { Bell, Download, FileClock } from 'lucide-react'
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { applicationStatusTone } from '@/entities/clients/applicationStatus'
@@ -6,14 +6,17 @@ import { APPLICATION_STATUSES } from '@/entities/clients/clients'
 import { useApplications, type ApplicationWithClient } from '@/entities/clients/useApplications'
 import { unreadCount } from '@/entities/notifications/notifications'
 import { LocationChip } from '@/entities/merchant/ui/LocationChip'
+import { usePermissions } from '@/entities/merchant/usePermissions'
 import { useMyLocations } from '@/entities/merchant/useMyLocations'
 import { currentUser } from '@/entities/session/user'
 import { ROUTES } from '@/shared/config/routes'
 import { calendarNames } from '@/shared/i18n/dictionaries'
 import { useI18n } from '@/shared/i18n/useI18n'
+import { downloadCsv } from '@/shared/lib/csv'
 import { formatDate, formatSum } from '@/shared/lib/format'
 import { inPeriod, periodDays, type Period } from '@/shared/lib/period'
 import { ActionCard } from '@/shared/ui/ActionCard'
+import { Button } from '@/shared/ui/Button'
 import { Avatar } from '@/shared/ui/Avatar'
 import { BarChart, type Bar } from '@/shared/ui/BarChart'
 import { EmptyState } from '@/shared/ui/EmptyState'
@@ -62,7 +65,10 @@ function toBars(items: ApplicationWithClient[], period: Period, weekdays: string
   })
 }
 
-/** Start screen: the chosen day, week or month in numbers. */
+/**
+ * Start screen: the chosen day, week or month in numbers. Staff whose role allows reports
+ * (the administrator, by default) can download the period's arizalar as a table.
+ */
 export function HomePage() {
   const { t, tl, lang } = useI18n()
   const myLocations = useMyLocations()
@@ -80,6 +86,29 @@ export function HomePage() {
   const total = items.reduce((sum, { application }) => sum + application.installmentTotal, 0)
   const clientCount = new Set(items.map(({ client }) => client.id)).size
   const formatCount = (count: number) => t('home.chart.tip', { count: String(count) })
+  const { can } = usePermissions()
+
+  const downloadReport = () => {
+    const { first, last } = periodDays(period)
+    downloadCsv(`birzum-hisobot-${formatDate(first)}-${formatDate(last)}.csv`, [
+      [
+        t('report.col.number'),
+        t('report.col.date'),
+        t('report.col.client'),
+        t('report.col.status'),
+        t('report.col.goods'),
+        t('report.col.installment'),
+      ],
+      ...items.map(({ application, client }) => [
+        application.id,
+        formatDate(application.date),
+        `${client.lastName} ${client.firstName}`,
+        t(`application.status.${application.status}`),
+        application.goodsTotal,
+        application.installmentTotal,
+      ]),
+    ])
+  }
 
   return (
     <div className="flex min-h-full flex-col gap-6 px-5 pt-[max(1rem,env(safe-area-inset-top))] pb-tabbar">
@@ -135,6 +164,13 @@ export function HomePage() {
           })}
         </p>
       </div>
+
+      {can('analytics') && items.length > 0 && (
+        <Button variant="secondary" block onClick={downloadReport}>
+          <Download size={20} />
+          {t('report.download')}
+        </Button>
+      )}
 
       {items.length === 0 ? (
         <EmptyState title={t('home.empty.title')} hint={t('home.empty.hint')} />

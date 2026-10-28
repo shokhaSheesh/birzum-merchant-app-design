@@ -1,5 +1,4 @@
 import { locationsStore } from '@/entities/merchant/locations'
-import { rolesStore } from '@/entities/merchant/roles'
 import { staffStore } from '@/entities/merchant/staff'
 import { managePath } from '@/shared/config/routes'
 import { useI18n } from '@/shared/i18n/useI18n'
@@ -10,7 +9,6 @@ import { ListRow, ListScreen } from '../components/ListScreen'
 export function StaffPage() {
   const { t, tl } = useI18n()
   const staff = staffStore.useAll()
-  const roles = rolesStore.useAll()
   const locations = locationsStore.useAll()
 
   return (
@@ -32,7 +30,7 @@ export function StaffPage() {
             }
             title={`${member.firstName} ${member.lastName}`}
             lines={[
-              roles.find((role) => role.id === member.roleId)?.name ?? t('common.none'),
+              t(`staff.role.${member.roleId}`),
               locations
                 .filter((location) => member.locationIds.includes(location.id))
                 .map((location) => tl(location.name))

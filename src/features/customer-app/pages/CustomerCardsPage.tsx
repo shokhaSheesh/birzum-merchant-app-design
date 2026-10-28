@@ -1,7 +1,7 @@
 import { Plus, Trash2 } from 'lucide-react'
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
-import { cardLabel, formatExpiry } from '@/entities/clients/cardBrand'
+import { cardHolder, cardLabel, formatExpiry } from '@/entities/clients/cardBrand'
 import { removeCard } from '@/entities/clients/cardsApi'
 import type { PaymentCard } from '@/entities/clients/clients'
 import { CardLogo } from '@/entities/clients/ui/CardLogo'
@@ -36,7 +36,11 @@ export function CustomerCardsPage() {
               <p className="font-semibold tracking-wider">
                 {card.first4} •••• •••• {card.last4}
               </p>
-              {card.expiry && <p className="text-sm opacity-75">{formatExpiry(card.expiry)}</p>}
+              <p className="text-sm opacity-75">
+                {[cardHolder(card), card.expiry && formatExpiry(card.expiry)]
+                  .filter(Boolean)
+                  .join(' · ')}
+              </p>
             </div>
             {cards.length > 1 && (
               <button

@@ -10,6 +10,13 @@ export function cardBrand(card: PaymentCard) {
 /** "08/28" from the stored "0828". */
 export const formatExpiry = (expiry: string) => `${expiry.slice(0, 2)}/${expiry.slice(2)}`
 
+/** The owner's name the Nizom allows to show: first name and the surname's initial, "Dilnoza K.". */
+export function cardHolder(card: PaymentCard) {
+  const [first, last] = (card.holder ?? '').trim().split(/\s+/)
+  if (!first) return ''
+  return last ? `${first} ${last[0]}.` : first
+}
+
 /** A card as one line, e.g. "Humo •••• 1671". */
 export function cardLabel(card: PaymentCard) {
   return [cardBrand(card), '••••', card.last4].filter(Boolean).join(' ')
