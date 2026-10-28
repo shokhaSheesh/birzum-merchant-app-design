@@ -2,7 +2,7 @@ import { Store, Truck } from 'lucide-react'
 import { useI18n } from '@/shared/i18n/useI18n'
 import { ChoiceGrid } from '@/shared/ui/ChoiceGrid'
 import { Select } from '@/shared/ui/Select'
-import { TextField } from '@/shared/ui/TextField'
+import { AddressField } from '@/shared/ui/AddressField'
 import { cardLabel } from '../cardBrand'
 import { DELIVERY_METHODS, type Fulfilment, type PaymentCard } from '../clients'
 
@@ -43,7 +43,8 @@ type Props = {
 }
 
 /**
- * How the goods are received: pickup (and from which filial) or delivery to an address.
+ * How the goods are received: pickup (and from which filial) or delivery to an address, typed
+ * or picked on the map.
  * The same block in the merchant's contract form and in the shopper's checkout.
  */
 export function FulfilmentFields({
@@ -79,11 +80,27 @@ export function FulfilmentFields({
         />
       )}
       {fulfilment.method === 'delivery' && (
-        <TextField
+        <AddressField
           label={t('delivery.address')}
-          autoComplete="street-address"
-          value={fulfilment.address}
-          onChange={(e) => onFulfilment({ ...fulfilment, address: e.target.value })}
+          value={
+            fulfilment.address
+              ? {
+                  lat: fulfilment.point?.lat ?? NaN,
+                  lng: fulfilment.point?.lng ?? NaN,
+                  text: fulfilment.address,
+                }
+              : null
+          }
+          onChange={(place) =>
+            onFulfilment({
+              ...fulfilment,
+              address: place?.text ?? '',
+              point:
+                place && Number.isFinite(place.lat)
+                  ? { lat: place.lat, lng: place.lng }
+                  : undefined,
+            })
+          }
           error={showErrors && fulfilment.address.trim() === '' ? t('error.required') : undefined}
         />
       )}

@@ -22,14 +22,14 @@ The background is in [design-todo-bpmn-nizom.md](design-todo-bpmn-nizom.md).
   - the current session is marked
   - a "Sessiyani tugatish" button for each session
 - [ ] **C4. Propiska address:** region → district → city selectors plus street and house (still to confirm instead of the map)
-- [ ] **C5. Cart:** products from one shop only, with a warning when a product from another shop is added
-- [ ] **C6. Checkout:**
+- [x] **C5. Cart:** products from one shop only, with a warning when a product from another shop is added
+- [x] **C6. Checkout:**
   - delivery address on a Yandex map
   - the down payment is "do'konda naqd" (no card charge)
   - the markup follows the shop's tariff
-- [ ] **C7. Warning before an action:** a sheet with the checkbox "O'zim bajaryapman, hech kim aralashmagan". It appears before "Yuborish" at checkout and before a payment.
+- [x] **C7. Warning before an action:** a sheet with the checkbox "O'zim bajaryapman, hech kim aralashmagan". It appears before "Yuborish" at checkout and before a payment.
 - [ ] **C8. "Masofadan mumkin emas":** shown when the shop hasn't used the app for 30 days, with "Do'konga boring" and "Boshqa do'kon"
-- [ ] **C9. Contract statuses** (list, contract page, Bosh sahifa):
+- [x] **C9. Contract statuses** (list, contract page, Bosh sahifa):
   - waiting for the shop (24 h)
   - rejected by the shop, with the reason
   - being created
@@ -60,11 +60,11 @@ Nothing to draw (backend or mobile only):
   - the address by propiska
   - the seller enters the card, and the client reads out the SMS code
 - [ ] **M4. Limit for a client:** a separate process started from the client's card ("Limit so'rash"), then the result by term or a refusal
-- [ ] **M5. Catalogue:**
+- [x] **M5. Catalogue:**
   - variant types and their values (UZ / RU), made by the merchant
   - a product status: "Tekshiruvda" / "Rad etildi: sabab"
   - stock can only be added after approval, and changing it doesn't go through moderation again
-- [ ] **M6. A client's ariza within 24 h:**
+- [x] **M6. A client's ariza within 24 h:**
   - a "Yangi arizalar" tab with a timer
   - check stock → "Tasdiqlash" / "Rad etish" with a reason
 - [ ] **M7. Contract statuses** (being created, created, confirmed) on the ariza page
@@ -78,12 +78,12 @@ Nothing to draw (backend or mobile only):
   - remove the create form and the tariff selector
 - [ ] **A2. Remove "Merchantlarga o'tkazmalar"**
 - [ ] **A3. Ustama:** read only (tariff × term × rate from FlexSoft)
-- [ ] **A4. New: product moderation:**
+- [x] **A4. New: product moderation:**
   - a queue with photo, name, description and price
   - "Tasdiqlash" / "Rad etish" with a reason
 - [ ] **A5. New: roles → pages:** for each of FlexSoft's roles, which pages and actions it gets in the merchant app
 - [ ] **A6. Reference lists:** remove "Variant turlari" (the merchant makes these)
-- [ ] **A7. Arizalar:** the new statuses and the filter for them
+- [x] **A7. Arizalar:** the new statuses and the filter for them
 - [ ] **A8. Blocking a client:** the note "FlexSoft'da ham bloklanadi" in the confirmation
 
 ## Open questions (we can design without them)

@@ -17,6 +17,7 @@ import { toCard } from '@/entities/clients/cardsApi'
 import { clientsStore } from '@/entities/clients/clientsStore'
 import { shopperCode } from '@/entities/clients/shopperCode'
 import { installmentTerms, type InstallmentTerms } from '@/entities/clients/installment'
+import { OWN_STORE_ID, tariffOf } from '@/entities/catalog/products'
 
 const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms))
 const newId = () => String(Date.now())
@@ -104,7 +105,7 @@ export { calculateLimit } from '@/entities/clients/limitsApi'
 /** Works out the installment terms for the amount being financed. */
 export async function calculateTerms(financed: number, term: Term): Promise<InstallmentTerms> {
   await delay(700)
-  return installmentTerms(financed, term)
+  return installmentTerms(financed, term, tariffOf(OWN_STORE_ID))
 }
 
 export const nextApplicationNumber = () => clientsStore.nextApplicationNumber()

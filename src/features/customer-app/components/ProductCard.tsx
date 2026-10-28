@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom'
-import { galleryOf, getStore, type Product } from '@/entities/catalog/products'
+import { galleryOf, getStore, tariffOf, type Product } from '@/entities/catalog/products'
 import { PhotoSwiper } from '@/entities/catalog/ui/PhotoSwiper'
 import { installmentTerms } from '@/entities/clients/installment'
 import { customerProductPath } from '@/shared/config/routes'
@@ -15,7 +15,11 @@ import { StoreLogo } from './StoreLogo'
 export function ProductCard({ product }: { product: Product }) {
   const { t, tl, lang } = useI18n()
   const store = getStore(product.storeId)
-  const lowestMonthly = installmentTerms(product.price, 24).monthlyPayment
+  const lowestMonthly = installmentTerms(
+    product.price,
+    24,
+    tariffOf(product.storeId),
+  ).monthlyPayment
 
   return (
     <div className="relative min-w-0 rounded-card border border-line bg-canvas p-2">

@@ -3,7 +3,7 @@ import { useState } from 'react'
 import { Navigate, useNavigate } from 'react-router-dom'
 import { cartStore, useCart } from '@/entities/cart/cartStore'
 import { ProductPicture } from '@/entities/catalog/ProductPicture'
-import { getStore, photosOf, stockOf } from '@/entities/catalog/products'
+import { getStore, photosOf, stockOf, tariffOf } from '@/entities/catalog/products'
 import { useVariantNames } from '@/entities/catalog/useVariantNames'
 import { submitApplication } from '@/entities/clients/applicationsApi'
 import { TERMS, type Fulfilment, type Term } from '@/entities/clients/clients'
@@ -14,6 +14,7 @@ import { CardSelect, FulfilmentFields } from '@/entities/clients/ui/FulfilmentFi
 import { LegalConsent } from '@/entities/legal/ui/LegalConsent'
 import { usePickupPoints } from '@/entities/merchant/usePickupPoints'
 import { SchedulePreviewSheet } from '../components/SchedulePreviewSheet'
+import { SelfCheckSheet } from '../components/SelfCheck'
 import { StoreLogo } from '../components/StoreLogo'
 import { useCustomer } from '@/entities/session/customer'
 import { ROUTES } from '@/shared/config/routes'
@@ -31,9 +32,11 @@ type ShopChoice = { fulfilment: Fulfilment; pointId: string | null }
 const noChoice: ShopChoice = { fulfilment: { method: 'pickup', address: '' }, pointId: null }
 
 /**
- * Checkout, the step after the cart. Each shop first asks how its goods are received, then
- * lists its products, each with its own term. The card is chosen once. Sending files one
- * ariza per shop and term, since an ariza has a single term.
+ * Checkout, the step after the cart. The shop first asks how its goods are received (delivery
+ * to an address picked on the map), then lists its products, each with its own term at the
+ * shop's tariff. A down payment is paid in cash at the shop. The card is chosen once. Before
+ * sending, the shopper confirms nobody is guiding them; one ariza is filed per term, since an
+ * ariza has a single term.
  */
 export function CheckoutPage() {
   const { t, tl, lang } = useI18n()
@@ -54,6 +57,8 @@ export function CheckoutPage() {
   const [submitted, setSubmitted] = useState(false)
   const [agreed, setAgreed] = useState(false)
   const [loading, setLoading] = useState(false)
+  /** The "I am doing this myself" sheet, shown once everything else is filled in. */
+  const [selfCheck, setSelfCheck] = useState(false)
   const [sent, setSent] = useState(false)
 
   if (sent) {
@@ -81,7 +86,7 @@ export function CheckoutPage() {
   const financedOf = (line: (typeof lines)[number]) =>
     Math.max(0, line.unitPrice * line.quantity - downOf(line.key))
   const planOf = (line: (typeof lines)[number]) =>
-    installmentTerms(financedOf(line), termOf(line.key))
+    installmentTerms(financedOf(line), termOf(line.key), tariffOf(line.product.storeId))
 
   const lineName = ({ product, valueIds }: (typeof lines)[number]) => {
     const variant = names(product, valueIds)
@@ -141,7 +146,7 @@ export function CheckoutPage() {
     (line) => downOf(line.key) > 0 && downOf(line.key) >= line.unitPrice * line.quantity,
   )
 
-  const checkout = async () => {
+  const checkout = () => {
     setSubmitted(true)
     if (
       !agreed ||
@@ -152,6 +157,12 @@ export function CheckoutPage() {
       !shops.every((shop) => shop.valid)
     )
       return
+    setSelfCheck(true)
+  }
+
+  const send = async () => {
+    if (!cardId) return
+    setSelfCheck(false)
     setLoading(true)
     for (const shop of shops) {
       const { fulfilment } = shop.choice
@@ -310,15 +321,16 @@ export function CheckoutPage() {
           error={submitted && !agreed ? t('consent.required') : undefined}
         />
         {error && <Alert message={error} />}
-        <Button
-          block
-          loading={loading}
-          disabled={!!error || shortAnywhere}
-          onClick={() => void checkout()}
-        >
+        <Button block loading={loading} disabled={!!error || shortAnywhere} onClick={checkout}>
           {t('cart.checkout')}
         </Button>
       </footer>
+      <SelfCheckSheet
+        open={selfCheck}
+        action="checkout"
+        onConfirm={() => void send()}
+        onCancel={() => setSelfCheck(false)}
+      />
       {(() => {
         const line = lines.find((item) => item.key === scheduleOf)
         return (
@@ -327,6 +339,7 @@ export function CheckoutPage() {
               title={lineName(line)}
               amount={financedOf(line)}
               term={termOf(line.key)}
+              tariff={tariffOf(line.product.storeId)}
               onClose={() => setScheduleOf(null)}
             />
           )

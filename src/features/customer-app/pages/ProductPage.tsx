@@ -6,6 +6,7 @@ import {
   getProduct,
   getStore,
   galleryOf,
+  tariffOf,
   priceOf,
   soldCombos,
   stockOf,
@@ -22,6 +23,7 @@ import { useI18n } from '@/shared/i18n/useI18n'
 import { formatSum } from '@/shared/lib/format'
 import { Alert } from '@/shared/ui/Alert'
 import { Button } from '@/shared/ui/Button'
+import { ConfirmSheet } from '@/shared/ui/ConfirmSheet'
 import { InfoList, InfoRow } from '@/shared/ui/InfoList'
 import { InstallmentTermsCard } from '@/shared/ui/InstallmentTermsCard'
 import { PageHeader } from '@/shared/ui/PageHeader'
@@ -55,6 +57,7 @@ function ProductDetails({ product }: { product: Product }) {
   const { attributes, color: colorOf } = useVariantNames()
   const [term, setTerm] = useState<Term>(12)
   const [copied, setCopied] = useState(false)
+  const [otherShop, setOtherShop] = useState(false)
   const combos = soldCombos(product)
   /** The chosen value of each variation, by position. Always a combination that is sold. */
   const [picked, setPicked] = useState<string[]>(() => combos[0] ?? [])
@@ -152,7 +155,10 @@ function ProductDetails({ product }: { product: Product }) {
 
         <Section title={t('contract.conditions')}>
           <TermPicker terms={TERMS} value={term} onChange={setTerm} />
-          <InstallmentTermsCard terms={installmentTerms(unitPrice, term)} showMarkup={false} />
+          <InstallmentTermsCard
+            terms={installmentTerms(unitPrice, term, tariffOf(product.storeId))}
+            showMarkup={false}
+          />
         </Section>
 
         {store && (
@@ -249,13 +255,28 @@ function ProductDetails({ product }: { product: Product }) {
           <Button
             block
             disabled={!hasLimit || !inStock}
-            onClick={() => cartStore.add(product, picked, unitPrice)}
+            onClick={() =>
+              cartStore.clashes(product)
+                ? setOtherShop(true)
+                : cartStore.add(product, picked, unitPrice)
+            }
           >
             <ShoppingCart size={20} />
             {inStock ? t('product.addToCart') : t('product.stock.out')}
           </Button>
         )}
       </footer>
+      <ConfirmSheet
+        open={otherShop}
+        onClose={() => setOtherShop(false)}
+        title={t('cart.otherShop.title')}
+        message={t('cart.otherShop.message', {
+          store: getStore(cartStore.storeId())?.name ?? '',
+          product: tl(product.name),
+        })}
+        confirmLabel={t('cart.otherShop.replace')}
+        onConfirm={() => cartStore.replaceWith(product, picked, unitPrice)}
+      />
     </div>
   )
 }

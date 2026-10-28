@@ -2,7 +2,7 @@ import { Trash2 } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 import { cartStore, useCart } from '@/entities/cart/cartStore'
 import { ProductPicture } from '@/entities/catalog/ProductPicture'
-import { getStore, photosOf, stockOf, useCatalog } from '@/entities/catalog/products'
+import { getStore, photosOf, stockOf, tariffOf, useCatalog } from '@/entities/catalog/products'
 import { useVariantNames } from '@/entities/catalog/useVariantNames'
 import { installmentTerms } from '@/entities/clients/installment'
 import { StoreLogo } from '../components/StoreLogo'
@@ -18,8 +18,8 @@ import { Section } from '@/shared/ui/Section'
 import { ProductCard } from '../components/ProductCard'
 
 /**
- * The cart: what the shopper picked, grouped by shop, with quantities to adjust. How the
- * goods are received, the term and the card are asked on the next screen, checkout.
+ * The cart: what the shopper picked from one shop, with quantities to adjust. How the goods
+ * are received, the term and the card are asked on the next screen, checkout.
  */
 export function CartPage() {
   const { t, tl, lang } = useI18n()
@@ -50,14 +50,18 @@ export function CartPage() {
 
   const storeIds = [...new Set(lines.map((line) => line.product.storeId))]
   const needsLimit = !customer?.limits
-  // More from the categories already in the cart
+  // More from the same shop and the categories already in the cart: other shops' goods cannot join
   const inCart = new Set(lines.map((line) => line.product.id))
   const categories = new Set(lines.map((line) => line.product.category))
   const similar = catalog.filter(
-    (product) => categories.has(product.category) && !inCart.has(product.id),
+    (product) =>
+      product.storeId === storeIds[0] &&
+      categories.has(product.category) &&
+      !inCart.has(product.id),
   )
   // The longest term gives the lowest monthly payment; the real term is chosen at checkout
-  const lowestMonthly = (amount: number) => installmentTerms(amount, 24).monthlyPayment
+  const lowestMonthly = (amount: number) =>
+    installmentTerms(amount, 24, tariffOf(storeIds[0])).monthlyPayment
 
   return (
     <div className={page}>

@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import type { Term } from '@/entities/clients/clients'
-import { installmentTerms } from '@/entities/clients/installment'
+import { installmentTerms, type Tariff } from '@/entities/clients/installment'
 import { useI18n } from '@/shared/i18n/useI18n'
 import { formatDate, formatSum } from '@/shared/lib/format'
 import { Sheet } from '@/shared/ui/Sheet'
@@ -10,13 +10,15 @@ type Props = {
   /** The goods sum being bought on nasiya, in UZS. */
   amount: number
   term: Term
+  /** The shop's tariff, which sets the markup. */
+  tariff: Tariff
   onClose: () => void
 }
 
 /** Every payment a purchase would bring, before it is made: date and amount, then the total. */
-export function SchedulePreviewSheet({ title, amount, term, onClose }: Props) {
+export function SchedulePreviewSheet({ title, amount, term, tariff, onClose }: Props) {
   const { t } = useI18n()
-  const plan = installmentTerms(amount, term)
+  const plan = installmentTerms(amount, term, tariff)
   const [today] = useState(() => new Date())
   // The first payment falls a month after the shop hands the goods over; shown from today
   const payments = Array.from({ length: term }, (_, i) => {

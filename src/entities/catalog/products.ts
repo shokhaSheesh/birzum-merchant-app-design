@@ -19,6 +19,7 @@ import photo15 from '@/shared/assets/products/product-15.jpg'
 import type { Lang, LocalizedText } from '@/shared/i18n/dictionaries'
 import { createStore } from '@/shared/lib/createStore'
 import { seedAttributes } from './attributes'
+import type { Tariff } from '../clients/installment'
 
 export const CATEGORIES = ['phones', 'tvs', 'appliances', 'laptops'] as const
 export type Category = (typeof CATEGORIES)[number]
@@ -29,6 +30,8 @@ export type Store = {
   address: string
   /** Square logo. The admin panel will upload it with the shop. */
   logo?: string
+  /** FlexSoft's tariff for this shop: the markup its shoppers pay. */
+  tariff: Tariff
 }
 
 /** One option group on a product: an attribute from the directory and which of its values apply. */
@@ -100,9 +103,15 @@ export const resubmitted = (product: Product | undefined): Moderation => ({
 
 // Invented sample shops and catalogue. Replace with the API.
 export const stores: Store[] = [
-  { id: 's1', name: 'Mediapark', address: 'Toshkent, Chilonzor', logo: mediaparkLogo },
-  { id: 's2', name: 'iSpace', address: 'Toshkent, Yunusobod', logo: ispaceLogo },
-  { id: 's3', name: 'CA.store', address: 'Samarqand, Registon koʻchasi', logo: castoreLogo },
+  { id: 's1', name: 'Mediapark', address: 'Toshkent, Chilonzor', logo: mediaparkLogo, tariff: 'A' },
+  { id: 's2', name: 'iSpace', address: 'Toshkent, Yunusobod', logo: ispaceLogo, tariff: 'B' },
+  {
+    id: 's3',
+    name: 'CA.store',
+    address: 'Samarqand, Registon koʻchasi',
+    logo: castoreLogo,
+    tariff: 'C',
+  },
 ]
 
 // The samples are written in a short form (Uzbek names, a price difference per option) and
@@ -574,3 +583,5 @@ export const useCatalog = () => {
 
 export const getProduct = (id: string | undefined) => productsStore.get(id)
 export const getStore = (id: string | undefined) => stores.find((s) => s.id === id)
+/** The shop's tariff, which sets the markup on everything bought there. */
+export const tariffOf = (storeId: string | undefined): Tariff => getStore(storeId)?.tariff ?? 'A'

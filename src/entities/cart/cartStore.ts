@@ -15,7 +15,8 @@ export type CartLine = {
 export const cartKey = (productId: string, valueIds: string[]) =>
   `${productId}/${variantKey(valueIds)}`
 
-// The shopper's cart, kept in memory. A page refresh empties it.
+// The shopper's cart, kept in memory. A page refresh empties it. It holds one shop's goods
+// only: an ariza goes to one shop, and a product from another one asks to empty the cart first.
 let lines: CartLine[] = []
 const listeners = new Set<() => void>()
 const change = (next: CartLine[]) => {
@@ -31,6 +32,10 @@ export const cartStore = {
     }
   },
   get: () => lines,
+  /** The shop whose goods are in the cart, if any. */
+  storeId: () => lines[0]?.product.storeId,
+  /** True when adding this product would mix two shops in the cart. */
+  clashes: (product: Product) => lines.length > 0 && lines[0].product.storeId !== product.storeId,
   add(product: Product, valueIds: string[], unitPrice: number) {
     const key = cartKey(product.id, valueIds)
     if (lines.some((line) => line.key === key)) return
@@ -46,6 +51,10 @@ export const cartStore = {
   },
   remove: (key: string) => change(lines.filter((line) => line.key !== key)),
   clear: () => change([]),
+  /** Empties the cart and starts it again with this product, from another shop. */
+  replaceWith(product: Product, valueIds: string[], unitPrice: number) {
+    change([{ key: cartKey(product.id, valueIds), product, valueIds, unitPrice, quantity: 1 }])
+  },
 }
 
 export function useCart() {

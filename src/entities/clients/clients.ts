@@ -49,8 +49,12 @@ export type ApplicationProduct = {
 
 export const DELIVERY_METHODS = ['pickup', 'delivery'] as const
 export type DeliveryMethod = (typeof DELIVERY_METHODS)[number]
-/** How the client gets the goods. The address is only for `delivery`. */
-export type Fulfilment = { method: DeliveryMethod; address: string }
+/** How the client gets the goods. The address, and its point on the map, are only for `delivery`. */
+export type Fulfilment = {
+  method: DeliveryMethod
+  address: string
+  point?: { lat: number; lng: number }
+}
 
 /** What was entered when the contract was drawn up. Missing on applications rejected before that. */
 export type ApplicationDetails = {

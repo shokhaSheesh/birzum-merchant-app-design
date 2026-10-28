@@ -1,4 +1,4 @@
-import { takeStock } from '@/entities/catalog/products'
+import { takeStock, tariffOf } from '@/entities/catalog/products'
 import type {
   Actor,
   Application,
@@ -52,8 +52,8 @@ export async function submitApplication(
 
   const total = products.reduce((sum, item) => sum + item.price * item.quantity, 0)
   const { downPayment = 0, ...rest } = checkout
-  // The down payment is paid at checkout; the nasiya covers the rest
-  const terms = installmentTerms(total - downPayment, term)
+  // The down payment is paid in cash at the shop; the nasiya covers the rest, at the shop's tariff
+  const terms = installmentTerms(total - downPayment, term, tariffOf(shop.storeId))
   const id = clientsStore.nextApplicationNumber()
   clientsStore.update(clientId, {
     // An order makes the shopper one of this merchant's clients

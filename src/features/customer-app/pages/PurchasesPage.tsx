@@ -18,7 +18,7 @@ import { EmptyState } from '@/shared/ui/EmptyState'
 import { FilterChips } from '@/shared/ui/FilterChips'
 import { StatusBadge } from '@/shared/ui/StatusBadge'
 
-/** Shartnomalar: the shopper's own arizalar and where each one stands, running ones (Faol) first. */
+/** Shartnomalar: the shopper's own arizalar and where each one stands, running ones (Shartnoma tasdiqlandi) first. */
 export function PurchasesPage() {
   const { t } = useI18n()
   const loaded = useLoaded()
@@ -28,7 +28,7 @@ export function PurchasesPage() {
 
   const dayStart = range.from ? new Date(range.from).setHours(0, 0, 0, 0) : -Infinity
   const dayEnd = range.to ? new Date(range.to).setHours(23, 59, 59, 999) : Infinity
-  // Faol is every contract that exists: made by FlexSoft (waiting for the goods) or running
+  // «Shartnoma tasdiqlandi» is every contract that exists: made by FlexSoft (waiting for the goods) or running
   const matches = (application: (typeof all)[number]) => {
     const current = customerStatus(application)
     return status === 'active' ? current === 'active' || current === 'approved' : current === status
@@ -57,7 +57,7 @@ export function PurchasesPage() {
             />
           }
           options={[
-            // Faol comes first and is chosen when the screen opens
+            // «Shartnoma tasdiqlandi» comes first and is chosen when the screen opens
             { value: 'active', label: t('cstatus.active') },
             { value: 'all', label: t('applications.filter.all') },
             ...CUSTOMER_STATUSES.filter((value) => value !== 'active' && value !== 'approved').map(

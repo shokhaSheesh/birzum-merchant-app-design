@@ -11,11 +11,23 @@ export type InstallmentTerms = {
   monthlyPayment: number
 }
 
-// Rates as shown by the web calculator. The real ones come from the backend.
-const MARKUP_PERCENT: Record<Term, number> = { 3: 15, 6: 25, 9: 30, 12: 38, 18: 55, 24: 72 }
+/** The shop's tariff, set by FlexSoft when the merchant is signed. It decides the markup. */
+export const TARIFFS = ['A', 'B', 'C'] as const
+export type Tariff = (typeof TARIFFS)[number]
 
-export function installmentTerms(financed: number, term: Term): InstallmentTerms {
-  const markupPercent = MARKUP_PERCENT[term]
+// Mock rates per tariff; A is the web calculator's. The real ones come from FlexSoft.
+const MARKUP_PERCENT: Record<Tariff, Record<Term, number>> = {
+  A: { 3: 15, 6: 25, 9: 30, 12: 38, 18: 55, 24: 72 },
+  B: { 3: 12, 6: 22, 9: 27, 12: 34, 18: 50, 24: 66 },
+  C: { 3: 10, 6: 19, 9: 24, 12: 30, 18: 45, 24: 60 },
+}
+
+export function installmentTerms(
+  financed: number,
+  term: Term,
+  tariff: Tariff = 'A',
+): InstallmentTerms {
+  const markupPercent = MARKUP_PERCENT[tariff][term]
   const installmentTotal = Math.round(financed * (1 + markupPercent / 100))
   return {
     term,
@@ -26,5 +38,5 @@ export function installmentTerms(financed: number, term: Term): InstallmentTerms
 }
 
 /** Terms for every available term, shortest first. */
-export const allInstallmentTerms = (financed: number) =>
-  TERMS.map((term) => installmentTerms(financed, term))
+export const allInstallmentTerms = (financed: number, tariff: Tariff = 'A') =>
+  TERMS.map((term) => installmentTerms(financed, term, tariff))
