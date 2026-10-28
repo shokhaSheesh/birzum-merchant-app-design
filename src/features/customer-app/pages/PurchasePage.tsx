@@ -1,4 +1,4 @@
-import { Download, Star } from 'lucide-react'
+import { Download, Star, Undo2 } from 'lucide-react'
 import { useState } from 'react'
 import { useParams } from 'react-router-dom'
 import { getStore, OWN_STORE_ID } from '@/entities/catalog/products'
@@ -9,6 +9,7 @@ import { shortName } from '@/entities/clients/clientName'
 import type { Application } from '@/entities/clients/clients'
 import { clientsStore } from '@/entities/clients/clientsStore'
 import { downloadContract } from '@/entities/clients/contractPdf'
+import { historyOf } from '@/entities/clients/history'
 import { hasSchedule, nextPayment } from '@/entities/clients/payments'
 import { FulfilmentRows } from '@/entities/clients/ui/FulfilmentRows'
 import { PaymentSchedule } from '@/entities/clients/ui/PaymentSchedule'
@@ -31,6 +32,7 @@ import { Section } from '@/shared/ui/Section'
 import { SegmentedTabs } from '@/shared/ui/SegmentedTabs'
 import { StatusBadge } from '@/shared/ui/StatusBadge'
 import { PaySheet } from '../components/PaySheet'
+import { ReturnInfoSheet } from '../components/ReturnInfoSheet'
 import { ReviewSheet } from '../components/ReviewSheet'
 
 /** Publishes the review to the shop and marks the purchase as reviewed. */
@@ -60,6 +62,7 @@ export function PurchasePage() {
   const [paying, setPaying] = useState(false)
   const [reviewing, setReviewing] = useState(false)
   const [cancelling, setCancelling] = useState(false)
+  const [returnInfo, setReturnInfo] = useState(false)
 
   const application = customer?.applications.find((item) => item.id === Number(number))
   if (!customer || !application) {
@@ -77,6 +80,7 @@ export function PurchasePage() {
   const point = pickupPoints(storeId).find((item) => item.id === application.locationId)
   const payment = nextPayment(application)
   const received = status === 'handed' || status === 'closed'
+  const handedAt = historyOf(application).find((entry) => entry.status === 'handed')?.at
 
   const sendReview = (rating: number, text: string) => {
     saveReview(application, {
@@ -90,7 +94,23 @@ export function PurchasePage() {
 
   return (
     <div className="flex h-full flex-col">
-      <PageHeader title={t('purchase.title')} />
+      <PageHeader
+        title={t('purchase.title')}
+        end={
+          // Returns are done at the shop; this only says how, and stays out of the way
+          status === 'handed' && (
+            <button
+              type="button"
+              aria-label={t('returnInfo.title')}
+              title={t('returnInfo.title')}
+              onClick={() => setReturnInfo(true)}
+              className="grid size-10 place-items-center rounded-full text-brand active:bg-navy-100"
+            >
+              <Undo2 size={22} />
+            </button>
+          )
+        }
+      />
 
       <div className="flex min-h-0 flex-1 flex-col gap-7 overflow-y-auto px-5 pt-3 pb-8">
         <div className="flex flex-col items-start gap-2">
@@ -162,6 +182,24 @@ export function PurchasePage() {
                 )}
               </div>
             )}
+            {!!application.handoverPhotos?.length && (
+              <Section title={t('handover.received')}>
+                <p className="-mt-1 text-sm text-ink-muted">
+                  {handedAt && `${formatDateTime(handedAt)} · `}
+                  {t('handover.received.hint')}
+                </p>
+                <div className="grid grid-cols-3 gap-3">
+                  {application.handoverPhotos.map((src) => (
+                    <img
+                      key={src}
+                      src={src}
+                      alt={t('handover.photos')}
+                      className="aspect-square w-full rounded-control object-cover"
+                    />
+                  ))}
+                </div>
+              </Section>
+            )}
           </>
         )}
 
@@ -208,6 +246,14 @@ export function PurchasePage() {
           payment={payment}
           cards={customer.cards}
           onClose={() => setPaying(false)}
+        />
+      )}
+      {returnInfo && (
+        <ReturnInfoSheet
+          shop={store?.name ?? ''}
+          address={point ? `${point.name}, ${point.address}` : undefined}
+          downPayment={details?.downPayment ?? 0}
+          onClose={() => setReturnInfo(false)}
         />
       )}
       {reviewing && (

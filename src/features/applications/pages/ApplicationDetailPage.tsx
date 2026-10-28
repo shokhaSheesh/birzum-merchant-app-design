@@ -1,4 +1,4 @@
-import { ArrowLeft, ChevronRight, Download, PackageCheck, PencilLine } from 'lucide-react'
+import { ArrowLeft, ChevronRight, Download, Info, PackageCheck, PencilLine } from 'lucide-react'
 import { useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import { applicationStatusTone } from '@/entities/clients/applicationStatus'
@@ -38,6 +38,7 @@ import { SegmentedTabs } from '@/shared/ui/SegmentedTabs'
 import { StatusBadge } from '@/shared/ui/StatusBadge'
 import { HandOverSheet } from '../components/HandOverSheet'
 import { RejectSheet } from '../components/RejectSheet'
+import { ReturnSheet } from '../components/ReturnSheet'
 import { downloadContract } from '@/entities/clients/contractPdf'
 
 export function ApplicationDetailPage() {
@@ -49,6 +50,7 @@ export function ApplicationDetailPage() {
   const [statusOpen, setStatusOpen] = useState(false)
   const [rejecting, setRejecting] = useState(false)
   const [cancelling, setCancelling] = useState(false)
+  const [returning, setReturning] = useState(false)
   const me = useActor()
   const locations = locationsStore.useAll()
   const [busy, setBusy] = useState<'approve' | 'handOver' | null>(null)
@@ -78,6 +80,8 @@ export function ApplicationDetailPage() {
     if (status === 'rejected') setRejecting(true)
     else if (status === 'processing') void approve()
     else if (status === 'handed') setHandingOver(true)
+    // After hand-over, cancelling means the goods came back: the client's SMS code confirms it
+    else if (status === 'cancelled' && found.application.status === 'handed') setReturning(true)
     else if (status === 'cancelled') setCancelling(true)
     else closeApplication(found.application.id, me)
   }
@@ -118,8 +122,16 @@ export function ApplicationDetailPage() {
             </div>
           )}
           {found.application.status === 'cancelled' && (
-            <div className="-mt-3">
+            <div className="-mt-3 flex flex-col gap-2">
               <CancelNote application={found.application} />
+              {found.application.returnReason && !!found.application.details?.downPayment && (
+                <p className="flex gap-2.5 rounded-control bg-warning-soft px-4 py-3 text-sm text-warning">
+                  <Info size={18} className="mt-0.5 shrink-0" />
+                  {t('return.downPayment.reminder', {
+                    amount: formatSum(found.application.details.downPayment),
+                  })}
+                </p>
+              )}
             </div>
           )}
 
@@ -170,7 +182,10 @@ export function ApplicationDetailPage() {
                     title={t('application.changeStatus')}
                     options={nextStatuses.map((status) => ({
                       value: status,
-                      label: t(`application.status.${status}`),
+                      label:
+                        status === 'cancelled' && found.application.status === 'handed'
+                          ? t('return.option')
+                          : t(`application.status.${status}`),
                     }))}
                     value={null}
                     onChange={changeStatus}
@@ -311,6 +326,14 @@ export function ApplicationDetailPage() {
       )}
 
       {handingOver && <HandOverSheet onClose={() => setHandingOver(false)} onConfirm={handOver} />}
+      {returning && found && (
+        <ReturnSheet
+          application={found.application}
+          phone={found.client.phone}
+          by={me}
+          onClose={() => setReturning(false)}
+        />
+      )}
       {rejecting && <RejectSheet onClose={() => setRejecting(false)} onReject={reject} />}
       {cancelling && found && (
         <CancelSheet

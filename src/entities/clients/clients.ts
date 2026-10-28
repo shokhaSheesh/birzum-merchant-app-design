@@ -65,6 +65,13 @@ export type ApplicationDetails = {
 
 export const REJECT_REASONS = ['noStock', 'unverified', 'limit', 'clientDeclined', 'other'] as const
 export type RejectReason = (typeof REJECT_REASONS)[number]
+/**
+ * Why goods were taken back after hand-over. The client brings them to the shop; the seller
+ * picks the reason and the client's SMS code confirms it, which cancels the contract.
+ */
+export const RETURN_REASONS = ['changedMind', 'faulty', 'other'] as const
+export type ReturnReason = (typeof RETURN_REASONS)[number]
+
 /** Why an application was turned down. The shopper reads it too. */
 export type Rejection = { reason: RejectReason; comment: string }
 
@@ -72,7 +79,8 @@ export type Rejection = { reason: RejectReason; comment: string }
 export const NEXT_STATUSES: Record<ApplicationStatus, ApplicationStatus[]> = {
   pending: ['processing', 'rejected'],
   processing: ['handed', 'rejected', 'cancelled'],
-  handed: ['closed'],
+  // Cancelling a handed-over contract is a return: the client's SMS code confirms it
+  handed: ['closed', 'cancelled'],
   rejected: [],
   closed: [],
   cancelled: [],
@@ -112,6 +120,8 @@ export type Application = {
   handoverPhotos?: string[]
   /** Why it was cancelled, in the words of whoever cancelled it. */
   cancelComment?: string
+  /** Set when it was cancelled after hand-over because the goods came back to the shop. */
+  returnReason?: ReturnReason
   /** Every status change, oldest first. Sample applications get theirs from `historyOf`. */
   history?: HistoryEntry[]
 }
@@ -255,6 +265,7 @@ export const seedClients: Client[] = [
         installmentTotal: 5_796_000,
         status: 'handed',
         contractNumber: 'B-33410/26',
+        handoverPhotos: [user2Photo],
         details: {
           products: [{ name: 'Televizor 43', price: 4_200_000, quantity: 1, productId: 'p2' }],
           downPayment: 0,

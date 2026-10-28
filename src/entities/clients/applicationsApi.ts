@@ -6,6 +6,7 @@ import type {
   ApplicationProduct,
   ApplicationStatus,
   Rejection,
+  ReturnReason,
   Term,
 } from './clients'
 import { shortName } from './clientName'
@@ -118,6 +119,33 @@ export async function handOverApplication(number: number, by: Actor, photos: str
 export async function cancelApplication(number: number, comment: string, by: Actor) {
   await delay(500)
   move(number, 'cancelled', by, { cancelComment: comment }, comment)
+}
+
+/** Sends the client the SMS code that confirms a return. Mock: always sent. */
+export async function sendReturnCode(_number: number) {
+  await delay(600)
+}
+
+/**
+ * The shop takes the goods back. The code the client read out from their SMS confirms it, and
+ * the contract is cancelled; the down payment is the shop's to give back. Mock: "000000" is wrong.
+ */
+export async function returnApplication(
+  number: number,
+  code: string,
+  reason: ReturnReason,
+  comment: string,
+  by: Actor,
+) {
+  await delay(700)
+  if (code === '000000') throw new Error('invalid_code')
+  move(
+    number,
+    'cancelled',
+    by,
+    { returnReason: reason, cancelComment: comment || undefined },
+    comment || undefined,
+  )
 }
 
 /** Merchant side: mark a running installment as fully paid. */
