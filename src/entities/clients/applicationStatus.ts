@@ -3,6 +3,7 @@ import type { ApplicationStatus } from './clients'
 
 export const applicationStatusTone: Record<ApplicationStatus, StatusTone> = {
   pending: 'warning',
+  creating: 'info',
   processing: 'info',
   handed: 'success',
   rejected: 'danger',

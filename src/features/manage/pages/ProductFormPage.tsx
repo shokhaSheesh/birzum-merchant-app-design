@@ -1,4 +1,4 @@
-import { Package, Plus, Trash2, X } from 'lucide-react'
+import { CircleAlert, Clock, Package, Plus, Trash2, X } from 'lucide-react'
 import { useState, type FormEvent } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { attributesStore, SWATCH_PRESETS, type Attribute } from '@/entities/catalog/attributes'
@@ -8,8 +8,10 @@ import {
   CATEGORIES,
   OWN_STORE_ID,
   productsStore,
+  resubmitted,
   variantKey,
   type Category,
+  type Product,
 } from '@/entities/catalog/products'
 import { subcategoriesOf } from '@/entities/catalog/subcategories'
 import type { Lang, LocalizedText } from '@/shared/i18n/dictionaries'
@@ -173,13 +175,15 @@ export function ProductFormPage() {
       images,
       valueImages,
       active,
+      // Every saved change goes to the admin; an approved product stays on sale meanwhile
+      moderation: resubmitted(existing),
       variations,
       variants,
       specs: specs
         .filter((spec) => !isBlank(spec.label) && !isBlank(spec.value))
         .map((spec) => ({ label: fillMissing(spec.label), value: fillMissing(spec.value) })),
     })
-    toast(t('toast.saved'))
+    toast(t('moderation.sent'))
     navigate(-1)
   }
 
@@ -204,6 +208,7 @@ export function ProductFormPage() {
     >
       <IconBadge icon={Package} />
       <ScreenIntro title={t(existing ? 'product.edit' : 'product.new')} />
+      {existing && <ModerationNote product={existing} />}
 
       <Section
         title={t('product.photos')}
@@ -574,5 +579,32 @@ function NewValueSheet({ attribute, onClose, onAdded }: NewValueProps) {
         </Button>
       </form>
     </Sheet>
+  )
+}
+
+/** Where the product stands with the admin, and what the merchant does next. */
+function ModerationNote({ product }: { product: Product }) {
+  const { t } = useI18n()
+  const { moderation } = product
+  if (moderation.state === 'approved') return null
+  if (moderation.state === 'rejected') {
+    return (
+      <div className="flex gap-2.5 rounded-control bg-danger-soft px-4 py-3 text-danger">
+        <CircleAlert size={20} className="mt-0.5 shrink-0" />
+        <div className="flex min-w-0 flex-col gap-0.5">
+          <p className="font-semibold">
+            {t('moderation.rejected', { reason: t(`moderation.reason.${moderation.reason}`) })}
+          </p>
+          {moderation.comment && <p className="text-sm break-words">{moderation.comment}</p>}
+          <p className="text-sm">{t('moderation.fix')}</p>
+        </div>
+      </div>
+    )
+  }
+  return (
+    <p className="flex gap-2.5 rounded-control bg-warning-soft px-4 py-3 text-sm text-warning">
+      <Clock size={18} className="mt-0.5 shrink-0" />
+      {t(moderation.wasLive ? 'moderation.pending.live' : 'moderation.pending.new')}
+    </p>
   )
 }

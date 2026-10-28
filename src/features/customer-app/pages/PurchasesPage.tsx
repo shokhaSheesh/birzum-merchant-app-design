@@ -28,9 +28,14 @@ export function PurchasesPage() {
 
   const dayStart = range.from ? new Date(range.from).setHours(0, 0, 0, 0) : -Infinity
   const dayEnd = range.to ? new Date(range.to).setHours(23, 59, 59, 999) : Infinity
+  // Faol is every contract that exists: made by FlexSoft (waiting for the goods) or running
+  const matches = (application: (typeof all)[number]) => {
+    const current = customerStatus(application)
+    return status === 'active' ? current === 'active' || current === 'approved' : current === status
+  }
   const applications = all.filter(
     (application) =>
-      (status === 'all' || customerStatus(application) === status) &&
+      (status === 'all' || matches(application)) &&
       application.date.getTime() >= dayStart &&
       application.date.getTime() <= dayEnd,
   )
@@ -55,10 +60,12 @@ export function PurchasesPage() {
             // Faol comes first and is chosen when the screen opens
             { value: 'active', label: t('cstatus.active') },
             { value: 'all', label: t('applications.filter.all') },
-            ...CUSTOMER_STATUSES.filter((value) => value !== 'active').map((value) => ({
-              value,
-              label: t(`cstatus.${value}`),
-            })),
+            ...CUSTOMER_STATUSES.filter((value) => value !== 'active' && value !== 'approved').map(
+              (value) => ({
+                value,
+                label: t(`cstatus.${value}`),
+              }),
+            ),
           ]}
           value={status}
           onChange={setStatus}

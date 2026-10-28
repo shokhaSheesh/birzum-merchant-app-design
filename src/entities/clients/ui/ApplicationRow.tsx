@@ -6,6 +6,7 @@ import { formatDate, formatSum, groupDigits } from '@/shared/lib/format'
 import { StatusBadge } from '@/shared/ui/StatusBadge'
 import { applicationStatusTone } from '../applicationStatus'
 import type { Application } from '../clients'
+import { ConfirmCountdown } from './ConfirmCountdown'
 
 type Props = {
   application: Application
@@ -29,7 +30,15 @@ export function ApplicationRow({ application, clientName }: Props) {
           </div>
           {clientName && <p className="truncate">{clientName}</p>}
           <div className="flex items-baseline justify-between gap-3">
-            <p className="text-sm text-ink-muted">{formatDate(application.date)}</p>
+            <p className="text-sm text-ink-muted">
+              {formatDate(application.date)}
+              {application.status === 'pending' && (
+                <>
+                  {' · '}
+                  <ConfirmCountdown application={application} />
+                </>
+              )}
+            </p>
             {application.installmentTotal > 0 && (
               <p className="font-semibold">{formatSum(application.installmentTotal)}</p>
             )}

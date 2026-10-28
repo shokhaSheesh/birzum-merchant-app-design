@@ -5,7 +5,7 @@ import { useI18n } from '@/shared/i18n/useI18n'
 import { Button } from '@/shared/ui/Button'
 import { EmptyState } from '@/shared/ui/EmptyState'
 import { PageHeader } from '@/shared/ui/PageHeader'
-import { StatusBadge } from '@/shared/ui/StatusBadge'
+import { StatusBadge, type StatusTone } from '@/shared/ui/StatusBadge'
 
 type ScreenProps = {
   title: string
@@ -54,10 +54,12 @@ type RowProps = {
   lines: string[]
   /** Marks a record that is switched off. */
   inactiveLabel?: string
+  /** A status worth seeing in the list, e.g. a product waiting for the admin. */
+  badge?: { label: string; tone: StatusTone }
 }
 
 /** One record in a management list. Opens its form. */
-export function ListRow({ to, leading, title, lines, inactiveLabel }: RowProps) {
+export function ListRow({ to, leading, title, lines, inactiveLabel, badge }: RowProps) {
   return (
     <li className="border-b border-line last:border-b-0">
       <Link to={to} className="flex items-center gap-3 py-3">
@@ -65,6 +67,7 @@ export function ListRow({ to, leading, title, lines, inactiveLabel }: RowProps) 
         <div className="flex min-w-0 flex-1 flex-col gap-0.5">
           <div className="flex items-center gap-2">
             <p className="min-w-0 truncate font-semibold">{title}</p>
+            {badge && <StatusBadge tone={badge.tone}>{badge.label}</StatusBadge>}
             {inactiveLabel && <StatusBadge tone="neutral">{inactiveLabel}</StatusBadge>}
           </div>
           {lines.map((line) => (

@@ -34,6 +34,26 @@ export type Store = {
 /** One option group on a product: an attribute from the directory and which of its values apply. */
 export type ProductVariation = { attributeId: string; valueIds: string[] }
 
+/** Why the admin turned a product down. The merchant reads it and fixes the product. */
+export const MODERATION_REASONS = [
+  'photo',
+  'text',
+  'category',
+  'price',
+  'forbidden',
+  'other',
+] as const
+export type ModerationReason = (typeof MODERATION_REASONS)[number]
+
+/**
+ * Every new or changed product goes to the admin first. `wasLive` keeps an edited product on
+ * sale while the change is checked; a brand-new one waits off the shelf.
+ */
+export type Moderation =
+  | { state: 'pending'; submittedAt: Date; wasLive: boolean }
+  | { state: 'approved'; decidedAt: Date }
+  | { state: 'rejected'; decidedAt: Date; reason: ModerationReason; comment: string }
+
 export type Product = {
   id: string
   name: LocalizedText
@@ -63,7 +83,20 @@ export type Product = {
   valueImages: Record<string, string[]>
   /** Hidden products stay in the merchant's list but not in the client app. */
   active: boolean
+  moderation: Moderation
 }
+
+/** The admin has passed it at least once, so it can be sold and stocked. */
+export const isApproved = (product: Product) =>
+  product.moderation.state === 'approved' ||
+  (product.moderation.state === 'pending' && product.moderation.wasLive)
+
+/** The status a saved change gets: back to the admin, staying on sale if it already was. */
+export const resubmitted = (product: Product | undefined): Moderation => ({
+  state: 'pending',
+  submittedAt: new Date(),
+  wasLive: product ? isApproved(product) : false,
+})
 
 // Invented sample shops and catalogue. Replace with the API.
 export const stores: Store[] = [
@@ -91,6 +124,8 @@ type SeedProduct = {
   photos?: string[]
   /** Photos of one color, by the color's name. They replace `photos` while it is chosen. */
   colorPhotos?: Record<string, string[]>
+  /** Approved unless set. */
+  moderation?: Moderation
 }
 
 const colors = (...labels: string[]): SeedVariation => ({
@@ -428,10 +463,57 @@ function fromSeed(seed: SeedProduct): Product {
       ]),
     ),
     active: true,
+    moderation: seed.moderation ?? { state: 'approved', decidedAt: new Date(2026, 9, 1) },
   }
 }
 
-export const productsStore = createStore<Product>(seedProducts.map(fromSeed))
+const hoursAgo = (hours: number) => new Date(Date.now() - hours * 60 * 60 * 1000)
+
+// The shop's own products sent to the admin: one waiting, one turned down. No stock until approved
+const submittedProducts: SeedProduct[] = [
+  {
+    id: 'p20',
+    name: 'Samsung Galaxy A57',
+    category: 'phones',
+    subcategory: 'smartphones',
+    brand: 'Samsung',
+    price: 5_400_000,
+    storeId: 's1',
+    stock: 0,
+    description: 'Katta AMOLED ekranli smartfon, 50 MP kamera va 5000 mAh batareya.',
+    variations: [],
+    specs: [
+      ['Ekran', '6,7 dyuym, AMOLED'],
+      ['Kafolat', '12 oy'],
+    ],
+    photos: [photo3],
+    moderation: { state: 'pending', submittedAt: hoursAgo(2), wasLive: false },
+  },
+  {
+    id: 'p21',
+    name: 'Televizor 32',
+    category: 'tvs',
+    brand: 'Artel',
+    price: 2_100_000,
+    storeId: 's1',
+    stock: 0,
+    description: '32 dyuymli HD televizor.',
+    variations: [],
+    specs: [['Diagonal', '32 dyuym']],
+    photos: [photo9],
+    moderation: {
+      state: 'rejected',
+      decidedAt: hoursAgo(20),
+      reason: 'photo',
+      comment:
+        'Rasmda boshqa diagonalli televizor koʻrsatilgan. 32 dyuymli modelning rasmini yuklang.',
+    },
+  },
+]
+
+export const productsStore = createStore<Product>(
+  [...seedProducts, ...submittedProducts].map(fromSeed),
+)
 
 /** Removes sold pieces from stock: from the given location first, then one after another. */
 export function takeStock(
@@ -486,7 +568,8 @@ export function galleryOf(product: Product, lang: Lang, valueIds: string[] = [])
 /** What shoppers can see: visible products from every shop. */
 export const useCatalog = () => {
   const all = productsStore.useAll()
-  return useMemo(() => all.filter((product) => product.active), [all])
+  // A product shoppers see: switched on by the merchant and passed by the admin
+  return useMemo(() => all.filter((product) => product.active && isApproved(product)), [all])
 }
 
 export const getProduct = (id: string | undefined) => productsStore.get(id)

@@ -7,10 +7,13 @@ export type MaritalStatus = (typeof MARITAL_STATUSES)[number]
 
 export type IncomeSource = 'salary' | 'business' | 'pension' | 'other'
 /**
- * `pending`: Birzum approved it and it waits for the merchant to confirm.
+ * `pending`: a shopper's order waiting for the shop to confirm it has the goods (24 hours).
+ * `creating`: confirmed and sent to FlexSoft, which is drawing up the contract.
+ * `processing`: FlexSoft made the contract; it waits for the goods to be handed over.
+ * `handed`: the client has the goods, so the contract is confirmed and payments run.
  */
 export type ApplicationStatus =
-  'pending' | 'processing' | 'handed' | 'rejected' | 'closed' | 'cancelled'
+  'pending' | 'creating' | 'processing' | 'handed' | 'rejected' | 'closed' | 'cancelled'
 
 export const TERMS = [3, 6, 9, 12, 18, 24] as const
 /** Installment length in months. */
@@ -64,7 +67,8 @@ export type ApplicationDetails = {
 }
 
 export const REJECT_REASONS = ['noStock', 'unverified', 'limit', 'clientDeclined', 'other'] as const
-export type RejectReason = (typeof REJECT_REASONS)[number]
+/** `timeout` is set by the system when the shop does not answer within 24 hours; nobody picks it. */
+export type RejectReason = (typeof REJECT_REASONS)[number] | 'timeout'
 /**
  * Why goods were taken back after hand-over. The client brings them to the shop; the seller
  * picks the reason and the client's SMS code confirms it, which cancels the contract.
@@ -77,8 +81,10 @@ export type Rejection = { reason: RejectReason; comment: string }
 
 /** The statuses an application can move to from each one. Empty means it is final. */
 export const NEXT_STATUSES: Record<ApplicationStatus, ApplicationStatus[]> = {
-  pending: ['processing', 'rejected'],
-  processing: ['handed', 'rejected', 'cancelled'],
+  pending: ['creating', 'rejected'],
+  // FlexSoft moves it on by itself once the contract is made
+  creating: [],
+  processing: ['handed', 'cancelled'],
   // Cancelling a handed-over contract is a return: the client's SMS code confirms it
   handed: ['closed', 'cancelled'],
   rejected: [],
@@ -524,6 +530,7 @@ export const appShoppers: Client[] = [
 /** Every status, in order. */
 export const APPLICATION_STATUSES: ApplicationStatus[] = [
   'pending',
+  'creating',
   'processing',
   'handed',
   'closed',

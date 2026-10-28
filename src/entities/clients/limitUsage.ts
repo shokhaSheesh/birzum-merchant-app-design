@@ -14,7 +14,10 @@ export function usedShare(client: Client) {
     client.applications.reduce((share, application) => {
       const details = application.details
       if (!details) return share
-      const open = application.status === 'pending' || application.status === 'processing'
+      const open =
+        application.status === 'pending' ||
+        application.status === 'creating' ||
+        application.status === 'processing'
       const running = application.status === 'handed'
       if (!open && !running) return share
       const financed = application.goodsTotal - details.downPayment

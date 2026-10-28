@@ -8,6 +8,7 @@ import { paymentSchedule } from './payments'
  */
 export const CUSTOMER_STATUSES = [
   'review',
+  'creating',
   'approved',
   'active',
   'overdue',
@@ -19,6 +20,7 @@ export type CustomerStatus = (typeof CUSTOMER_STATUSES)[number]
 
 const fromStage: Record<ApplicationStatus, CustomerStatus> = {
   pending: 'review',
+  creating: 'creating',
   processing: 'approved',
   handed: 'active',
   closed: 'closed',
@@ -38,6 +40,7 @@ export function customerStatus(application: Application): CustomerStatus {
 
 export const customerStatusTone: Record<CustomerStatus, StatusTone> = {
   review: 'warning',
+  creating: 'info',
   approved: 'info',
   active: 'success',
   overdue: 'danger',

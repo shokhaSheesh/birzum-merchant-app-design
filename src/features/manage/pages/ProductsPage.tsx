@@ -61,6 +61,13 @@ export function ProductsPage() {
                 count: String(stockOf(product)),
               })}`,
             ]}
+            badge={
+              product.moderation.state === 'pending'
+                ? { label: t('moderation.state.pending'), tone: 'warning' }
+                : product.moderation.state === 'rejected'
+                  ? { label: t('moderation.state.rejected'), tone: 'danger' }
+                  : undefined
+            }
             inactiveLabel={product.active ? undefined : t('product.hidden')}
           />
         ))}

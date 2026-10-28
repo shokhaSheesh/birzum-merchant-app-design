@@ -1,8 +1,22 @@
-import { ArrowLeft, ChevronRight, Download, Info, PackageCheck, PencilLine } from 'lucide-react'
+import {
+  ArrowLeft,
+  ChevronRight,
+  Clock,
+  Download,
+  Info,
+  Loader,
+  PackageCheck,
+  PencilLine,
+} from 'lucide-react'
 import { useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import { applicationStatusTone } from '@/entities/clients/applicationStatus'
-import { NEXT_STATUSES, type ApplicationStatus, type Rejection } from '@/entities/clients/clients'
+import {
+  NEXT_STATUSES,
+  type Application,
+  type ApplicationStatus,
+  type Rejection,
+} from '@/entities/clients/clients'
 import {
   approveApplication,
   cancelApplication,
@@ -15,6 +29,7 @@ import { hasSchedule } from '@/entities/clients/payments'
 import { FulfilmentRows } from '@/entities/clients/ui/FulfilmentRows'
 import { PaymentSchedule } from '@/entities/clients/ui/PaymentSchedule'
 import { CancelNote } from '@/entities/clients/ui/CancelNote'
+import { useConfirmTimeLeft } from '@/entities/clients/useConfirmTimeLeft'
 import { CancelSheet } from '@/entities/clients/ui/CancelSheet'
 import { HistoryList } from '@/entities/clients/ui/HistoryList'
 import { RejectionNote } from '@/entities/clients/ui/RejectionNote'
@@ -78,7 +93,7 @@ export function ApplicationDetailPage() {
   const changeStatus = (status: ApplicationStatus) => {
     if (!found) return
     if (status === 'rejected') setRejecting(true)
-    else if (status === 'processing') void approve()
+    else if (status === 'creating') void approve()
     else if (status === 'handed') setHandingOver(true)
     // After hand-over, cancelling means the goods came back: the client's SMS code confirms it
     else if (status === 'cancelled' && found.application.status === 'handed') setReturning(true)
@@ -115,6 +130,16 @@ export function ApplicationDetailPage() {
               {t('review.number', { number: groupDigits(found.application.id) })}
             </h1>
           </div>
+
+          {found.application.status === 'pending' && (
+            <PendingBanner application={found.application} />
+          )}
+          {found.application.status === 'creating' && (
+            <p className="-mt-3 flex gap-2.5 rounded-control bg-surface px-4 py-3 text-sm text-navy-700">
+              <Loader size={18} className="mt-0.5 shrink-0 animate-spin" />
+              {t('application.creating.note')}
+            </p>
+          )}
 
           {found.application.rejection && (
             <div className="-mt-3">
@@ -342,5 +367,21 @@ export function ApplicationDetailPage() {
         />
       )}
     </div>
+  )
+}
+
+/** A shopper's order waits for the shop: how long is left before it is rejected by itself. */
+function PendingBanner({ application }: { application: Application }) {
+  const { t } = useI18n()
+  const { hours, text } = useConfirmTimeLeft(application)
+  return (
+    <p
+      className={`-mt-3 flex gap-2.5 rounded-control px-4 py-3 text-sm ${
+        hours < 3 ? 'bg-danger-soft text-danger' : 'bg-warning-soft text-warning'
+      }`}
+    >
+      <Clock size={18} className="mt-0.5 shrink-0" />
+      {t('application.confirm.banner', { time: text })}
+    </p>
   )
 }

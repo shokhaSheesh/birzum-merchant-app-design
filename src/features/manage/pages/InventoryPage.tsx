@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { ProductPicture } from '@/entities/catalog/ProductPicture'
 import {
   OWN_STORE_ID,
+  isApproved,
   productsStore,
   soldCombos,
   variantKey,
@@ -81,27 +82,33 @@ export function InventoryPage() {
                       </p>
                     </div>
                   </div>
-                  {combos.map((combo) => {
-                    const key = variantKey(combo)
-                    const name =
-                      combo.length > 0 ? names(product, combo).join(' · ') : t('inventory.qty')
-                    return (
-                      <div
-                        key={key}
-                        className="flex items-center justify-between gap-3 border-t border-line pt-2 first:border-t-0"
-                      >
-                        <p className="min-w-0 truncate text-sm">{name}</p>
-                        <QuantityStepper
-                          size="sm"
-                          label={`${tl(product.name)}, ${name}`}
-                          value={here[key] ?? 0}
-                          min={0}
-                          max={MAX_STOCK}
-                          onChange={(quantity) => setStock(product, locationId, key, quantity)}
-                        />
-                      </div>
-                    )
-                  })}
+                  {!isApproved(product) ? (
+                    <p className="border-t border-line pt-2 text-sm text-ink-muted">
+                      {t('moderation.stockLocked')}
+                    </p>
+                  ) : (
+                    combos.map((combo) => {
+                      const key = variantKey(combo)
+                      const name =
+                        combo.length > 0 ? names(product, combo).join(' · ') : t('inventory.qty')
+                      return (
+                        <div
+                          key={key}
+                          className="flex items-center justify-between gap-3 border-t border-line pt-2 first:border-t-0"
+                        >
+                          <p className="min-w-0 truncate text-sm">{name}</p>
+                          <QuantityStepper
+                            size="sm"
+                            label={`${tl(product.name)}, ${name}`}
+                            value={here[key] ?? 0}
+                            min={0}
+                            max={MAX_STOCK}
+                            onChange={(quantity) => setStock(product, locationId, key, quantity)}
+                          />
+                        </div>
+                      )
+                    })
+                  )}
                 </li>
               )
             })}

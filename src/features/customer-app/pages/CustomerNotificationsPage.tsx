@@ -25,7 +25,8 @@ import { PageHeader } from '@/shared/ui/PageHeader'
 
 const looks: Record<ApplicationStatus, { icon: LucideIcon; tone: string; text: string }> = {
   pending: { icon: Send, tone: 'bg-warning-soft text-warning', text: 'cnotif.pending' },
-  processing: { icon: ThumbsUp, tone: 'bg-green-200 text-brand', text: 'cnotif.processing' },
+  creating: { icon: ThumbsUp, tone: 'bg-green-200 text-brand', text: 'cnotif.creating' },
+  processing: { icon: CircleCheck, tone: 'bg-green-200 text-brand', text: 'cnotif.processing' },
   handed: { icon: CircleCheck, tone: 'bg-success-soft text-success', text: 'cnotif.processing' },
   closed: { icon: CircleCheck, tone: 'bg-success-soft text-success', text: 'notification.closed' },
   rejected: { icon: CircleX, tone: 'bg-danger-soft text-danger', text: 'notification.rejected' },
@@ -139,7 +140,10 @@ export function CustomerNotificationsPage() {
       title: t(`${text}.title` as TranslationKey),
       body: t(`${text}.body` as TranslationKey, { number: groupDigits(application.id) }),
       date: application.date,
-      unread: application.status === 'pending' || application.status === 'processing',
+      unread:
+        application.status === 'pending' ||
+        application.status === 'creating' ||
+        application.status === 'processing',
       to: customerPurchasePath(application.id),
     })
   }

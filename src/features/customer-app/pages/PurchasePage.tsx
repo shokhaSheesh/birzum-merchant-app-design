@@ -1,4 +1,4 @@
-import { Download, Star, Undo2 } from 'lucide-react'
+import { Download, Info, Star, Undo2 } from 'lucide-react'
 import { useState } from 'react'
 import { useParams } from 'react-router-dom'
 import { getStore, OWN_STORE_ID } from '@/entities/catalog/products'
@@ -16,6 +16,7 @@ import { PaymentSchedule } from '@/entities/clients/ui/PaymentSchedule'
 import { ProductsSummary } from '@/entities/clients/ui/ProductsSummary'
 import { CancelNote } from '@/entities/clients/ui/CancelNote'
 import { CancelSheet } from '@/entities/clients/ui/CancelSheet'
+import { ConfirmCountdown } from '@/entities/clients/ui/ConfirmCountdown'
 import { RejectionNote } from '@/entities/clients/ui/RejectionNote'
 import { usePickupPoints } from '@/entities/merchant/usePickupPoints'
 import { useCustomer } from '@/entities/session/customer'
@@ -121,6 +122,8 @@ export function PurchasePage() {
             {t('review.number', { number: groupDigits(application.id) })}
           </h1>
         </div>
+
+        <StatusNote application={application} />
 
         {application.rejection && (
           <div className="-mt-3">
@@ -274,6 +277,26 @@ export function PurchasePage() {
           }
         />
       )}
+    </div>
+  )
+}
+
+/** What the shopper is waiting for while the order goes from the shop to FlexSoft and back. */
+function StatusNote({ application }: { application: Application }) {
+  const { t } = useI18n()
+  const status = customerStatus(application)
+  if (status !== 'review' && status !== 'creating' && status !== 'approved') return null
+  return (
+    <div className="-mt-3 flex gap-2.5 rounded-control bg-surface px-4 py-3 text-sm text-navy-700">
+      <Info size={18} className="mt-0.5 shrink-0" />
+      <div className="flex flex-col gap-1">
+        <p>{t(`cstatus.note.${status}`)}</p>
+        {status === 'review' && (
+          <p className="font-semibold">
+            <ConfirmCountdown application={application} />
+          </p>
+        )}
+      </div>
     </div>
   )
 }

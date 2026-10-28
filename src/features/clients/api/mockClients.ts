@@ -12,7 +12,7 @@ import {
   type MaritalStatus,
   type Term,
 } from '@/entities/clients/clients'
-import { takeStockFor } from '@/entities/clients/applicationsApi'
+import { awaitFlexSoftContract, takeStockFor } from '@/entities/clients/applicationsApi'
 import { toCard } from '@/entities/clients/cardsApi'
 import { clientsStore } from '@/entities/clients/clientsStore'
 import { shopperCode } from '@/entities/clients/shopperCode'
@@ -121,15 +121,16 @@ export async function createApplication(
   const client = clientsStore.get(clientId)
   if (!client) return
   const now = new Date()
-  // Made in the shop, so the merchant's own confirmation starts the contract
+  // Made in the shop, so there is nothing to confirm: it goes straight to FlexSoft
   const created: Application = {
     ...application,
     date: now,
-    status: 'processing',
-    history: [{ status: 'processing', at: now, by }],
+    status: 'creating',
+    history: [{ status: 'creating', at: now, by }],
   }
   takeStockFor(application.details?.products ?? [], application.locationId)
   clientsStore.update(clientId, { applications: [created, ...client.applications] })
+  awaitFlexSoftContract(application.id)
 }
 
 export const SHOPPER_SCAN_MOCK_MS = 3000

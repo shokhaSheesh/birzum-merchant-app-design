@@ -1,6 +1,8 @@
 import type { Actor, Application, HistoryEntry } from './clients'
 
 export const SYSTEM: Actor = { kind: 'system', name: '' }
+/** FlexSoft draws up the contract and moves the application on by itself. */
+export const FLEXSOFT: Actor = { kind: 'system', name: 'FlexSoft' }
 // The sample applications were all handled by the same seller
 const SAMPLE_STAFF: Actor = { kind: 'staff', name: 'Aziz Karimov' }
 
@@ -16,7 +18,9 @@ export function historyOf(application: Application): HistoryEntry[] {
 
   const { status, date } = application
   if (status === 'pending') return []
-  const log: HistoryEntry[] = [{ status: 'processing', at: date, by: SAMPLE_STAFF }]
+  const log: HistoryEntry[] = [{ status: 'creating', at: date, by: SAMPLE_STAFF }]
+  if (status === 'creating') return log
+  log.push({ status: 'processing', at: later(date, 0.05), by: FLEXSOFT })
   if (status === 'handed' || status === 'closed') {
     log.push({ status: 'handed', at: later(date, 2), by: SAMPLE_STAFF })
   }

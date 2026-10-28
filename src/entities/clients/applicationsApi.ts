@@ -10,7 +10,7 @@ import type {
   Term,
 } from './clients'
 import { shortName } from './clientName'
-import { historyOf, SYSTEM } from './history'
+import { FLEXSOFT, historyOf, SYSTEM } from './history'
 import { clientsStore } from './clientsStore'
 import { paymentSchedule, remainingOf } from './payments'
 import { installmentTerms } from './installment'
@@ -89,12 +89,34 @@ export async function submitApplication(
   return id
 }
 
-/** Merchant side: accept a shopper's application. It moves on to being drawn up. */
+/** Mock: how long FlexSoft takes to draw up a contract. In real life minutes, sometimes hours. */
+export const FLEXSOFT_CONTRACT_MOCK_MS = 6000
+
+/**
+ * The application goes to FlexSoft and waits there as "Shartnoma yaratilmoqda". When FlexSoft
+ * answers, the contract has its number and waits for the goods to be handed over.
+ */
+export function sendToFlexSoft(number: number, by: Actor) {
+  move(number, 'creating', by)
+  awaitFlexSoftContract(number)
+}
+
+/** Mock FlexSoft's answer for an application already in `creating`. */
+export function awaitFlexSoftContract(number: number) {
+  setTimeout(() => {
+    if (find(number)?.status !== 'creating') return
+    move(number, 'processing', FLEXSOFT, {
+      contractNumber: `B-${number % 100_000}/${String(new Date().getFullYear()).slice(2)}`,
+    })
+  }, FLEXSOFT_CONTRACT_MOCK_MS)
+}
+
+/** Merchant side: the shop has the goods, so it confirms the order and it goes to FlexSoft. */
 export async function approveApplication(number: number, by: Actor) {
   await delay(900)
   const application = find(number)
   takeStockFor(application?.details?.products ?? [], application?.locationId)
-  move(number, 'processing', by)
+  sendToFlexSoft(number, by)
 }
 
 export async function rejectApplication(number: number, rejection: Rejection, by: Actor) {

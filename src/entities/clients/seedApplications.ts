@@ -81,8 +81,9 @@ export function withGeneratedApplications(clients: Client[]): Client[] {
             status,
             goodsTotal: product.price,
             installmentTotal: terms.installmentTotal,
+            // FlexSoft numbers the contract when it makes it, before hand-over
             contractNumber:
-              status === 'closed' || status === 'handed'
+              status === 'closed' || status === 'handed' || status === 'processing'
                 ? `B-${number - FIRST_NUMBER + 37_100}/${String(date.getFullYear()).slice(2)}`
                 : undefined,
             details: {
