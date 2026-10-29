@@ -10,6 +10,14 @@ export type StaffMember = {
   /** Nine digits after +998. */
   phone: string
   login: string
+  email?: string
+  /** JSHSHIR: 14 digits. */
+  pinfl?: string
+  /**
+   * True when the password was set by whoever created the account: FlexSoft asks for a new one
+   * at the first sign-in. The password itself goes to FlexSoft and is never kept here.
+   */
+  temporaryPassword?: boolean
   roleId: RoleId
   locationIds: string[]
   photoUrl?: string
@@ -27,6 +35,8 @@ export const staffStore = createStore<StaffMember>([
     lastName: 'Karimov',
     phone: '901112233',
     login: 'aziz.karimov',
+    email: 'aziz.karimov@mediapark.uz',
+    pinfl: '30111991012001',
     roleId: 'admin',
     locationIds: ['l1', 'l2', 'l3'],
     photoUrl: user4Photo,
@@ -38,6 +48,8 @@ export const staffStore = createStore<StaffMember>([
     lastName: 'Sobirova',
     phone: '935004411',
     login: 'madina.sobirova',
+    email: 'madina.sobirova@mediapark.uz',
+    pinfl: '30211992022001',
     roleId: 'admin',
     locationIds: ['l1'],
     active: true,
@@ -48,6 +60,8 @@ export const staffStore = createStore<StaffMember>([
     lastName: 'Umarov',
     phone: '977203090',
     login: 'sherzod.umarov',
+    email: 'sherzod.umarov@mediapark.uz',
+    pinfl: '30311993032001',
     roleId: 'seller',
     locationIds: ['l2'],
     active: true,
@@ -58,6 +72,8 @@ export const staffStore = createStore<StaffMember>([
     lastName: 'Aliyeva',
     phone: '901458899',
     login: 'nodira.aliyeva',
+    email: 'nodira.aliyeva@mediapark.uz',
+    pinfl: '30411994042001',
     roleId: 'seller',
     locationIds: ['l1'],
     active: false,

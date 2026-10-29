@@ -5,7 +5,7 @@ import { clientAddCardPath } from '@/shared/config/routes'
 import { useI18n } from '@/shared/i18n/useI18n'
 import { formatDate, formatSum } from '@/shared/lib/format'
 import { formatPassport } from '@/shared/lib/passport'
-import { formatPropiska } from '@/entities/address/regions'
+import { formatAddress } from '@/entities/address/regions'
 import { formatPhone } from '@/shared/lib/phone'
 import { Avatar } from '@/shared/ui/Avatar'
 import { EmptyState } from '@/shared/ui/EmptyState'
@@ -83,10 +83,10 @@ export function ClientDetailPage() {
                   <InfoRow label={t('field.birthDate')} value={formatDate(client.birthDate)} />
                   <InfoRow label={t('clients.pinfl')} value={client.pinfl} />
                   <InfoRow label={t('field.phone')} value={formatPhone(client.phone)} />
-                  {client.propiska && (
+                  {client.homeAddress && (
                     <InfoRow
-                      label={t('field.propiska')}
-                      value={formatPropiska(client.propiska, lang)}
+                      label={t('field.homeAddress')}
+                      value={formatAddress(client.homeAddress, lang)}
                     />
                   )}
                 </InfoList>

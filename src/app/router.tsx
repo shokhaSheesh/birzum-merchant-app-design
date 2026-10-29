@@ -17,6 +17,7 @@ import { CustomerContactsPage } from '@/features/customer-app/pages/CustomerCont
 import { CustomerAddCardPage } from '@/features/customer-app/pages/CustomerAddCardPage'
 import { CustomerProfilePage } from '@/features/customer-app/pages/CustomerProfilePage'
 import { MyQrPage } from '@/features/customer-app/pages/MyQrPage'
+import { SessionsPage } from '@/features/customer-app/pages/SessionsPage'
 import { FavoritesPage } from '@/features/customer-app/pages/FavoritesPage'
 import { CartPage } from '@/features/customer-app/pages/CartPage'
 import { CheckoutPage } from '@/features/customer-app/pages/CheckoutPage'
@@ -101,6 +102,7 @@ export const router = createBrowserRouter([
       { path: ROUTES.customerApp, element: <CustomerAuthPage /> },
       { path: ROUTES.customerPinSetup, element: <PinSetupPage /> },
       { path: ROUTES.customerSecurity, element: <SecurityPage /> },
+      { path: ROUTES.customerSessions, element: <SessionsPage /> },
       { path: ROUTES.customerPersonal, element: <PersonalPage /> },
       { path: ROUTES.customerChangePhone, element: <ChangePhonePage /> },
       { path: ROUTES.customerWelcome, element: <OnboardingPage /> },

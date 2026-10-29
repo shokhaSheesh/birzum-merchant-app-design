@@ -17,7 +17,8 @@ export function usedShare(client: Client) {
       const open =
         application.status === 'pending' ||
         application.status === 'creating' ||
-        application.status === 'processing'
+        application.status === 'processing' ||
+        application.status === 'received'
       const running = application.status === 'handed'
       if (!open && !running) return share
       const financed = application.goodsTotal - details.downPayment

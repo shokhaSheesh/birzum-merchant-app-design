@@ -32,6 +32,17 @@ export type Store = {
   logo?: string
   /** FlexSoft's tariff for this shop: the markup its shoppers pay. */
   tariff: Tariff
+  /** When anyone from the shop last used the merchant app. */
+  lastActiveAt?: Date
+}
+
+/** A shop idle for this many days can't take orders from a distance: the client goes in person. */
+export const REMOTE_IDLE_DAYS = 30
+
+/** False when the shop hasn't opened the merchant app for 30 days or more. */
+export function sellsRemotely(store: Store) {
+  if (!store.lastActiveAt) return true
+  return Date.now() - store.lastActiveAt.getTime() < REMOTE_IDLE_DAYS * 24 * 60 * 60 * 1000
 }
 
 /** One option group on a product: an attribute from the directory and which of its values apply. */
@@ -111,6 +122,8 @@ export const stores: Store[] = [
     address: 'Samarqand, Registon koʻchasi',
     logo: castoreLogo,
     tariff: 'C',
+    // Idle for over a month, to show «Masofadan mumkin emas» on its products
+    lastActiveAt: new Date(Date.now() - 35 * 24 * 60 * 60 * 1000),
   },
 ]
 

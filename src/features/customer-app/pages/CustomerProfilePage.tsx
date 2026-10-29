@@ -7,6 +7,7 @@ import {
   LifeBuoy,
   LogOut,
   MessageCircle,
+  MonitorSmartphone,
   Palette,
   QrCode,
   Receipt,
@@ -64,6 +65,11 @@ export function CustomerProfilePage() {
       <Section title={t('profile.settings')}>
         <MenuList>
           <MenuRow icon={ShieldCheck} label={t('pin.section')} to={ROUTES.customerSecurity} />
+          <MenuRow
+            icon={MonitorSmartphone}
+            label={t('sessions.title')}
+            to={ROUTES.customerSessions}
+          />
           <MenuRow
             icon={Palette}
             label={t('profile.theme')}

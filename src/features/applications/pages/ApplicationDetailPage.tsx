@@ -102,6 +102,8 @@ export function ApplicationDetailPage() {
   }
 
   const nextStatuses = found ? NEXT_STATUSES[found.application.status] : []
+  // The shop hands over only after the client has pressed «Qabul qildim» in the app
+  const waitingForClient = found?.application.status === 'processing'
   const location = locations.find((item) => item.id === found?.application.locationId)
 
   return (
@@ -138,6 +140,19 @@ export function ApplicationDetailPage() {
             <p className="-mt-3 flex gap-2.5 rounded-control bg-surface px-4 py-3 text-sm text-navy-700">
               <Loader size={18} className="mt-0.5 shrink-0 animate-spin" />
               {t('application.creating.note')}
+            </p>
+          )}
+
+          {waitingForClient && (
+            <p className="-mt-3 flex gap-2.5 rounded-control bg-surface px-4 py-3 text-sm text-navy-700">
+              <Clock size={18} className="mt-0.5 shrink-0" />
+              {t('handover.waitClient')}
+            </p>
+          )}
+          {found.application.status === 'received' && (
+            <p className="-mt-3 flex gap-2.5 rounded-control bg-success-soft px-4 py-3 text-sm text-success">
+              <PackageCheck size={18} className="mt-0.5 shrink-0" />
+              {t('handover.clientReceived')}
             </p>
           )}
 
@@ -211,6 +226,8 @@ export function ApplicationDetailPage() {
                         status === 'cancelled' && found.application.status === 'handed'
                           ? t('return.option')
                           : t(`application.status.${status}`),
+                      ...(status === 'handed' &&
+                        waitingForClient && { disabled: true, hint: t('handover.waitClient') }),
                     }))}
                     value={null}
                     onChange={changeStatus}
@@ -341,9 +358,14 @@ export function ApplicationDetailPage() {
         </footer>
       )}
 
-      {found?.application.status === 'processing' && (
+      {(found?.application.status === 'processing' || found?.application.status === 'received') && (
         <footer className="shrink-0 px-5 pt-3 pb-[max(1.25rem,env(safe-area-inset-bottom))]">
-          <Button block loading={busy === 'handOver'} onClick={() => setHandingOver(true)}>
+          <Button
+            block
+            loading={busy === 'handOver'}
+            disabled={waitingForClient}
+            onClick={() => setHandingOver(true)}
+          >
             <PackageCheck size={20} />
             {t('application.handOver')}
           </Button>

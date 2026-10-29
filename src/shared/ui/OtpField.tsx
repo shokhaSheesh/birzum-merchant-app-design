@@ -11,6 +11,8 @@ type Props = {
   hint?: string
   disabled?: boolean
   autoFocus?: boolean
+  /** Digits only, for bank card codes and the client's QR code. Ours are letters and digits. */
+  numeric?: boolean
 }
 
 /** One-time code. A single real input sits invisibly over the boxes, so paste and SMS autofill work. */
@@ -23,6 +25,7 @@ export function OtpField({
   hint,
   disabled,
   autoFocus,
+  numeric,
 }: Props) {
   const id = useId()
   const [focused, setFocused] = useState(false)
@@ -51,7 +54,10 @@ export function OtpField({
         </div>
         <input
           id={id}
-          inputMode="numeric"
+          inputMode={numeric ? 'numeric' : 'text'}
+          autoCapitalize={numeric ? undefined : 'characters'}
+          autoCorrect="off"
+          spellCheck={false}
           autoComplete="one-time-code"
           autoFocus={autoFocus}
           disabled={disabled}
@@ -59,7 +65,14 @@ export function OtpField({
           aria-invalid={!!error || undefined}
           className="absolute inset-0 size-full cursor-text opacity-0"
           value={value}
-          onChange={(e) => onChange(e.target.value.replace(/\D/g, '').slice(0, length))}
+          onChange={(e) =>
+            onChange(
+              (numeric
+                ? e.target.value.replace(/\D/g, '')
+                : e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, '')
+              ).slice(0, length),
+            )
+          }
           onFocus={() => setFocused(true)}
           onBlur={() => setFocused(false)}
         />

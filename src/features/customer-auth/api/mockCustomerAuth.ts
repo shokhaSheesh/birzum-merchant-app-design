@@ -1,17 +1,14 @@
-import type { Propiska } from '@/entities/address/regions'
+import type { HomeAddress } from '@/entities/address/regions'
 // Stand-in for the shopper's auth API. There is one entry for sign-in and sign-up:
 // the backend decides which it is from the phone number.
-// - Any 6-digit code works except "000000".
+// - Any 6-character code (letters and digits) works except "000000".
 // - A phone number that belongs to one of the sample clients counts as already registered.
-// - The QR code is "found" after a few seconds, and the face check always succeeds
-//   and returns the same invented name.
+// - The face check always succeeds and returns the same invented name.
 
 import { clientsStore } from '@/entities/clients/clientsStore'
 import type { MaritalStatus } from '@/entities/clients/clients'
 
 const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms))
-
-export const QR_SCAN_MOCK_MS = 3500
 
 export async function sendCustomerCode(_phone: string) {
   await delay(700)
@@ -38,8 +35,8 @@ export async function changeCustomerPhone(clientId: string, phone: string) {
 export type CustomerDetails = {
   passport: string
   birthDate: Date
-  /** The propiska (permanent registration) address: viloyat, shahar, tuman, street and house. */
-  address: Propiska
+  /** Where the shopper lives now, not the propiska. Kept in Birzum only. */
+  address: HomeAddress
   maritalStatus: MaritalStatus
   monthlyIncome: number
 }

@@ -12,6 +12,8 @@ type Props = {
   /** Label of the quiet button, when "Bekor qilish" would be confusing. */
   cancelLabel?: string
   onConfirm: () => void
+  /** Red for deletes (the default); primary when confirming something good, like receiving goods. */
+  tone?: 'danger' | 'primary'
 }
 
 /** Asks before something that cannot be undone. Every delete in the app goes through this. */
@@ -23,6 +25,7 @@ export function ConfirmSheet({
   confirmLabel,
   cancelLabel,
   onConfirm,
+  tone = 'danger',
 }: Props) {
   const { t } = useI18n()
 
@@ -35,7 +38,7 @@ export function ConfirmSheet({
             {cancelLabel ?? t('common.cancel')}
           </Button>
           <Button
-            variant="danger"
+            variant={tone}
             block
             onClick={() => {
               onConfirm()

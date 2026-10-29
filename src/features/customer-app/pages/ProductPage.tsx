@@ -1,4 +1,11 @@
-import { Check, ChevronRight, Share2, ShoppingCart } from 'lucide-react'
+import {
+  Check,
+  ChevronRight,
+  MapPinOff,
+  Share2,
+  ShoppingCart,
+  Store as StoreIcon,
+} from 'lucide-react'
 import { useState } from 'react'
 import { Link, Navigate, useNavigate, useParams } from 'react-router-dom'
 import { cartKey, cartStore, useCart } from '@/entities/cart/cartStore'
@@ -8,6 +15,7 @@ import {
   galleryOf,
   tariffOf,
   priceOf,
+  sellsRemotely,
   soldCombos,
   stockOf,
   useCatalog,
@@ -18,7 +26,7 @@ import { useVariantNames } from '@/entities/catalog/useVariantNames'
 import { TERMS, type Term } from '@/entities/clients/clients'
 import { installmentTerms } from '@/entities/clients/installment'
 import { useCustomer } from '@/entities/session/customer'
-import { customerStorePath, ROUTES } from '@/shared/config/routes'
+import { customerProductsPath, customerStorePath, ROUTES } from '@/shared/config/routes'
 import { useI18n } from '@/shared/i18n/useI18n'
 import { formatSum } from '@/shared/lib/format'
 import { Alert } from '@/shared/ui/Alert'
@@ -26,6 +34,7 @@ import { Button } from '@/shared/ui/Button'
 import { ConfirmSheet } from '@/shared/ui/ConfirmSheet'
 import { InfoList, InfoRow } from '@/shared/ui/InfoList'
 import { InstallmentTermsCard } from '@/shared/ui/InstallmentTermsCard'
+import { NoticeSheet } from '@/shared/ui/NoticeSheet'
 import { PageHeader } from '@/shared/ui/PageHeader'
 import { QuantityStepper } from '@/shared/ui/QuantityField'
 import { Section } from '@/shared/ui/Section'
@@ -58,6 +67,7 @@ function ProductDetails({ product }: { product: Product }) {
   const [term, setTerm] = useState<Term>(12)
   const [copied, setCopied] = useState(false)
   const [otherShop, setOtherShop] = useState(false)
+  const [inPersonOnly, setInPersonOnly] = useState(false)
   const combos = soldCombos(product)
   /** The chosen value of each variation, by position. Always a combination that is sold. */
   const [picked, setPicked] = useState<string[]>(() => combos[0] ?? [])
@@ -90,6 +100,8 @@ function ProductDetails({ product }: { product: Product }) {
   }
 
   const store = getStore(product.storeId)
+  // The shop hasn't used the app for 30 days: it can only sell in person
+  const remoteBlocked = !!store && !sellsRemotely(store)
   const unitPrice = priceOf(product, picked)
   const color = colorOf(product, picked)
   const line = lines.find((l) => l.key === cartKey(product.id, picked))
@@ -233,7 +245,13 @@ function ProductDetails({ product }: { product: Product }) {
       </div>
 
       <footer className="flex shrink-0 flex-col gap-3 border-t border-line px-5 pt-3 pb-[max(1.25rem,env(safe-area-inset-bottom))]">
-        {!hasLimit && inStock && <Alert message={t('product.needLimit')} />}
+        {!hasLimit && inStock && !remoteBlocked && <Alert message={t('product.needLimit')} />}
+        {remoteBlocked && inStock && (
+          <p className="flex gap-2.5 rounded-control bg-warning-soft px-4 py-3 text-sm text-warning">
+            <MapPinOff size={18} className="mt-0.5 shrink-0" />
+            {t('remote.blocked.note')}
+          </p>
+        )}
         {line ? (
           // Once it is in the cart: change the quantity here, or go to the cart
           <div className="flex gap-3">
@@ -254,18 +272,53 @@ function ProductDetails({ product }: { product: Product }) {
         ) : (
           <Button
             block
-            disabled={!hasLimit || !inStock}
+            disabled={!remoteBlocked && (!hasLimit || !inStock)}
             onClick={() =>
-              cartStore.clashes(product)
-                ? setOtherShop(true)
-                : cartStore.add(product, picked, unitPrice)
+              remoteBlocked
+                ? setInPersonOnly(true)
+                : cartStore.clashes(product)
+                  ? setOtherShop(true)
+                  : cartStore.add(product, picked, unitPrice)
             }
           >
-            <ShoppingCart size={20} />
-            {inStock ? t('product.addToCart') : t('product.stock.out')}
+            {remoteBlocked ? <MapPinOff size={20} /> : <ShoppingCart size={20} />}
+            {remoteBlocked
+              ? t('remote.blocked.title')
+              : inStock
+                ? t('product.addToCart')
+                : t('product.stock.out')}
           </Button>
         )}
       </footer>
+      {inPersonOnly && store && (
+        <NoticeSheet
+          onClose={() => setInPersonOnly(false)}
+          sheetTitle={store.name}
+          icon={MapPinOff}
+          tone="warning"
+          title={t('remote.blocked.title')}
+          text={t('remote.blocked.text', { store: store.name, address: store.address })}
+          actions={
+            <>
+              <Button
+                variant="ghost"
+                block
+                onClick={() =>
+                  navigate(
+                    customerProductsPath({ category: product.category, sub: product.subcategory }),
+                  )
+                }
+              >
+                {t('remote.blocked.otherShop')}
+              </Button>
+              <Button block onClick={() => navigate(customerStorePath(store.id))}>
+                <StoreIcon size={20} />
+                {t('remote.blocked.goToShop')}
+              </Button>
+            </>
+          }
+        />
+      )}
       <ConfirmSheet
         open={otherShop}
         onClose={() => setOtherShop(false)}

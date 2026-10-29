@@ -21,6 +21,8 @@ type Props = {
   /** Must reject when the code is wrong. */
   verify: (code: string) => Promise<void>
   onVerified: () => void | Promise<void>
+  /** Digits only: a bank card's code from Atmos. */
+  numeric?: boolean
 }
 
 /** The SMS code step. Every place that asks for a code uses this screen. */
@@ -32,6 +34,7 @@ export function OtpScreen({
   resend,
   verify,
   onVerified,
+  numeric,
 }: Props) {
   const { t } = useI18n()
   const [code, setCode] = useState('')
@@ -77,6 +80,7 @@ export function OtpScreen({
       <IconBadge icon={MessageSquareText} />
       <ScreenIntro title={t('code.title')} subtitle={subtitle} />
       <OtpField
+        numeric={numeric}
         label={t('field.code')}
         length={CODE_LENGTH}
         value={code}

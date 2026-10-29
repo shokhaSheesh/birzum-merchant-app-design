@@ -6,8 +6,17 @@ const n = (uz: string, ru: string): Name => ({ uz, ru })
 export type City = { id: string; name: Name; districts: { id: string; name: Name }[] }
 export type Region = { id: string; name: Name; cities: City[] }
 
-/** The propiska address as the passport has it: picked step by step, then street and house typed. */
-export type Propiska = { regionId: string; cityId: string; districtId: string; street: string }
+/**
+ * Where the client lives now (yashash manzili), not the propiska. The viloyat, then a shahar, a
+ * tuman or both, then the MFY and the street and house typed in. Kept in Birzum only.
+ */
+export type HomeAddress = {
+  regionId: string
+  cityId?: string
+  districtId?: string
+  mfy: string
+  street: string
+}
 
 const city = (id: string, name: Name, districts: Name[]): City => ({
   id,
@@ -188,23 +197,35 @@ export const REGIONS: Region[] = [
 ]
 
 const regionOf = (id: string | null) => REGIONS.find((region) => region.id === id)
-const cityOf = (regionId: string | null, cityId: string | null) =>
-  regionOf(regionId)?.cities.find((item) => item.id === cityId)
-
 export const citiesOf = (regionId: string | null) => regionOf(regionId)?.cities ?? []
-export const districtsOf = (regionId: string | null, cityId: string | null) =>
-  cityOf(regionId, cityId)?.districts ?? []
+/** Every tuman of a viloyat, whichever shahar it sits under in the list. */
+export const districtsOf = (regionId: string | null) =>
+  citiesOf(regionId).flatMap((item) => item.districts)
 
-/** True when every step is picked and the street and house are typed. */
-export const propiskaComplete = (propiska: Partial<Propiska>): propiska is Propiska =>
-  !!propiska.regionId && !!propiska.cityId && !!propiska.districtId && !!propiska.street?.trim()
+/** True when the viloyat, at least one of shahar or tuman, the MFY and the street are all in. */
+export const addressComplete = (address: Partial<HomeAddress>): address is HomeAddress =>
+  !!address.regionId &&
+  (!!address.cityId || !!address.districtId) &&
+  !!address.mfy?.trim() &&
+  !!address.street?.trim()
 
-/** "Toshkent shahri, Toshkent, Chilonzor tumani, 9-kvartal, 21-uy" */
-export function formatPropiska(propiska: Propiska, lang: Lang) {
-  const region = regionOf(propiska.regionId)
-  const place = cityOf(propiska.regionId, propiska.cityId)
-  const district = place?.districts.find((item) => item.id === propiska.districtId)
-  return [region?.name[lang], place?.name[lang], district?.name[lang], propiska.street.trim()]
+/** "Toshkent, Chilonzor tumani": the shahar and tuman picked, for the field and the client page. */
+export function formatPlace(address: Partial<HomeAddress>, lang: Lang) {
+  const city = citiesOf(address.regionId ?? null).find((item) => item.id === address.cityId)
+  const district = districtsOf(address.regionId ?? null).find(
+    (item) => item.id === address.districtId,
+  )
+  return [city?.name[lang], district?.name[lang]].filter(Boolean).join(', ')
+}
+
+/** "Toshkent shahri, Toshkent, Chilonzor tumani, Bunyodkor MFY, 9-kvartal, 21-uy" */
+export function formatAddress(address: HomeAddress, lang: Lang) {
+  return [
+    regionOf(address.regionId)?.name[lang],
+    formatPlace(address, lang),
+    address.mfy.trim(),
+    address.street.trim(),
+  ]
     .filter(Boolean)
     .join(', ')
 }

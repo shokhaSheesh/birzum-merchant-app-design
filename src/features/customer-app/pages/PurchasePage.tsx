@@ -1,10 +1,14 @@
-import { Download, Info, Star, Undo2 } from 'lucide-react'
+import { Download, Info, PackageCheck, Star, Undo2 } from 'lucide-react'
 import { useState } from 'react'
 import { useParams } from 'react-router-dom'
 import { getStore, OWN_STORE_ID } from '@/entities/catalog/products'
 import { reviewsStore, type Review } from '@/entities/catalog/reviews'
 import { customerStatus, customerStatusTone } from '@/entities/clients/customerStatus'
-import { cancelApplication } from '@/entities/clients/applicationsApi'
+import {
+  cancelApplication,
+  handoverDaysLeft,
+  receiveApplication,
+} from '@/entities/clients/applicationsApi'
 import { shortName } from '@/entities/clients/clientName'
 import type { Application } from '@/entities/clients/clients'
 import { clientsStore } from '@/entities/clients/clientsStore'
@@ -25,6 +29,7 @@ import { toast } from '@/shared/lib/toast'
 import { newId } from '@/shared/lib/createStore'
 import { formatDateTime, formatSum, groupDigits } from '@/shared/lib/format'
 import { Button } from '@/shared/ui/Button'
+import { ConfirmSheet } from '@/shared/ui/ConfirmSheet'
 import { EmptyState } from '@/shared/ui/EmptyState'
 import { InfoList, InfoRow } from '@/shared/ui/InfoList'
 import { InstallmentTermsCard } from '@/shared/ui/InstallmentTermsCard'
@@ -64,6 +69,8 @@ export function PurchasePage() {
   const [reviewing, setReviewing] = useState(false)
   const [cancelling, setCancelling] = useState(false)
   const [returnInfo, setReturnInfo] = useState(false)
+  const [receiving, setReceiving] = useState(false)
+  const [busy, setBusy] = useState(false)
 
   const application = customer?.applications.find((item) => item.id === Number(number))
   if (!customer || !application) {
@@ -82,6 +89,13 @@ export function PurchasePage() {
   const payment = nextPayment(application)
   const received = status === 'handed' || status === 'closed'
   const handedAt = historyOf(application).find((entry) => entry.status === 'handed')?.at
+
+  const receive = async () => {
+    setBusy(true)
+    await receiveApplication(application.id, { kind: 'customer', name: shortName(customer) })
+    setBusy(false)
+    toast(t('receive.done'))
+  }
 
   const sendReview = (rating: number, text: string) => {
     saveReview(application, {
@@ -230,6 +244,14 @@ export function PurchasePage() {
           </Button>
         </footer>
       )}
+      {status === 'processing' && (
+        <footer className="shrink-0 px-5 pt-3 pb-[max(1.25rem,env(safe-area-inset-bottom))]">
+          <Button block loading={busy} onClick={() => setReceiving(true)}>
+            <PackageCheck size={20} />
+            {t('receive.button')}
+          </Button>
+        </footer>
+      )}
       {status === 'pending' && (
         <footer className="shrink-0 px-5 pt-3 pb-[max(1.25rem,env(safe-area-inset-bottom))]">
           <Button
@@ -243,6 +265,16 @@ export function PurchasePage() {
         </footer>
       )}
 
+      <ConfirmSheet
+        open={receiving}
+        onClose={() => setReceiving(false)}
+        title={t('receive.confirm.title')}
+        message={t('receive.confirm.message')}
+        confirmLabel={t('receive.button')}
+        cancelLabel={t('receive.confirm.notYet')}
+        tone="primary"
+        onConfirm={() => void receive()}
+      />
       {paying && payment && (
         <PaySheet
           application={application}
@@ -285,7 +317,14 @@ export function PurchasePage() {
 function StatusNote({ application }: { application: Application }) {
   const { t } = useI18n()
   const status = customerStatus(application)
-  if (status !== 'review' && status !== 'creating' && status !== 'approved') return null
+  if (
+    status !== 'review' &&
+    status !== 'creating' &&
+    status !== 'approved' &&
+    status !== 'received'
+  ) {
+    return null
+  }
   return (
     <div className="-mt-3 flex gap-2.5 rounded-control bg-surface px-4 py-3 text-sm text-navy-700">
       <Info size={18} className="mt-0.5 shrink-0" />
@@ -294,6 +333,11 @@ function StatusNote({ application }: { application: Application }) {
         {status === 'review' && (
           <p className="font-semibold">
             <ConfirmCountdown application={application} />
+          </p>
+        )}
+        {status === 'received' && (
+          <p className="font-semibold">
+            {t('receive.daysLeft', { days: String(handoverDaysLeft(application)) })}
           </p>
         )}
       </div>

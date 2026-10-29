@@ -1,6 +1,6 @@
 import user1Photo from '@/shared/assets/people/user-1.jpg'
 import user2Photo from '@/shared/assets/people/user-2.jpg'
-import type { Propiska } from '../address/regions'
+import type { HomeAddress } from '../address/regions'
 import user3Photo from '@/shared/assets/people/user-3.jpg'
 
 export const MARITAL_STATUSES = ['single', 'married', 'divorced', 'widowed'] as const
@@ -11,10 +11,18 @@ export type IncomeSource = 'salary' | 'business' | 'pension' | 'other'
  * `pending`: a shopper's order waiting for the shop to confirm it has the goods (24 hours).
  * `creating`: confirmed and sent to FlexSoft, which is drawing up the contract.
  * `processing`: FlexSoft made the contract; it waits for the goods to be handed over.
+ * `received`: the client pressed «Qabul qildim» in the app, so the shop can now hand over.
  * `handed`: the client has the goods, so the contract is confirmed and payments run.
  */
 export type ApplicationStatus =
-  'pending' | 'creating' | 'processing' | 'handed' | 'rejected' | 'closed' | 'cancelled'
+  | 'pending'
+  | 'creating'
+  | 'processing'
+  | 'received'
+  | 'handed'
+  | 'rejected'
+  | 'closed'
+  | 'cancelled'
 
 export const TERMS = [3, 6, 9, 12, 18, 24] as const
 /** Installment length in months. */
@@ -91,7 +99,9 @@ export const NEXT_STATUSES: Record<ApplicationStatus, ApplicationStatus[]> = {
   pending: ['creating', 'rejected'],
   // FlexSoft moves it on by itself once the contract is made
   creating: [],
+  // «Topshirildi» is listed but stays locked until the client presses «Qabul qildim»
   processing: ['handed', 'cancelled'],
+  received: ['handed', 'cancelled'],
   // Cancelling a handed-over contract is a return: the client's SMS code confirms it
   handed: ['closed', 'cancelled'],
   rejected: [],
@@ -159,8 +169,8 @@ export type Client = {
   /** In UZS. */
   monthlyIncome: number
   incomeSource?: IncomeSource
-  /** The propiska address, entered when the client is added in the shop. */
-  propiska?: Propiska
+  /** Where the client lives now (not the propiska), typed at sign-up or in the shop. */
+  homeAddress?: HomeAddress
   /** Credit limit in UZS for each term; null until it has been calculated. */
   limits: Record<Term, number> | null
   /** The day the limit stops being valid and has to be calculated again. */
@@ -267,6 +277,31 @@ export const seedClients: Client[] = [
           markupPercent: 38,
           monthlyPayment: 897_000,
           fulfilment: { method: 'delivery', address: 'Toshkent, Chilonzor 9-kvartal, 21-uy' },
+        },
+      },
+      {
+        // Contract made yesterday, goods not taken yet: try «Mahsulotni qabul qildim», then
+        // the shop's hand-over
+        id: 252463,
+        date: new Date(Date.now() - 26 * 60 * 60 * 1000),
+        goodsTotal: 3_600_000,
+        installmentTotal: 4_428_000,
+        status: 'processing',
+        contractNumber: 'B-52463/26',
+        details: {
+          products: [
+            {
+              name: 'Samsung Galaxy A35 (Koʻk, 128 GB)',
+              price: 3_600_000,
+              quantity: 1,
+            },
+          ],
+          downPayment: 0,
+          paymentDay: 15,
+          term: 6,
+          markupPercent: 23,
+          monthlyPayment: 738_000,
+          fulfilment: { method: 'pickup', address: '' },
         },
       },
       {
@@ -544,6 +579,7 @@ export const APPLICATION_STATUSES: ApplicationStatus[] = [
   'pending',
   'creating',
   'processing',
+  'received',
   'handed',
   'closed',
   'rejected',

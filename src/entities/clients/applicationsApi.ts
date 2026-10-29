@@ -124,6 +124,23 @@ export async function rejectApplication(number: number, rejection: Rejection, by
   move(number, 'rejected', by, { rejection }, rejection.comment)
 }
 
+/** Shopper side: the client has the goods in hand and says so, which unlocks the shop's hand-over. */
+export async function receiveApplication(number: number, by: Actor) {
+  await delay(600)
+  move(number, 'received', by)
+}
+
+/** Days the shop and the client have to finish the hand-over, counted from «Shartnoma yaratildi». */
+export const HANDOVER_DAYS = 3
+
+/** Whole days left of those three, at least 1 while it runs. Display only: nothing confirms it yet. */
+export function handoverDaysLeft(application: Application) {
+  const created = historyOf(application).find((entry) => entry.status === 'processing')?.at
+  if (!created) return HANDOVER_DAYS
+  const passed = Math.floor((Date.now() - created.getTime()) / (24 * 60 * 60 * 1000))
+  return Math.max(1, HANDOVER_DAYS - passed)
+}
+
 /** Marks the goods as given to the client. The contract gets its number and payments run from here. */
 export async function handOverApplication(number: number, by: Actor, photos: string[] = []) {
   await delay(700)

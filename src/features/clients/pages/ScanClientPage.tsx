@@ -112,6 +112,7 @@ function CodeEntry({ onBack, onFound }: { onBack: () => void; onFound: (client: 
       <ScreenIntro title={t('scan.code.title')} subtitle={t('scan.code.hint')} />
       <OtpField
         label={t('myqr.code')}
+        numeric
         value={code}
         onChange={(next) => {
           setCode(next)

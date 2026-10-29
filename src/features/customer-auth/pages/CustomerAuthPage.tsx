@@ -1,8 +1,8 @@
-import { Check, IdCard, LoaderCircle, ScanLine } from 'lucide-react'
-import { useEffect, useState } from 'react'
+import { Check, IdCard } from 'lucide-react'
+import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { propiskaComplete, type Propiska } from '@/entities/address/regions'
-import { PropiskaFields } from '@/entities/address/ui/PropiskaFields'
+import { addressComplete, type HomeAddress } from '@/entities/address/regions'
+import { HomeAddressFields } from '@/entities/address/ui/HomeAddressFields'
 import { MARITAL_STATUSES, type MaritalStatus } from '@/entities/clients/clients'
 import { LegalConsent } from '@/entities/legal/ui/LegalConsent'
 import { setCustomerId } from '@/entities/session/customer'
@@ -12,7 +12,6 @@ import logo from '@/shared/assets/logo.svg'
 import { useI18n } from '@/shared/i18n/useI18n'
 import { isPassport } from '@/shared/lib/passport'
 import { formatPhone, PHONE_DIGITS } from '@/shared/lib/phone'
-import { ActionCard } from '@/shared/ui/ActionCard'
 import { Button } from '@/shared/ui/Button'
 import { CameraView } from '@/shared/ui/CameraView'
 import { DatePicker } from '@/shared/ui/DatePicker'
@@ -26,7 +25,6 @@ import { PhoneField } from '@/shared/ui/PhoneField'
 import { ScreenIntro } from '@/shared/ui/ScreenIntro'
 import { Select } from '@/shared/ui/Select'
 import {
-  QR_SCAN_MOCK_MS,
   registerCustomer,
   sendCustomerCode,
   verifyCustomerCode,
@@ -37,10 +35,9 @@ import { PinLock } from '../components/PinLock'
 /**
  * phone -> code -> home                      already registered
  * phone -> code -> details -> face -> done   signing up by themselves
- * phone -> qr -> face -> done                registered by a merchant, who showed a QR code
  * lock -> home                               returning, with a PIN set on this phone
  */
-type Step = 'lock' | 'phone' | 'code' | 'details' | 'qr' | 'face' | 'done'
+type Step = 'lock' | 'phone' | 'code' | 'details' | 'face' | 'done'
 
 const MIN_AGE = 18
 
@@ -51,8 +48,6 @@ export function CustomerAuthPage() {
   const [step, setStep] = useState<Step>(() => (security.hasPin() ? 'lock' : 'phone'))
   const [agreed, setAgreed] = useState(false)
   const [consentError, setConsentError] = useState(false)
-  /** Where the face step goes back to: the details form or the QR scanner. */
-  const [cameFromQr, setCameFromQr] = useState(false)
   const [submitted, setSubmitted] = useState(false)
   const [loading, setLoading] = useState(false)
 
@@ -62,7 +57,7 @@ export function CustomerAuthPage() {
   const [birthDate, setBirthDate] = useState<Date | null>(null)
   const [maritalStatus, setMaritalStatus] = useState<MaritalStatus | null>(null)
   const [monthlyIncome, setMonthlyIncome] = useState<number | null>(null)
-  const [address, setAddress] = useState<Partial<Propiska>>({})
+  const [address, setAddress] = useState<Partial<HomeAddress>>({})
   const [latestBirthDate] = useState(() => {
     const now = new Date()
     return new Date(now.getFullYear() - MIN_AGE, now.getMonth(), now.getDate())
@@ -75,13 +70,6 @@ export function CustomerAuthPage() {
   }
   // A first sign-in sets up the PIN and shows the intro; later ones go straight home
   const enterApp = () => navigate(afterSignIn(), { replace: true })
-
-  useEffect(() => {
-    if (step !== 'qr') return
-    // Mock: the real screen moves on when the scanner reads the merchant's code
-    const timer = setTimeout(() => setStep('face'), QR_SCAN_MOCK_MS)
-    return () => clearTimeout(timer)
-  }, [step])
 
   const submitPhone = async () => {
     setSubmitted(true)
@@ -97,14 +85,13 @@ export function CustomerAuthPage() {
     if (
       !isPassport(passport) ||
       !birthDate ||
-      !propiskaComplete(address) ||
+      !addressComplete(address) ||
       !maritalStatus ||
       !monthlyIncome
     )
       return
     setLoading(true)
     await registerCustomer(phone, { passport, birthDate, address, maritalStatus, monthlyIncome })
-    setCameFromQr(false)
     goTo('face')
   }
 
@@ -188,23 +175,12 @@ export function CustomerAuthPage() {
             error={required(!!monthlyIncome)}
           />
         </div>
-        <PropiskaFields value={address} onChange={setAddress} showErrors={submitted} whose="own" />
-      </FormScreen>
-    )
-  }
-
-  if (step === 'qr') {
-    return (
-      <FormScreen onSubmit={() => {}} onBack={() => goTo('phone')}>
-        <ScreenIntro title={t('customer.qr.title')} subtitle={t('customer.qr.hint')} />
-        <CameraView guide="qr" facing="environment" unavailableText={t('myid.scan.noCamera')} />
-        <p
-          role="status"
-          className="flex items-center justify-center gap-2 text-sm font-medium text-ink-muted"
-        >
-          <LoaderCircle size={18} className="animate-spin" aria-hidden />
-          {t('customer.qr.searching')}
-        </p>
+        <HomeAddressFields
+          value={address}
+          onChange={setAddress}
+          showErrors={submitted}
+          whose="own"
+        />
       </FormScreen>
     )
   }
@@ -213,8 +189,8 @@ export function CustomerAuthPage() {
     return (
       <FormScreen
         onSubmit={() => void captureFace()}
-        onBack={() => goTo(cameFromQr ? 'phone' : 'details')}
-        progress={cameFromQr ? undefined : { step: 2, total: 2 }}
+        onBack={() => goTo('details')}
+        progress={{ step: 2, total: 2 }}
         footer={
           <Button type="submit" block loading={loading}>
             {t('myid.scan.capture')}
@@ -280,25 +256,6 @@ export function CustomerAuthPage() {
         value={phone}
         onChange={setPhone}
         error={submitted && phone.length < PHONE_DIGITS ? t('auth.error.phone') : undefined}
-      />
-      <div className="flex items-center gap-3 text-sm text-ink-subtle">
-        <span className="h-px flex-1 bg-line" />
-        {t('customer.login.or')}
-        <span className="h-px flex-1 bg-line" />
-      </div>
-      <ActionCard
-        icon={ScanLine}
-        title={t('customer.qr.card.title')}
-        description={t('customer.qr.card.hint')}
-        onClick={() => {
-          // The QR route skips the phone, but not the agreement
-          if (!agreed) {
-            setConsentError(true)
-            return
-          }
-          setCameFromQr(true)
-          goTo('qr')
-        }}
       />
     </FormScreen>
   )

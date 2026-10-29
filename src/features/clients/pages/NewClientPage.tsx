@@ -24,8 +24,8 @@ import {
 } from '../api/mockClients'
 import { CardForm } from '@/entities/clients/ui/CardForm'
 import { MyIdStep } from '../components/MyIdStep'
-import { propiskaComplete, type Propiska } from '@/entities/address/regions'
-import { PropiskaFields } from '@/entities/address/ui/PropiskaFields'
+import { addressComplete, type HomeAddress } from '@/entities/address/regions'
+import { HomeAddressFields } from '@/entities/address/ui/HomeAddressFields'
 import { MARITAL_STATUSES, type MaritalStatus } from '@/entities/clients/clients'
 
 const STEPS = ['phone', 'phoneCode', 'details', 'myid', 'card', 'cardCode'] as const
@@ -49,7 +49,7 @@ export function NewClientPage() {
   const [birthDate, setBirthDate] = useState<Date | null>(null)
   const [maritalStatus, setMaritalStatus] = useState<MaritalStatus | null>(null)
   const [monthlyIncome, setMonthlyIncome] = useState<number | null>(null)
-  const [propiska, setPropiska] = useState<Partial<Propiska>>({})
+  const [homeAddress, setHomeAddress] = useState<Partial<HomeAddress>>({})
   const [cardNumber, setCardNumber] = useState('')
   const [cardExpiry, setCardExpiry] = useState('')
   const [latestBirthDate] = useState(() => {
@@ -82,20 +82,20 @@ export function NewClientPage() {
       birthDate &&
       maritalStatus &&
       monthlyIncome &&
-      propiskaComplete(propiska)
+      addressComplete(homeAddress)
     )
       goTo('myid')
   }
 
   const saveClient = async () => {
-    if (!birthDate || !maritalStatus || !monthlyIncome || !propiskaComplete(propiska)) return
+    if (!birthDate || !maritalStatus || !monthlyIncome || !addressComplete(homeAddress)) return
     const client = await createClient({
       phone,
       passport,
       birthDate,
       maritalStatus,
       monthlyIncome,
-      propiska,
+      homeAddress,
       cardNumber,
       cardExpiry,
     })
@@ -169,6 +169,7 @@ export function NewClientPage() {
         progress={progress}
         resend={() => sendCardCode(cardNumber, cardExpiry)}
         verify={(code) => verifyCardCode(cardNumber, code)}
+        numeric
         onVerified={saveClient}
       />
     )
@@ -225,9 +226,9 @@ export function NewClientPage() {
           error={required(!!monthlyIncome)}
         />
       </div>
-      <PropiskaFields
-        value={propiska}
-        onChange={setPropiska}
+      <HomeAddressFields
+        value={homeAddress}
+        onChange={setHomeAddress}
         showErrors={submitted}
         whose="client"
       />

@@ -1,5 +1,5 @@
 // Stand-in for the real client API.
-// - Any 6-digit code works except "000000".
+// - Any 6-character code (letters and digits) works except "000000".
 // - MyID always succeeds: the face capture after a short wait, the QR route after a few seconds.
 // - The real service will return the client's name, photo and passport dates from MyID;
 //   here fixed invented values are used.
@@ -18,7 +18,7 @@ import { clientsStore } from '@/entities/clients/clientsStore'
 import { shopperCode } from '@/entities/clients/shopperCode'
 import { installmentTerms, type InstallmentTerms } from '@/entities/clients/installment'
 import { OWN_STORE_ID, tariffOf } from '@/entities/catalog/products'
-import type { Propiska } from '@/entities/address/regions'
+import type { HomeAddress } from '@/entities/address/regions'
 
 const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms))
 const newId = () => String(Date.now())
@@ -45,7 +45,7 @@ export type NewClient = {
   birthDate: Date
   maritalStatus: MaritalStatus
   monthlyIncome: number
-  propiska: Propiska
+  homeAddress: HomeAddress
   cardNumber: string
   cardExpiry: string
 }

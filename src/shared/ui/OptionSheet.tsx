@@ -2,7 +2,13 @@ import { Check } from 'lucide-react'
 import { cn } from '@/shared/lib/cn'
 import { Sheet } from './Sheet'
 
-export type Option<T extends string> = { value: T; label: string }
+export type Option<T extends string> = {
+  value: T
+  label: string
+  /** Shown but not pickable, with `hint` saying why. */
+  disabled?: boolean
+  hint?: string
+}
 
 type Props<T extends string> = {
   open: boolean
@@ -28,19 +34,29 @@ export function OptionSheet<T extends string>({
         {options.map((option) => {
           const selected = option.value === value
           return (
-            <li key={option.value} role="option" aria-selected={selected}>
+            <li
+              key={option.value}
+              role="option"
+              aria-selected={selected}
+              aria-disabled={option.disabled || undefined}
+            >
               <button
                 type="button"
+                disabled={option.disabled}
                 onClick={() => {
                   onChange(option.value)
                   onClose()
                 }}
                 className={cn(
-                  'flex h-13 w-full items-center justify-between rounded-control px-4 text-left text-base',
+                  'flex min-h-13 w-full items-center justify-between gap-3 rounded-control px-4 py-2 text-left text-base',
                   selected ? 'bg-green-200 font-semibold' : 'active:bg-navy-100',
+                  option.disabled && 'cursor-not-allowed active:bg-transparent',
                 )}
               >
-                {option.label}
+                <span className="flex flex-col gap-0.5">
+                  <span className={cn(option.disabled && 'text-ink-subtle')}>{option.label}</span>
+                  {option.hint && <span className="text-sm text-ink-muted">{option.hint}</span>}
+                </span>
                 {selected && <Check size={20} className="text-brand" />}
               </button>
             </li>
