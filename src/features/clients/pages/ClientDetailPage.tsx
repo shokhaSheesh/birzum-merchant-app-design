@@ -83,6 +83,9 @@ export function ClientDetailPage() {
                   <InfoRow label={t('field.birthDate')} value={formatDate(client.birthDate)} />
                   <InfoRow label={t('clients.pinfl')} value={client.pinfl} />
                   <InfoRow label={t('field.phone')} value={formatPhone(client.phone)} />
+                  {client.propiska && (
+                    <InfoRow label={t('client.propiska')} value={client.propiska} />
+                  )}
                   {client.homeAddress && (
                     <InfoRow
                       label={t('field.homeAddress')}

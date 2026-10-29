@@ -220,12 +220,12 @@ export function formatPlace(address: Partial<HomeAddress>, lang: Lang) {
 
 /** "Toshkent shahri, Toshkent, Chilonzor tumani, Bunyodkor MFY, 9-kvartal, 21-uy" */
 export function formatAddress(address: HomeAddress, lang: Lang) {
-  return [
-    regionOf(address.regionId)?.name[lang],
-    formatPlace(address, lang),
-    address.mfy.trim(),
-    address.street.trim(),
-  ]
+  // Toshkent shahri has one city, Toshkent: naming both reads twice
+  const single = citiesOf(address.regionId).length === 1
+  const place = single
+    ? formatPlace({ ...address, cityId: undefined }, lang)
+    : formatPlace(address, lang)
+  return [regionOf(address.regionId)?.name[lang], place, address.mfy.trim(), address.street.trim()]
     .filter(Boolean)
     .join(', ')
 }

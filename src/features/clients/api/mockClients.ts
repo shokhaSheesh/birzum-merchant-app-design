@@ -59,6 +59,8 @@ export async function createClient({ cardNumber, cardExpiry, ...data }: NewClien
     firstName: 'Aziza',
     middleName: 'Farhod qizi',
     pinfl: '41503960120092',
+    // MyID returns the propiska with the person
+    propiska: 'Toshkent shahri, Yunusobod tumani, 11-mavze, 23-uy',
     passportIssuedOn: new Date(2021, 4, 18),
     passportExpiresOn: new Date(2031, 4, 18),
     limits: null,

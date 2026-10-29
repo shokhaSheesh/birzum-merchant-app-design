@@ -169,6 +169,8 @@ export type Client = {
   /** In UZS. */
   monthlyIncome: number
   incomeSource?: IncomeSource
+  /** The propiska as MyID returns it, one line. */
+  propiska?: string
   /** Where the client lives now (not the propiska), typed at sign-up or in the shop. */
   homeAddress?: HomeAddress
   /** Credit limit in UZS for each term; null until it has been calculated. */
@@ -207,10 +209,37 @@ const monthsAgo = (months: number) => {
   return new Date(now.getFullYear(), now.getMonth() - months, 2, 11, 20)
 }
 
+// Sample addresses: the propiska from MyID, and where each sample client lives now
+const SAMPLE_PROPISKA = [
+  'Toshkent shahri, Chilonzor tumani, 9-kvartal, 21-uy',
+  'Samarqand viloyati, Samarqand shahri, Rudakiy koʻchasi, 44-uy',
+  'Toshkent viloyati, Chirchiq shahri, Navroʻz koʻchasi, 5-uy',
+]
+const SAMPLE_HOMES: HomeAddress[] = [
+  {
+    regionId: 'tashkent-city',
+    cityId: 'tashkent',
+    districtId: 'tashkent-2',
+    mfy: 'Qatortol MFY',
+    street: '9-kvartal, 21-uy',
+  },
+  {
+    regionId: 'tashkent-city',
+    cityId: 'tashkent',
+    districtId: 'tashkent-12',
+    mfy: 'Bodomzor MFY',
+    street: 'Amir Temur koʻchasi, 107-uy, 14-xonadon',
+  },
+  { regionId: 'tashkent-region', districtId: 'chirchiq-1', mfy: 'Bogʻiston MFY', street: '5-uy' },
+]
+
 function fromSeed({ born, issued, cards = [], applications = [], ...rest }: Seed): Client {
   const issuedOn = date(issued)
+  const n = Number(rest.id)
   return {
     ...rest,
+    propiska: SAMPLE_PROPISKA[n % SAMPLE_PROPISKA.length],
+    homeAddress: SAMPLE_HOMES[n % SAMPLE_HOMES.length],
     birthDate: date(born),
     passportIssuedOn: issuedOn,
     passportExpiresOn: new Date(

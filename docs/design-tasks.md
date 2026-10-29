@@ -72,9 +72,9 @@ Also done 29.10: «Parolni tasdiqlash» in the admin's «Adminlar» create/edit 
 
 ## Admin
 
-- [ ] **A9.** Forgot password: email → OTP from the email → new password, entered twice
-- [ ] **A10.** Remove «Qo'lda to'lov» (Undiruv)
-- [ ] **A12.** Analytics:
+- [x] **A9.** Forgot password: email → OTP from the email → new password, entered twice
+- [x] **A10.** Remove «Qo'lda to'lov» (Undiruv)
+- [x] **A12.** Analytics:
   - downloads by day and time
   - active users
   - the most-viewed products and merchants
@@ -82,8 +82,8 @@ Also done 29.10: «Parolni tasdiqlash» in the admin's «Adminlar» create/edit 
 - [~] **A11. No UI (29.10).** «Qaytarish muddati», the refund window in days
 - [~] **A14. No UI (29.10).** Application proof (offer, history with times, handover photos)
 - [~] **A13. Dropped (29.10).** The «Support» role
-- [ ] **A15.** Undo A8: blocking a client applies only in Birzum, not the FlexSoft blacklist. Remove the FlexSoft text.
-- [ ] **A16.** The client's page shows both the MyID propiska and the «Yashash manzili» the client typed: in the admin and in the merchant app
+- [x] **A15.** Undo A8: blocking a client applies only in Birzum, not the FlexSoft blacklist. Remove the FlexSoft text.
+- [x] **A16.** The client's page shows both the MyID propiska and the «Yashash manzili» the client typed: in the admin and in the merchant app
 - Merchant branches stay as they are.
 
 ## Not design
