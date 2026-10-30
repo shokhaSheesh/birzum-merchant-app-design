@@ -103,20 +103,19 @@ Frame «BPMN · Микрозаймы (Fortuna / Vodiy)» below the BNPL frames. 
 ## Next (30.10, after the user's answers)
 
 **App**
-- [ ] **ML21. Asosiy without the loan card:** the loan card goes (the loan lives in Qarzlarim); the red overdue card stays. Background: a fixed theme drawn in the app, not set from the admin. In the card's place: to be agreed (suggestion: a theme header with the greeting and the top story tiles).
-- [ ] **ML22b. Quick actions in two sets:** with an active loan (Kreditlar, Toʻlov, Kartalar, Yordam) and without one (Kreditlar, Arizalarim, Kartalar, Yordam). Replaces the single set of ML22.
-- [ ] **ML23. Rename the Toʻlovlar tab** to «Monitoring» (payment history and receipts).
+- [ ] **ML21. Asosiy:** the active-loan card moves to Qarzlarim (on top of «Faol»), so Asosiy has no loan card. The red overdue card stays on Asosiy. The background is one fixed theme drawn in the app (not set from the admin). In the card's place: a theme header with the greeting, the bell and the top story tiles.
+- [x] **ML22. Quick actions:** Kreditlar, Toʻlov, Kartalar, Yordam in both cases (done 30.10).
+- [ ] **ML23. Rename the Toʻlovlar tab to «Monitoring»** (ru «Мониторинг»): payment history and receipts.
 - [ ] **ML16b. «Holatlar namunasi»:** remove «Kredit bor» and «Kredit yoʻq»; keep «Toʻlov kechikkan».
 - ML31: the rates stay on Kreditlar and «Batafsil shartlar» (user, 30.10).
 - On hold: ML27 (which check before FlexSoft), ML29 (limit per product), both with Bobur aka.
 
 **Admin**
 - [ ] **MA8b. «Asosiy oyna»:** remove «Mavzu» (the background picture); the theme is fixed in the app.
-- [ ] **MA6b. Quick actions in two lists:** «Faol qarz bor» and «Faol qarz yoʻq», each ordered and edited on its own.
+- MA6 stays as it is: one list of quick actions, ordered and edited in the admin (no second list for «no loan»).
 - [ ] **MA9. Tab bar:** the default label of Toʻlovlar becomes «Monitoring».
 
 **BPMN v2**
-- [ ] Admin «Asosiy oyna» step: «верхние баннеры, кнопки меню (с займом и без)», without the background.
-- [ ] Rename Toʻlovlar to «Monitoring» where the BPMN shows the tab.
+- [ ] Admin «Asosiy oyna» step: «верхние баннеры, кнопки меню», without the background.
+- [ ] The active loan shown in «Qarzlarim», not on Asosiy; rename Toʻlovlar to «Monitoring» where the tab appears.
 - [ ] After Bobur aka: ML27 and ML29.
-
