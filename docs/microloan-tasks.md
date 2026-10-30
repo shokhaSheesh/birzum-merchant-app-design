@@ -44,19 +44,26 @@ Frame «BPMN · Микрозаймы (Fortuna / Vodiy)» below the BNPL frames. 
 - [x] **ML7. 3 min idle:** lock screen (PIN / Face ID).
 
 **Cards, application, contract, payments**
-- [ ] **ML8. Cards:** linked only from Profil → Kartalar after sign-up. Card's SMS phone ≠ client's phone → push + «Xavfsizlik». Owner shown as «Ism F.».
+- [x] **ML8. Cards:** linked only from Profil → Kartalar after sign-up; owner shown as «Ism F.». The «card's SMS phone ≠ client's phone» error goes to the errors page (ML16), not as live logic.
 - [x] **ML17. Calculator (comment 1):** sum ✓, term ✓, plus **payment day** (1–10, a fixed list in the app for now) and **payment type**: «Standart» (equal monthly payment) or «Kamayib boruvchi» (falling payments). The type picker shows only when the product allows both. The schedule and totals update with the choice.
 - [x] **ML18. «Batafsil shartlar» (comment 2):** a separate screen per product, opened from the product card on Asosiy and an «i» in the calculator: sum range, terms, rate by term, payment types with a sample schedule, early repayment rules and fee, requirements (age, documents), what happens when a payment is late, the offer PDF.
-- [ ] **ML9. Application:** the card step picks one of the linked cards; with none, a link to add one.
-- [ ] **ML10. «Oʻzim bajaryapman»** checkbox sheet: at the credit-check consent, before signing the contract, before a payment.
-- [ ] **ML11. Payout failed** state on the ariza: retrying, the money will come later.
-- [ ] **ML12. Overdue:** the loan shows the overdue sum and a «Toʻlash» button (pay the overdue in the app).
+- [x] **ML9. Application:** the card step picks one of the linked cards; with none, a link to add one.
+- [x] **ML10. «Oʻzim bajaryapman»** checkbox sheet: at the credit-check consent, before signing the contract, before a payment.
+- [x] **ML11. Payout failed** state on the ariza: retrying, the money will come later.
+- [x] **ML12. Overdue:** the loan shows the overdue sum and a «Toʻlash» button (pay the overdue in the app).
 
 **Profile**
 - [ ] **ML13. Phone change:** code to the **old** number first, then the new one (today only the new one). Done screen says both numbers get an SMS.
 - [ ] **ML14. «Aktiv sessiyalar»** (as in BNPL C3).
 - [ ] **ML15. Fraud:** «Firibgarlik sxemalari» (schemes and tips) and «Firibgarlik haqida xabar berish» (a form that goes to the support chat).
-- [ ] **ML16. «Holatlar namunasi»:** the Nizom states in one place (as in BNPL M15).
+- [ ] **ML16. «Holatlar namunasi»** (UI only, as in the merchant app): one page listing the Nizom error and security states, each opening its screen or sheet. Instead of mock logic per case:
+  - number not in the client's name (phone ↔ PINFL)
+  - card's SMS phone ≠ client's phone (push + «Xavfsizlik»)
+  - «Bu mijoz bloklangan»
+  - 3 wrong codes → 15 min block
+  - new device: MyID failed, cards unlinked
+  - payout failed
+  - Later, the live mock logic built for ML4–ML6 and ML11 (special demo numbers and the failing card) can be moved here.
 
 ## Design: admin (Fortuna / Vodiy)
 
