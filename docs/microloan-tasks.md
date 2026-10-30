@@ -53,17 +53,14 @@ Frame «BPMN · Микрозаймы (Fortuna / Vodiy)» below the BNPL frames. 
 - [x] **ML12. Overdue:** the loan shows the overdue sum and a «Toʻlash» button (pay the overdue in the app).
 
 **Profile**
-- [ ] **ML13. Phone change:** code to the **old** number first, then the new one (today only the new one). Done screen says both numbers get an SMS.
-- [ ] **ML14. «Aktiv sessiyalar»** (as in BNPL C3).
-- [ ] **ML15. Fraud:** «Firibgarlik sxemalari» (schemes and tips) and «Firibgarlik haqida xabar berish» (a form that goes to the support chat).
-- [ ] **ML16. «Holatlar namunasi»** (UI only, as in the merchant app): one page listing the Nizom error and security states, each opening its screen or sheet. Instead of mock logic per case:
-  - number not in the client's name (phone ↔ PINFL)
-  - card's SMS phone ≠ client's phone (push + «Xavfsizlik»)
-  - «Bu mijoz bloklangan»
-  - 3 wrong codes → 15 min block
-  - new device: MyID failed, cards unlinked
-  - payout failed
-  - Later, the live mock logic built for ML4–ML6 and ML11 (special demo numbers and the failing card) can be moved here.
+- [x] **ML13. Phone change:** code to the **old** number first, then the new one (today only the new one). Done screen says both numbers get an SMS.
+- [x] **ML14. «Aktiv sessiyalar»** (as in BNPL C3).
+- [x] **ML15. Fraud:** «Firibgarlik sxemalari» (schemes and tips) and «Firibgarlik haqida xabar berish» (a form that goes to the support chat).
+- [x] **ML16. «Holatlar namunasi»** (Profil → Dizayn, UI only, as in the merchant app): one page whose rows open the screen as the client sees it.
+  - Asosiy: with a credit, without a credit, payment overdue
+  - Kirish va xavfsizlik: 3 wrong codes → 15 min block, «Bu mijoz bloklangan», number not in the client's name, card's SMS phone ≠ client's phone, new device MyID failed, cards unlinked
+  - Ariza va toʻlovlar: payout failed, the three «Oʻzim bajaryapman» sheets
+  - The demo triggers are gone from the live flow (blocked and not-owner numbers, the failing card, the overdue sample client). The handling code stays for the real API. The 3-wrong-codes block still works live (code 000000).
 
 ## Design: admin (Fortuna / Vodiy)
 
