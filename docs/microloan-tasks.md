@@ -111,11 +111,11 @@ Frame «BPMN · Микрозаймы (Fortuna / Vodiy)» below the BNPL frames. 
 - On hold: ML27 (which check before FlexSoft), ML29 (limit per product), both with Bobur aka.
 
 **Admin**
-- [ ] **MA8b. «Asosiy oyna»:** remove «Mavzu» (the background picture); the theme is fixed in the app.
+- [x] **MA8b. «Asosiy oyna»:** remove «Mavzu» (the background picture); the theme is fixed in the app.
 - MA6 stays as it is: one list of quick actions, ordered and edited in the admin (no second list for «no loan»).
 - [x] **MA9. Tab bar:** the default label of Toʻlovlar becomes «Monitoring».
 
 **BPMN v2**
-- [ ] Admin «Asosiy oyna» step: «верхние баннеры, кнопки меню», without the background.
-- [ ] The active loan shown in «Qarzlarim», not on Asosiy; rename Toʻlovlar to «Monitoring» where the tab appears.
+- [x] Admin «Asosiy oyna» step: «верхние баннеры, кнопки меню», without the background.
+- [x] «Главная: истории, быстрые действия; займ в «Qarzlarim»». The v2 BPMN never named the Toʻlovlar tab, so there was nothing to rename.
 - [ ] After Bobur aka: ML27 and ML29.
