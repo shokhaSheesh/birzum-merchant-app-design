@@ -38,10 +38,10 @@ Frame «BPMN · Микрозаймы (Fortuna / Vodiy)» below the BNPL frames. 
 - [x] **ML2. Sign-in:** phone → OTP → **password** (today it's phone → OTP → PIN). Wrong password state. Then, on a known device, straight home.
 - [x] **ML3. New device:** after the password, MyID face → «Kartalaringiz bu qurilmadan oʻchirildi» → set PIN / Face ID. Failed MyID → «Xavfsizlik» state.
 - [x] **ML19. «Parolni unutdingizmi?»** on the sign-in password screen: SMS code → new password twice (the same rules) → «Parol yangilandi». A new phone still goes through MyID after it.
-- [ ] **ML4. OTP:** 6 characters (letters and digits, keyboard with letters), resend after 59 s (now 60); 3 wrong → 15 min block screen with a timer.
-- [ ] **ML5. Blocked client:** «Bu mijoz bloklangan» at sign-in, no code sent.
-- [ ] **ML6. Phone ↔ PINFL mismatch** after MyID: push + «Xavfsizlik» («Raqam sizning nomingizda emas»).
-- [ ] **ML7. 3 min idle:** lock screen (PIN / Face ID).
+- [x] **ML4. OTP:** 6 characters (letters and digits, keyboard with letters), resend after 59 s (now 60); 3 wrong → 15 min block screen with a timer.
+- [x] **ML5. Blocked client:** «Bu mijoz bloklangan» at sign-in, no code sent.
+- [x] **ML6. Phone ↔ PINFL mismatch** after MyID: push + «Xavfsizlik» («Raqam sizning nomingizda emas»).
+- [x] **ML7. 3 min idle:** lock screen (PIN / Face ID).
 
 **Cards, application, contract, payments**
 - [ ] **ML8. Cards:** linked only from Profil → Kartalar after sign-up. Card's SMS phone ≠ client's phone → push + «Xavfsizlik». Owner shown as «Ism F.».
