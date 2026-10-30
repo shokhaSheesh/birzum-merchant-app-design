@@ -73,20 +73,20 @@ Frame «BPMN · Микрозаймы (Fortuna / Vodiy)» below the BNPL frames. 
 ## Feedback 30.10: the «Asosiy oyna» sheet and Bobur aka's Miro comments
 
 **Asosiy (from the sheet)**
-- [ ] **ML20. «Arizangiz koʻrib chiqilmoqda» card:** shows when the client sends an ariza, disappears when the ariza is closed. Check that every closing status hides it.
+- [x] **ML20. «Arizangiz koʻrib chiqilmoqda» card:** shows when the client sends an ariza, disappears when the ariza is closed. Check that every closing status hides it.
 - [ ] **ML21. No loan card on Asosiy:** the active-loan card and the «Sizga mikroqarz» card go. The active loan's details live in Qarzlarim. Instead, Asosiy gets a theme wallpaper and small info banners at the top, like AVO bank's story tiles.
-- [ ] **ML22. Quick actions:** Kreditlar, Toʻlov, Kartalar, Yordam. Order, labels and on/off come from the admin (MA6).
+- [x] **ML22. Quick actions:** Kreditlar, Toʻlov, Kartalar, Yordam. Order, labels and on/off come from the admin (MA6).
 - [ ] **ML23. Tab bar:** Toʻlovlar is monitoring: payment history and receipts. The tabs' order, labels and on/off also come from the admin (MA6).
 
 **From the Miro comments**
 - [x] **ML24. Phone ↔ PINFL antifraud:** already in BPMN v2 (user, 30.10). compare the client's PINFL with the number owner's PINFL. If they match, send the code; if not, send a push. Bobur aka puts this before the code is sent, but at sign-up the PINFL is only known after MyID. Ask where it goes for a new client.
 - [x] **ML25. Password before the PIN** (ML1).
-- [ ] **ML26. Card in the ariza:** cards are linked after registration (done). In the ariza the chosen card is also used for its turnover («karta aylanmasi»). Say so on the card step and in the BPMN.
+- [x] **ML26. Card in the ariza:** cards are linked after registration (done). In the ariza the chosen card is also used for its turnover («karta aylanmasi»). Say so on the card step and in the BPMN.
 - [ ] **ML27 (on hold). A check before sending the ariza to FlexSoft:** which check is not stated (blocked client? antifraud? limits?). Ask.
 - [x] **ML28. FlexSoft decides by the chosen product's rules:** the app only sends the ariza, and it waits in «Koʻrib chiqilmoqda» (30.10).
 - [ ] **ML29 (on hold, the user talks to Bobur aka 31.10). Limit per product:** each product calculates its limit differently. Should each product have its own path? Our suggestion: one flow, because the app only sends the ariza and FlexSoft applies each product's rules. Confirm with Bobur aka.
-- [ ] **ML30. Blocked client:** don't refuse sign-in. Block only Kreditlar, new arizalar and personal data. With an active loan the client can still pay. Update the screen in «Holatlar namunasi» and the BPMN.
-- [ ] **BPMN fixes (v2):** «Правила решения» out of the admin lane (rules live in FlexSoft). Signing the contract: two arrows, «client enters code → code checked», and only after that «FlexSoft: create contract»; add the wrong-code branch. Same for the other code step Bobur aka marked. Blocked client per ML30. Antifraud per ML24.
+- [x] **ML30. Blocked client:** don't refuse sign-in. Block only Kreditlar, new arizalar and personal data. With an active loan the client can still pay. Update the screen in «Holatlar namunasi» and the BPMN.
+- [x] **BPMN fixes (v2), 30.10:** «Код верный?» before «FlexSoft: создать договор» and «FlexSoft: обновить номер», with «Неверный код: ввести снова, 3 ошибки — блок 15 мин»; admin «Правила решения» replaced by «Asosiy oyna»; ariza decided «в FlexSoft по правилам выбранного продукта»; card «для выплаты и оценки оборота»; blocked client per ML30. Was: «Правила решения» out of the admin lane (rules live in FlexSoft). Signing the contract: two arrows, «client enters code → code checked», and only after that «FlexSoft: create contract»; add the wrong-code branch. Same for the other code step Bobur aka marked. Blocked client per ML30. Antifraud per ML24.
 
 **Admin**
 - [x] **MA6. App menu:** the quick actions on Asosiy and the tab bar. Order (drag), label, on/off.
@@ -96,7 +96,7 @@ Frame «BPMN · Микрозаймы (Fortuna / Vodiy)» below the BNPL frames. 
 **From the sheet: Kreditlar, Ariza, Tolov tabs**
 - [x] **Kreditlar:** a separate window with every product's detailed terms (ML18).
 - [x] **Ariza, calculator:** payment day and payment type (ML17).
-- [ ] **ML31. Calculator result:** show only the approximate monthly payment and the total. No rate, no interest: they change with scoring. No «Toʻlov jadvali»: the real schedule comes after the decision. Question: should the rate chips on Kreditlar and the rates in «Batafsil shartlar» also go?
-- [ ] **ML32. Ariza card step:** instead of «Pul qaysi kartaga», say «Kredit ajratish ehtimolini oshirish uchun eng yuqori aylanmaga ega kartangizni biriktiring» (with ML26).
-- [ ] **ML33. Toʻlov: three kinds of payment** in one place: by the schedule, early (partial), and paying off in full.
+- [x] **ML31. Calculator result** (calculator done 30.10; the question about Kreditlar and «Batafsil shartlar» is still open): show only the approximate monthly payment and the total. No rate, no interest: they change with scoring. No «Toʻlov jadvali»: the real schedule comes after the decision. Question: should the rate chips on Kreditlar and the rates in «Batafsil shartlar» also go?
+- [x] **ML32. Ariza card step:** instead of «Pul qaysi kartaga», say «Kredit ajratish ehtimolini oshirish uchun eng yuqori aylanmaga ega kartangizni biriktiring» (with ML26).
+- [x] **ML33. Toʻlov: three kinds of payment** in one place: by the schedule, early (partial), and paying off in full.
 
