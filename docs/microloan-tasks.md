@@ -74,9 +74,9 @@ Frame «BPMN · Микрозаймы (Fortuna / Vodiy)» below the BNPL frames. 
 
 **Asosiy (from the sheet)**
 - [x] **ML20. «Arizangiz koʻrib chiqilmoqda» card:** shows when the client sends an ariza, disappears when the ariza is closed. Check that every closing status hides it.
-- [ ] **ML21. No loan card on Asosiy:** the active-loan card and the «Sizga mikroqarz» card go. The active loan's details live in Qarzlarim. Instead, Asosiy gets a theme wallpaper and small info banners at the top, like AVO bank's story tiles.
+- [x] **ML21. No loan card on Asosiy:** the active-loan card and the «Sizga mikroqarz» card go. The active loan's details live in Qarzlarim. Instead, Asosiy gets a theme wallpaper and small info banners at the top, like AVO bank's story tiles.
 - [x] **ML22. Quick actions:** Kreditlar, Toʻlov, Kartalar, Yordam. Order, labels and on/off come from the admin (MA6).
-- [ ] **ML23. Tab bar:** Toʻlovlar is monitoring: payment history and receipts. The tabs' order, labels and on/off also come from the admin (MA6).
+- [x] **ML23. Tab bar:** Toʻlovlar is monitoring: payment history and receipts. The tabs' order, labels and on/off also come from the admin (MA6).
 
 **From the Miro comments**
 - [x] **ML24. Phone ↔ PINFL antifraud:** already in BPMN v2 (user, 30.10). compare the client's PINFL with the number owner's PINFL. If they match, send the code; if not, send a push. Bobur aka puts this before the code is sent, but at sign-up the PINFL is only known after MyID. Ask where it goes for a new client.
@@ -103,17 +103,17 @@ Frame «BPMN · Микрозаймы (Fortuna / Vodiy)» below the BNPL frames. 
 ## Next (30.10, after the user's answers)
 
 **App**
-- [ ] **ML21. Asosiy:** the active-loan card moves to Qarzlarim (on top of «Faol»), so Asosiy has no loan card. The red overdue card stays on Asosiy. The background is one fixed theme drawn in the app (not set from the admin). In the card's place: a theme header with the greeting, the bell and the top story tiles.
+- [x] **ML21. Asosiy:** the active-loan card moves to Qarzlarim (on top of «Faol»), so Asosiy has no loan card. The red overdue card stays on Asosiy. The background is one fixed theme drawn in the app (not set from the admin). In the card's place: a theme header with the greeting, the bell and the top story tiles.
 - [x] **ML22. Quick actions:** Kreditlar, Toʻlov, Kartalar, Yordam in both cases (done 30.10).
-- [ ] **ML23. Rename the Toʻlovlar tab to «Monitoring»** (ru «Мониторинг»): payment history and receipts.
-- [ ] **ML16b. «Holatlar namunasi»:** remove «Kredit bor» and «Kredit yoʻq»; keep «Toʻlov kechikkan».
+- [x] **ML23. Rename the Toʻlovlar tab to «Monitoring»** (ru «Мониторинг»): payment history and receipts.
+- ~~**ML16b.**~~ Keep «Kredit bor» and «Kredit yoʻq» in «Holatlar namunasi» (user, 30.10).
 - ML31: the rates stay on Kreditlar and «Batafsil shartlar» (user, 30.10).
 - On hold: ML27 (which check before FlexSoft), ML29 (limit per product), both with Bobur aka.
 
 **Admin**
 - [ ] **MA8b. «Asosiy oyna»:** remove «Mavzu» (the background picture); the theme is fixed in the app.
 - MA6 stays as it is: one list of quick actions, ordered and edited in the admin (no second list for «no loan»).
-- [ ] **MA9. Tab bar:** the default label of Toʻlovlar becomes «Monitoring».
+- [x] **MA9. Tab bar:** the default label of Toʻlovlar becomes «Monitoring».
 
 **BPMN v2**
 - [ ] Admin «Asosiy oyna» step: «верхние баннеры, кнопки меню», without the background.
