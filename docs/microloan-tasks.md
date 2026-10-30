@@ -100,3 +100,23 @@ Frame «BPMN · Микрозаймы (Fortuna / Vodiy)» below the BNPL frames. 
 - [x] **ML32. Ariza card step:** instead of «Pul qaysi kartaga», say «Kredit ajratish ehtimolini oshirish uchun eng yuqori aylanmaga ega kartangizni biriktiring» (with ML26).
 - [x] **ML33. Toʻlov: three kinds of payment** in one place: by the schedule, early (partial), and paying off in full.
 
+## Next (30.10, after the user's answers)
+
+**App**
+- [ ] **ML21. Asosiy without the loan card:** the loan card goes (the loan lives in Qarzlarim); the red overdue card stays. Background: a fixed theme drawn in the app, not set from the admin. In the card's place: to be agreed (suggestion: a theme header with the greeting and the top story tiles).
+- [ ] **ML22b. Quick actions in two sets:** with an active loan (Kreditlar, Toʻlov, Kartalar, Yordam) and without one (Kreditlar, Arizalarim, Kartalar, Yordam). Replaces the single set of ML22.
+- [ ] **ML23. Rename the Toʻlovlar tab** to «Monitoring» (payment history and receipts).
+- [ ] **ML16b. «Holatlar namunasi»:** remove «Kredit bor» and «Kredit yoʻq»; keep «Toʻlov kechikkan».
+- ML31: the rates stay on Kreditlar and «Batafsil shartlar» (user, 30.10).
+- On hold: ML27 (which check before FlexSoft), ML29 (limit per product), both with Bobur aka.
+
+**Admin**
+- [ ] **MA8b. «Asosiy oyna»:** remove «Mavzu» (the background picture); the theme is fixed in the app.
+- [ ] **MA6b. Quick actions in two lists:** «Faol qarz bor» and «Faol qarz yoʻq», each ordered and edited on its own.
+- [ ] **MA9. Tab bar:** the default label of Toʻlovlar becomes «Monitoring».
+
+**BPMN v2**
+- [ ] Admin «Asosiy oyna» step: «верхние баннеры, кнопки меню (с займом и без)», without the background.
+- [ ] Rename Toʻlovlar to «Monitoring» where the BPMN shows the tab.
+- [ ] After Bobur aka: ML27 and ML29.
+
