@@ -119,3 +119,43 @@ Frame «BPMN · Микрозаймы (Fortuna / Vodiy)» below the BNPL frames. 
 - [x] Admin «Asosiy oyna» step: «верхние баннеры, кнопки меню», without the background.
 - [x] «Главная: истории, быстрые действия; займ в «Qarzlarim»». The v2 BPMN never named the Toʻlovlar tab, so there was nothing to rename.
 - [ ] After Bobur aka: ML27 and ML29.
+
+## Design plan after the 31.10 call (02.11)
+
+Details and reasons: [microloan-call-2026-10-31.md](microloan-call-2026-10-31.md). ⏸ waits for Bobur aka's answers from FlexSoft.
+
+**Admin (first, the app follows it)**
+- [x] **MA10. Mahsulotlar from FlexSoft:** a read-only list (FlexSoft code, name, sum range, longest term, rate, payment types, shown in the app or not). No creating products, no rate tables.
+- [x] **MA11. Remove «Shartnoma va toʻlov»:** page, nav and role; FlexSoft holds those rules.
+- [x] **MA12. «Toʻlov kuni» setting:** a switch between fixed days (pick which) and the rule by the application day (1–5 → 1–5, 6–10 → 1–10, 11–20 one more each day, after the 20th only the 1st).
+- [x] **MA13. Client sessions:** on the client page, the client's devices (device, OS, IP, time), view only.
+
+**App: calculator and products**
+- [ ] **ML34.** One rate per product (a range for collateral ones); the product's FlexSoft code goes with the ariza.
+- [ ] **ML35.** Term chips in steps of 3 up to the longest term (just 1 or 2 when the longest is that).
+- [ ] **ML36.** Payment day by the admin mode: by the application day (with a note after the 20th) or fixed days.
+
+**App: sign-in and security**
+- [ ] **ML37.** «Parolni unutdingizmi?» → MyID face → new password ×2 → PIN (replaces the SMS code of ML19).
+- [ ] **ML38.** One device at a time: the old phone shows «Hisobingizga boshqa qurilmadan kirildi» and is signed out; also in «Holatlar namunasi».
+- [ ] **ML39.** Phone change: after both codes, a MyID face check and the new number's PINFL check.
+
+**App: ariza, contract, payout**
+- [ ] **ML40.** Ariza card step: the card with the highest turnover, for the income check and auto-debit, not where the money goes.
+- [ ] **ML41.** After the contract is accepted: «Qaysi kartaga oʻtkazay?» (linked cards + «Karta qoʻshish»).
+- [ ] **ML43.** Statuses in Arizalar: Koʻrib chiqilmoqda, Tasdiqlandi, Imzolandi, Pul oʻtkazildi, Rad etildi, Bekor qilindi, Yopilgan; the offer lasts 1 day; the client can cancel an approved offer.
+- [ ] **ML44.** After a refusal a new ariza can still be sent; FlexSoft's block message is shown.
+- [ ] ⏸ **ML42.** Signing by OTP or MyID.
+- [ ] ⏸ **ML45.** A bigger approved sum than asked: the client picks the sum when signing.
+
+**App: payments**
+- [ ] **ML46.** Before paying in the app: «Tekshirilmoqda…», then «allaqachon toʻlangan» or on to payment.
+- [ ] **ML47.** Monitoring: payments made outside the app (Click, Payme, kassa, auto-debit) with a receipt and where it came from.
+- [ ] **ML48.** Reminder push 3 days and 1 day before, in Bildirishnomalar.
+
+**App: Asosiy and Profil**
+- [ ] **ML51.** Profil root shows sections only; each opens a page: Hisob (Kartalarim, Kontaktlarim), Sozlamalar (Xavfsizlik, Aktiv sessiyalar, Til), Yordam (Savol-javob, Chat, Aloqa), Hujjatlar (Oferta, Maxfiylik).
+- [ ] **ML50.** Design pass: brighter colours, no oversized cards (about ⅓ of the screen).
+- [ ] **ML49.** Wallpaper on Asosiy; top stories as explainers (MyID, Face ID, what a loan is, fraud). Waits for Bobur aka's references.
+
+**After the design:** an updated mind-map list for all four maps (Microloan, Admin, BNPL, Merchant), for the user to apply with the Claude extension.
