@@ -143,19 +143,19 @@ Details and reasons: [microloan-call-2026-10-31.md](microloan-call-2026-10-31.md
 **App: ariza, contract, payout**
 - [x] **ML40.** Ariza card step: the card with the highest turnover, for the income check and auto-debit, not where the money goes.
 - [x] **ML41.** After the contract is accepted: «Qaysi kartaga oʻtkazay?» (linked cards + «Karta qoʻshish»).
-- [ ] **ML43.** Statuses in Arizalar: Koʻrib chiqilmoqda, Tasdiqlandi, Imzolandi, Pul oʻtkazildi, Rad etildi, Bekor qilindi, Yopilgan; the offer lasts 1 day; the client can cancel an approved offer.
-- [ ] **ML44.** After a refusal a new ariza can still be sent; FlexSoft's block message is shown.
+- [x] **ML43.** Statuses in Arizalar: Koʻrib chiqilmoqda, Tasdiqlandi, Imzolandi, Pul oʻtkazildi, Rad etildi, Bekor qilindi, Yopilgan; the offer lasts 1 day; the client can cancel an approved offer.
+- [x] **ML44.** (screen in «Holatlar namunasi» only) After a refusal a new ariza can still be sent; FlexSoft's block message is shown.
 - [ ] ⏸ **ML42.** Signing by OTP or MyID.
-- [ ] ⏸ **ML45.** A bigger approved sum than asked: the client picks the sum when signing.
+- [x] **ML45.** (screen in «Holatlar namunasi» only, in case FlexSoft does it) A bigger approved sum than asked: the client picks the sum when signing.
 
 **App: payments**
-- [ ] **ML46.** Before paying in the app: «Tekshirilmoqda…», then «allaqachon toʻlangan» or on to payment.
-- [ ] **ML47.** Monitoring: payments made outside the app (Click, Payme, kassa, auto-debit) with a receipt and where it came from.
-- [ ] **ML48.** Reminder push 3 days and 1 day before, in Bildirishnomalar.
+- ~~**ML46.**~~ (for development, no UI: user 02.11) Before paying in the app: «Tekshirilmoqda…», then «allaqachon toʻlangan» or on to payment.
+- ~~**ML47.**~~ (not needed now) Monitoring: payments made outside the app (Click, Payme, kassa, auto-debit) with a receipt and where it came from.
+- ~~**ML48.**~~ (not needed now) Reminder push 3 days and 1 day before, in Bildirishnomalar.
 
 **App: Asosiy and Profil**
-- [ ] **ML51.** Profil root shows sections only; each opens a page: Hisob (Kartalarim, Kontaktlarim), Sozlamalar (Xavfsizlik, Aktiv sessiyalar, Til), Yordam (Savol-javob, Chat, Aloqa), Hujjatlar (Oferta, Maxfiylik).
-- [ ] **ML50.** Design pass: brighter colours, no oversized cards (about ⅓ of the screen).
-- [ ] **ML49.** Wallpaper on Asosiy; top stories as explainers (MyID, Face ID, what a loan is, fraud). Waits for Bobur aka's references.
+- [x] **ML51.** Profil root shows sections only; each opens a page: Hisob (Kartalarim, Kontaktlarim), Sozlamalar (Xavfsizlik, Aktiv sessiyalar, Til), Yordam (Savol-javob, Chat, Aloqa), Hujjatlar (Oferta, Maxfiylik).
+- [x] **ML50.** (brighter tile colour, compact loan card) Design pass: brighter colours, no oversized cards (about ⅓ of the screen).
+- [ ] ⏸ **ML49.** (nothing for now) Wallpaper on Asosiy; top stories as explainers (MyID, Face ID, what a loan is, fraud). Waits for Bobur aka's references.
 
 **After the design:** an updated mind-map list for all four maps (Microloan, Admin, BNPL, Merchant), for the user to apply with the Claude extension.
