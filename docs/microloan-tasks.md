@@ -131,18 +131,18 @@ Details and reasons: [microloan-call-2026-10-31.md](microloan-call-2026-10-31.md
 - [x] **MA13. Client sessions:** on the client page, the client's devices (device, OS, IP, time), view only.
 
 **App: calculator and products**
-- [ ] **ML34.** One rate per product (a range for collateral ones); the product's FlexSoft code goes with the ariza.
-- [ ] **ML35.** Term chips in steps of 3 up to the longest term (just 1 or 2 when the longest is that).
-- [ ] **ML36.** Payment day by the admin mode: by the application day (with a note after the 20th) or fixed days.
+- ~~**ML34.**~~ (for development, no UI: user 02.11) One rate per product (a range for collateral ones); the product's FlexSoft code goes with the ariza.
+- ~~**ML35.**~~ (for development, no UI) Term chips in steps of 3 up to the longest term (just 1 or 2 when the longest is that).
+- ~~**ML36.**~~ (for development, no UI) Payment day by the admin mode: by the application day (with a note after the 20th) or fixed days.
 
 **App: sign-in and security**
-- [ ] **ML37.** «Parolni unutdingizmi?» → MyID face → new password ×2 → PIN (replaces the SMS code of ML19).
-- [ ] **ML38.** One device at a time: the old phone shows «Hisobingizga boshqa qurilmadan kirildi» and is signed out; also in «Holatlar namunasi».
-- [ ] **ML39.** Phone change: after both codes, a MyID face check and the new number's PINFL check.
+- [x] **ML37.** «Parolni unutdingizmi?» → MyID face → new password ×2 → PIN (replaces the SMS code of ML19).
+- [x] **ML38.** One device at a time: only the screen «Hisobingizga boshqa qurilmadan kirildi» in «Holatlar namunasi»; the sign-out logic is for development.
+- [x] **ML39.** Phone change: after both codes, the MyID camera and the done screen (the PINFL check is for development).
 
 **App: ariza, contract, payout**
-- [ ] **ML40.** Ariza card step: the card with the highest turnover, for the income check and auto-debit, not where the money goes.
-- [ ] **ML41.** After the contract is accepted: «Qaysi kartaga oʻtkazay?» (linked cards + «Karta qoʻshish»).
+- [x] **ML40.** Ariza card step: the card with the highest turnover, for the income check and auto-debit, not where the money goes.
+- [x] **ML41.** After the contract is accepted: «Qaysi kartaga oʻtkazay?» (linked cards + «Karta qoʻshish»).
 - [ ] **ML43.** Statuses in Arizalar: Koʻrib chiqilmoqda, Tasdiqlandi, Imzolandi, Pul oʻtkazildi, Rad etildi, Bekor qilindi, Yopilgan; the offer lasts 1 day; the client can cancel an approved offer.
 - [ ] **ML44.** After a refusal a new ariza can still be sent; FlexSoft's block message is shown.
 - [ ] ⏸ **ML42.** Signing by OTP or MyID.
