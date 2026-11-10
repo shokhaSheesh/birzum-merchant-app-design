@@ -1,13 +1,15 @@
 import { Trash2 } from 'lucide-react'
 import { useState } from 'react'
 import { useI18n } from '@/shared/i18n/useI18n'
+import { toastError } from '@/shared/api/client'
 import { toast } from '@/shared/lib/toast'
 import { Alert } from '@/shared/ui/Alert'
 import { Button } from '@/shared/ui/Button'
 import { ConfirmSheet } from '@/shared/ui/ConfirmSheet'
 
 type Props = {
-  onDelete: () => void
+  /** Throw to report a failure (the server refused); the screen stays and the error is shown. */
+  onDelete: () => void | Promise<void>
   /** Why this record cannot be deleted right now. Shown instead of the button. */
   blocked?: string
 }
@@ -31,9 +33,13 @@ export function DeleteRecord({ onDelete, blocked }: Props) {
         title={t('confirm.delete.title')}
         message={t('confirm.delete.message')}
         confirmLabel={t('common.delete')}
-        onConfirm={() => {
-          onDelete()
-          toast(t('toast.deleted'))
+        onConfirm={async () => {
+          try {
+            await onDelete()
+            toast(t('toast.deleted'))
+          } catch (error) {
+            toastError(error)
+          }
         }}
       />
     </>

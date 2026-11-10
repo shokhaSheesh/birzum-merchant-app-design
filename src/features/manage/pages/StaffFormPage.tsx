@@ -2,11 +2,13 @@ import { UserRound } from 'lucide-react'
 import { useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { locationsStore } from '@/entities/merchant/locations'
+import { loadLocations, loadStaff, removeStaff, saveStaff } from '@/entities/merchant/merchantApi'
 import { ROLE_IDS, type RoleId } from '@/entities/merchant/roles'
-import { CURRENT_STAFF_ID, staffStore } from '@/entities/merchant/staff'
+import { currentStaffId, staffStore } from '@/entities/merchant/staff'
+import { toastError } from '@/shared/api/client'
+import { useRemote } from '@/shared/api/useRemote'
 import { useI18n } from '@/shared/i18n/useI18n'
 import { toast } from '@/shared/lib/toast'
-import { newId } from '@/shared/lib/createStore'
 import { PHONE_DIGITS } from '@/shared/lib/phone'
 import { Button } from '@/shared/ui/Button'
 import { Checkbox } from '@/shared/ui/Checkbox'
@@ -19,6 +21,7 @@ import { Section } from '@/shared/ui/Section'
 import { Select } from '@/shared/ui/Select'
 import { TextField } from '@/shared/ui/TextField'
 import { DeleteRecord } from '../components/DeleteRecord'
+import { LoadGate } from '../components/LoadGate'
 
 const PINFL_DIGITS = 14
 const MIN_PASSWORD = 8
@@ -30,6 +33,15 @@ const isEmail = (value: string) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value.trim(
  * keeps the old one.
  */
 export function StaffFormPage() {
+  const remote = useRemote(() => Promise.all([loadStaff(), loadLocations()]))
+  return (
+    <LoadGate loading={remote.loading} failed={remote.failed} onRetry={remote.reload}>
+      <StaffForm />
+    </LoadGate>
+  )
+}
+
+function StaffForm() {
   const { t, tl } = useI18n()
   const navigate = useNavigate()
   const { id } = useParams()
@@ -41,7 +53,8 @@ export function StaffFormPage() {
   const [phone, setPhone] = useState(existing?.phone ?? '')
   const [login, setLogin] = useState(existing?.login ?? '')
   const [email, setEmail] = useState(existing?.email ?? '')
-  const [pinfl, setPinfl] = useState(existing?.pinfl ?? '')
+  // The server returns the JSHSHIR masked, so an edit starts empty and empty keeps the stored one
+  const [pinfl, setPinfl] = useState('')
   const [password, setPassword] = useState('')
   const [passwordRepeat, setPasswordRepeat] = useState('')
   const [temporaryPassword, setTemporaryPassword] = useState(existing?.temporaryPassword ?? true)
@@ -49,6 +62,7 @@ export function StaffFormPage() {
   const [locationIds, setLocationIds] = useState<string[]>(existing?.locationIds ?? [])
   const [active, setActive] = useState(existing?.active ?? true)
   const [submitted, setSubmitted] = useState(false)
+  const [saving, setSaving] = useState(false)
 
   const required = (value: string) =>
     submitted && value.trim() === '' ? t('error.required') : undefined
@@ -58,39 +72,46 @@ export function StaffFormPage() {
       ? t('staff.password.short', { count: String(MIN_PASSWORD) })
       : undefined
   const repeatError = password !== passwordRepeat ? t('staff.password.mismatch') : undefined
+  const pinflValid = pinfl.length === PINFL_DIGITS || (!!existing && pinfl === '')
   const toggleLocation = (locationId: string, on: boolean) =>
     setLocationIds((list) => (on ? [...list, locationId] : list.filter((x) => x !== locationId)))
 
-  const save = () => {
+  const save = async () => {
     setSubmitted(true)
     const filled = [firstName, lastName, login].every((value) => value.trim() !== '')
     if (
       !filled ||
-      !isEmail(email) ||
+      (email.trim() !== '' && !isEmail(email)) ||
       phone.length < PHONE_DIGITS ||
-      pinfl.length !== PINFL_DIGITS ||
+      !pinflValid ||
       passwordError ||
       repeatError ||
       !roleId ||
       locationIds.length === 0
     )
       return
-    staffStore.save({
-      ...existing,
-      id: existing?.id ?? newId(),
-      firstName: firstName.trim(),
-      lastName: lastName.trim(),
-      phone,
-      login: login.trim(),
-      email: email.trim(),
-      pinfl,
-      temporaryPassword,
-      roleId,
-      locationIds,
-      active,
-    })
-    toast(t('toast.saved'))
-    navigate(-1)
+    setSaving(true)
+    try {
+      await saveStaff(existing?.id, {
+        firstName: firstName.trim(),
+        lastName: lastName.trim(),
+        phone,
+        login: login.trim(),
+        email: email.trim(),
+        pinfl,
+        password,
+        temporaryPassword,
+        roleId,
+        locationIds,
+        active,
+      })
+      toast(t('toast.saved'))
+      navigate(-1)
+    } catch (error) {
+      toastError(error)
+    } finally {
+      setSaving(false)
+    }
   }
 
   return (
@@ -98,7 +119,7 @@ export function StaffFormPage() {
       onSubmit={save}
       onBack={() => navigate(-1)}
       footer={
-        <Button type="submit" block>
+        <Button type="submit" block loading={saving}>
           {t('common.save')}
         </Button>
       }
@@ -137,7 +158,11 @@ export function StaffFormPage() {
           placeholder="name@example.uz"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
-          error={submitted && !isEmail(email) ? t('staff.email.invalid') : undefined}
+          error={
+            submitted && email.trim() !== '' && !isEmail(email)
+              ? t('staff.email.invalid')
+              : undefined
+          }
         />
         <PhoneField
           label={t('field.phone')}
@@ -152,7 +177,8 @@ export function StaffFormPage() {
           placeholder={t('staff.pinfl.placeholder')}
           value={pinfl}
           onChange={(e) => setPinfl(e.target.value.replace(/\D/g, '').slice(0, PINFL_DIGITS))}
-          error={submitted && pinfl.length !== PINFL_DIGITS ? t('staff.pinfl.invalid') : undefined}
+          hint={existing?.pinfl ? t('staff.pinfl.keep', { pinfl: existing.pinfl }) : undefined}
+          error={submitted && !pinflValid ? t('staff.pinfl.invalid') : undefined}
         />
         <PasswordField
           label={t('field.password')}
@@ -212,9 +238,9 @@ export function StaffFormPage() {
       />
       {existing && (
         <DeleteRecord
-          blocked={existing.id === CURRENT_STAFF_ID ? t('staff.self') : undefined}
-          onDelete={() => {
-            staffStore.remove(existing.id)
+          blocked={existing.id === currentStaffId() ? t('staff.self') : undefined}
+          onDelete={async () => {
+            await removeStaff(existing.id)
             navigate(-1)
           }}
         />

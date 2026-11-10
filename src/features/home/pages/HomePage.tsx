@@ -1,3 +1,4 @@
+import { SampleBadge } from '@/shared/ui/SampleBadge'
 import { Bell, Download, FileClock } from 'lucide-react'
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
@@ -8,7 +9,7 @@ import { unreadCount } from '@/entities/notifications/notifications'
 import { LocationChip } from '@/entities/merchant/ui/LocationChip'
 import { usePermissions } from '@/entities/merchant/usePermissions'
 import { useMyLocations } from '@/entities/merchant/useMyLocations'
-import { currentUser } from '@/entities/session/user'
+import { useCurrentUser } from '@/entities/merchant/useCurrentUser'
 import { ROUTES } from '@/shared/config/routes'
 import { calendarNames } from '@/shared/i18n/dictionaries'
 import { useI18n } from '@/shared/i18n/useI18n'
@@ -72,7 +73,7 @@ function toBars(items: ApplicationWithClient[], period: Period, weekdays: string
 export function HomePage() {
   const { t, tl, lang } = useI18n()
   const myLocations = useMyLocations()
-  const user = currentUser
+  const user = useCurrentUser()
   const navigate = useNavigate()
   const [period, setPeriod] = useState<Period>(() => ({ unit: 'week', anchor: new Date() }))
 
@@ -151,6 +152,10 @@ export function HomePage() {
           <LocationChip value={locationId} onChange={setLocationId} />
         </div>
       )}
+
+      <div className="-mb-3 flex">
+        <SampleBadge />
+      </div>
 
       <PeriodPicker value={period} onChange={setPeriod} />
 

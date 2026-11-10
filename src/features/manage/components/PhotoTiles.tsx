@@ -1,5 +1,4 @@
 import { ImagePlus, X } from 'lucide-react'
-import { useRef } from 'react'
 import { useI18n } from '@/shared/i18n/useI18n'
 import { cn } from '@/shared/lib/cn'
 
@@ -13,7 +12,12 @@ type Props = {
 /** Photos as square tiles with a remove button each, ending in a dashed tile that adds more. */
 export function PhotoTiles({ images, onChange, size = 'md' }: Props) {
   const { t } = useI18n()
-  const fileInput = useRef<HTMLInputElement>(null)
+  // The backend has no photo upload for merchants yet (API doc §4): a product takes ready
+  // http(s) links, so the tile asks for one.
+  const addByUrl = () => {
+    const url = window.prompt(t('product.photos.url'))?.trim()
+    if (url && /^https?:\/\/\S+$/.test(url) && !images.includes(url)) onChange([...images, url])
+  }
   const tile = size === 'sm' ? 'size-16' : 'size-24'
 
   return (
@@ -34,7 +38,7 @@ export function PhotoTiles({ images, onChange, size = 'md' }: Props) {
       <button
         type="button"
         aria-label={t('product.photos.add')}
-        onClick={() => fileInput.current?.click()}
+        onClick={addByUrl}
         className={cn(
           'flex flex-col items-center justify-center gap-1 rounded-control border-[1.5px] border-dashed border-navy-400 px-1 text-center text-xs font-semibold text-brand active:bg-navy-100',
           tile,
@@ -43,18 +47,6 @@ export function PhotoTiles({ images, onChange, size = 'md' }: Props) {
         <ImagePlus size={size === 'sm' ? 20 : 24} />
         {size === 'md' && t('product.photos.add')}
       </button>
-      <input
-        ref={fileInput}
-        type="file"
-        accept="image/*"
-        multiple
-        hidden
-        onChange={(e) => {
-          const files = Array.from(e.target.files ?? [])
-          onChange([...images, ...files.map((file) => URL.createObjectURL(file))])
-          e.target.value = ''
-        }}
-      />
     </div>
   )
 }

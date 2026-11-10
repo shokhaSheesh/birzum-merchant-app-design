@@ -1,10 +1,12 @@
 import { useI18n } from '@/shared/i18n/useI18n'
-import { attributesStore } from './attributes'
+import { attributesStore, ownAttributesStore } from './attributes'
 import type { Product } from './products'
 
 /** Turns a product's chosen value ids into what a person reads, in the current language. */
 export function useVariantNames() {
-  const attributes = attributesStore.useAll()
+  const own = ownAttributesStore.useAll()
+  const sample = attributesStore.useAll()
+  const attributes = [...own, ...sample]
   const { tl } = useI18n()
 
   const valueOf = (product: Product, index: number, valueId: string) =>

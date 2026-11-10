@@ -58,6 +58,8 @@ export const ROUTES = {
   customerProfile: '/customer/profile',
   customerQr: '/customer/qr',
   kit: '/kit',
+  /** Which screens are wired to the backend (api branch). */
+  apiStatus: '/api-status',
   theme: '/theme',
   language: '/language',
   customerLanguage: '/customer/language',

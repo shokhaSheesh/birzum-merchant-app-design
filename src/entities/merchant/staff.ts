@@ -11,7 +11,7 @@ export type StaffMember = {
   phone: string
   login: string
   email?: string
-  /** JSHSHIR: 14 digits. */
+  /** JSHSHIR: 14 digits when typed; the server only returns it masked («••••••••••1234»). */
   pinfl?: string
   /**
    * True when the password was set by whoever created the account: FlexSoft asks for a new one
@@ -24,8 +24,12 @@ export type StaffMember = {
   active: boolean
 }
 
-/** The staff record of whoever is signed in. */
-export const CURRENT_STAFF_ID = 'u1'
+let currentId = 'u1'
+/** The staff record of whoever is signed in. The id comes from `GET /merchant/me`. */
+export const currentStaffId = () => currentId
+export const setCurrentStaffId = (id: string) => {
+  currentId = id
+}
 
 // Invented sample staff. Replace with the API.
 export const staffStore = createStore<StaffMember>([

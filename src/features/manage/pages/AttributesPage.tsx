@@ -1,4 +1,6 @@
-import { attributesStore } from '@/entities/catalog/attributes'
+import { ownAttributesStore } from '@/entities/catalog/attributes'
+import { loadAttributes } from '@/entities/merchant/merchantApi'
+import { useRemote } from '@/shared/api/useRemote'
 import { managePath } from '@/shared/config/routes'
 import { useI18n } from '@/shared/i18n/useI18n'
 import { ListRow, ListScreen } from '../components/ListScreen'
@@ -6,13 +8,17 @@ import { ListRow, ListScreen } from '../components/ListScreen'
 /** The directory of variant types (color, memory, …) and their values, named in every language. */
 export function AttributesPage() {
   const { t, tl } = useI18n()
-  const attributes = attributesStore.useAll()
+  const attributes = ownAttributesStore.useAll()
+  const { loading, failed, reload } = useRemote(loadAttributes)
 
   return (
     <ListScreen
       title={t('manage.attributes')}
       createTo={managePath('attributes', 'new')}
       empty={attributes.length === 0}
+      loading={loading}
+      failed={failed}
+      onRetry={reload}
     >
       <ul className="rounded-card border border-line bg-canvas px-4">
         {attributes.map((attribute) => (

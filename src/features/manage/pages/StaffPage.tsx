@@ -1,4 +1,6 @@
 import { locationsStore } from '@/entities/merchant/locations'
+import { loadLocations, loadStaff } from '@/entities/merchant/merchantApi'
+import { useRemote } from '@/shared/api/useRemote'
 import { staffStore } from '@/entities/merchant/staff'
 import { managePath } from '@/shared/config/routes'
 import { useI18n } from '@/shared/i18n/useI18n'
@@ -10,12 +12,16 @@ export function StaffPage() {
   const { t, tl } = useI18n()
   const staff = staffStore.useAll()
   const locations = locationsStore.useAll()
+  const { loading, failed, reload } = useRemote(() => Promise.all([loadStaff(), loadLocations()]))
 
   return (
     <ListScreen
       title={t('manage.staff')}
       createTo={managePath('staff', 'new')}
       empty={staff.length === 0}
+      loading={loading}
+      failed={failed}
+      onRetry={reload}
     >
       <ul className="rounded-card border border-line bg-canvas px-4">
         {staff.map((member) => (

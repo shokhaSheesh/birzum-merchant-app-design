@@ -4,7 +4,9 @@ import { Link, useNavigate } from 'react-router-dom'
 import { useI18n } from '@/shared/i18n/useI18n'
 import { Button } from '@/shared/ui/Button'
 import { EmptyState } from '@/shared/ui/EmptyState'
+import { ErrorState } from '@/shared/ui/ErrorState'
 import { PageHeader } from '@/shared/ui/PageHeader'
+import { SkeletonRows } from '@/shared/ui/Skeleton'
 import { StatusBadge, type StatusTone } from '@/shared/ui/StatusBadge'
 
 type ScreenProps = {
@@ -14,11 +16,25 @@ type ScreenProps = {
   /** Shown between the header and the list, e.g. a search field or filter. */
   toolbar?: ReactNode
   empty: boolean
+  /** True until the server has answered: shows placeholders instead of the list. */
+  loading?: boolean
+  /** The request failed: shows the error screen, whose button runs `onRetry`. */
+  failed?: 'offline' | 'server' | null
+  onRetry?: () => void
   children: ReactNode
 }
 
 /** The frame of every management list: back, title, "Qoʻshish" at the top right, then the rows. */
-export function ListScreen({ title, createTo, toolbar, empty, children }: ScreenProps) {
+export function ListScreen({
+  title,
+  createTo,
+  toolbar,
+  empty,
+  loading,
+  failed,
+  onRetry,
+  children,
+}: ScreenProps) {
   const { t } = useI18n()
   const navigate = useNavigate()
 
@@ -37,7 +53,11 @@ export function ListScreen({ title, createTo, toolbar, empty, children }: Screen
       />
       {toolbar && <div className="flex shrink-0 flex-col gap-3 px-5 pb-3">{toolbar}</div>}
       <div className="min-h-0 flex-1 overflow-y-auto px-5 pt-2 pb-6">
-        {empty ? (
+        {loading ? (
+          <SkeletonRows />
+        ) : failed ? (
+          <ErrorState kind={failed} onAction={() => onRetry?.()} />
+        ) : empty ? (
           <EmptyState title={t('manage.empty.title')} hint={t('manage.empty.hint')} />
         ) : (
           children

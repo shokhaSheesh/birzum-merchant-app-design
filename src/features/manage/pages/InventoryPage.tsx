@@ -11,24 +11,46 @@ import {
 } from '@/entities/catalog/products'
 import { useVariantNames } from '@/entities/catalog/useVariantNames'
 import { locationsStore } from '@/entities/merchant/locations'
+import {
+  loadAttributes,
+  loadLocations,
+  loadProducts,
+  saveStock,
+} from '@/entities/merchant/merchantApi'
+import { toastError } from '@/shared/api/client'
+import { useRemote } from '@/shared/api/useRemote'
 import { useI18n } from '@/shared/i18n/useI18n'
 import { EmptyState } from '@/shared/ui/EmptyState'
+import { ErrorState } from '@/shared/ui/ErrorState'
 import { FilterChips } from '@/shared/ui/FilterChips'
 import { PageHeader } from '@/shared/ui/PageHeader'
+import { SkeletonCards } from '@/shared/ui/Skeleton'
 import { QuantityStepper } from '@/shared/ui/QuantityField'
 
 const MAX_STOCK = 9999
 
-function setStock(product: Product, locationId: string, key: string, quantity: number) {
+/** Saves the count on the server; the screen shows the old count again if it is refused. */
+async function setStock(product: Product, locationId: string, combo: string[], quantity: number) {
+  const key = variantKey(combo)
+  const before = productsStore.get(product.id)?.stock ?? product.stock
   productsStore.update(product.id, {
-    stock: { ...product.stock, [locationId]: { ...product.stock[locationId], [key]: quantity } },
+    stock: { ...before, [locationId]: { ...before[locationId], [key]: quantity } },
   })
+  try {
+    await saveStock(product, locationId, combo, quantity)
+  } catch (error) {
+    toastError(error)
+    productsStore.update(product.id, { stock: before })
+  }
 }
 
 /** Stock on hand, one shop at a time: a count for every product and every variant of it. */
 export function InventoryPage() {
   const { t, tl, lang } = useI18n()
   const { names } = useVariantNames()
+  const { loading, failed, reload } = useRemote(() =>
+    Promise.all([loadLocations(), loadProducts(), loadAttributes()]),
+  )
   const locations = locationsStore.useAll()
   const products = productsStore.useAll().filter((product) => product.storeId === OWN_STORE_ID)
   const [chosen, setChosen] = useState(locations[0]?.id ?? '')
@@ -39,7 +61,13 @@ export function InventoryPage() {
   return (
     <div className="flex h-full flex-col">
       <PageHeader title={t('manage.inventory')} />
-      {locations.length === 0 ? (
+      {loading ? (
+        <div className="px-5 pt-2">
+          <SkeletonCards />
+        </div>
+      ) : failed ? (
+        <ErrorState kind={failed} onAction={reload} />
+      ) : locations.length === 0 ? (
         <EmptyState title={t('inventory.noLocations')} hint={t('manage.empty.hint')} />
       ) : (
         <>
@@ -103,7 +131,9 @@ export function InventoryPage() {
                             value={here[key] ?? 0}
                             min={0}
                             max={MAX_STOCK}
-                            onChange={(quantity) => setStock(product, locationId, key, quantity)}
+                            onChange={(quantity) =>
+                              void setStock(product, locationId, combo, quantity)
+                            }
                           />
                         </div>
                       )

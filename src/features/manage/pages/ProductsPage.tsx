@@ -8,6 +8,8 @@ import {
   stockOf,
   type Product,
 } from '@/entities/catalog/products'
+import { loadProducts } from '@/entities/merchant/merchantApi'
+import { useRemote } from '@/shared/api/useRemote'
 import { managePath } from '@/shared/config/routes'
 import { useI18n } from '@/shared/i18n/useI18n'
 import { formatSum } from '@/shared/lib/format'
@@ -21,6 +23,7 @@ export function ProductsPage() {
     const sub = getSubcategory(product.subcategory)
     return sub ? tl(sub.name) : t(`catalog.category.${product.category}`)
   }
+  const { loading, failed, reload } = useRemote(loadProducts)
   const [query, setQuery] = useState('')
   const needle = query.trim().toLowerCase()
   const products = productsStore
@@ -33,6 +36,9 @@ export function ProductsPage() {
       title={t('manage.products')}
       createTo={managePath('products', 'new')}
       empty={products.length === 0}
+      loading={loading}
+      failed={failed}
+      onRetry={reload}
       toolbar={
         <SearchField
           label={t('catalog.search')}

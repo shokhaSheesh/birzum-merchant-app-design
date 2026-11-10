@@ -89,3 +89,6 @@ export const seedAttributes: Attribute[] = [
 ]
 
 export const attributesStore = createStore<Attribute>(seedAttributes)
+
+/** The merchant's own variation types, as the server has them. The sample store above only names the other shops' products. */
+export const ownAttributesStore = createStore<Attribute>([])

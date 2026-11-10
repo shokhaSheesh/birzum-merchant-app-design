@@ -1,3 +1,4 @@
+import { SampleBadge } from '@/shared/ui/SampleBadge'
 import {
   ArrowLeft,
   Ban,
@@ -89,6 +90,7 @@ export function NotificationsPage() {
             <ArrowLeft size={24} />
           </button>
           <h1 className="text-lg font-bold">{t('notifications.title')}</h1>
+          <SampleBadge />
         </div>
         <SegmentedTabs
           label={t('notifications.title')}

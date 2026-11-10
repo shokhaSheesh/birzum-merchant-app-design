@@ -6,6 +6,7 @@ import {
   MapPin,
   Package,
   Shapes,
+  ServerCog,
   Star,
   Tags,
   UsersRound,
@@ -15,7 +16,7 @@ import {
 import { useNavigate } from 'react-router-dom'
 import { useMyLocations } from '@/entities/merchant/useMyLocations'
 import { usePermissions } from '@/entities/merchant/usePermissions'
-import { currentUser } from '@/entities/session/user'
+import { useCurrentUser } from '@/entities/merchant/useCurrentUser'
 import { logout } from '@/features/auth/api/mockAuth'
 import { ROUTES } from '@/shared/config/routes'
 import { LANG_NAMES } from '@/shared/i18n/dictionaries'
@@ -33,7 +34,7 @@ export function ProfilePage() {
   const { t, tl, lang } = useI18n()
   const { theme } = useTheme()
   const navigate = useNavigate()
-  const user = currentUser
+  const user = useCurrentUser()
   const { can, role } = usePermissions()
   const myLocations = useMyLocations()
 
@@ -126,6 +127,7 @@ export function ProfilePage() {
 
       <Section title={t('states.design')}>
         <MenuList>
+          <MenuRow icon={ServerCog} label={t('api.title')} to={ROUTES.apiStatus} />
           <MenuRow icon={Shapes} label={t('states.kit')} to={ROUTES.kit} />
           <MenuRow icon={LoaderCircle} label={t('states.title')} to={ROUTES.states} />
         </MenuList>

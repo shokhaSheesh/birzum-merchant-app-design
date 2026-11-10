@@ -1,3 +1,4 @@
+import { SampleBadge } from '@/shared/ui/SampleBadge'
 import { useState, type FormEvent } from 'react'
 import {
   allInstallmentTerms,
@@ -52,7 +53,10 @@ export function CalculatorPage() {
         className="flex flex-col gap-4"
       >
         <div className="flex flex-col gap-1">
-          <h1 className="flex min-h-10 items-center text-2xl font-bold">{t('nav.calculator')}</h1>
+          <div className="flex items-center gap-2">
+            <h1 className="flex min-h-10 items-center text-2xl font-bold">{t('nav.calculator')}</h1>
+            <SampleBadge />
+          </div>
           <p className="text-ink-muted">{t('calculator.hint')}</p>
         </div>
         <NumberField

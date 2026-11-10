@@ -44,6 +44,7 @@ import { CustomerAuthPage } from '@/features/customer-auth/pages/CustomerAuthPag
 import { OnboardingPage } from '@/features/customer-auth/pages/OnboardingPage'
 import { PinSetupPage } from '@/features/customer-auth/pages/PinSetupPage'
 import { HomePage } from '@/features/home/pages/HomePage'
+import { ApiStatusPage } from '@/features/api-status/pages/ApiStatusPage'
 import { KitPage } from '@/features/kit/pages/KitPage'
 import { AttributeFormPage } from '@/features/manage/pages/AttributeFormPage'
 import { AttributesPage } from '@/features/manage/pages/AttributesPage'
@@ -63,9 +64,8 @@ import { ThemePage } from '@/features/settings/pages/ThemePage'
 import { ProfilePage } from '@/features/profile/pages/ProfilePage'
 import { ROUTES } from '@/shared/config/routes'
 import { DeviceLayout } from './layouts/DeviceLayout'
-import { TabLayout } from './layouts/TabLayout'
+import { MerchantTabLayout } from './layouts/MerchantTabLayout'
 import { CustomerTabLayout } from './layouts/CustomerTabLayout'
-import { merchantTabs } from './tabs'
 
 export const router = createBrowserRouter([
   {
@@ -75,6 +75,7 @@ export const router = createBrowserRouter([
       { path: ROUTES.changePassword, element: <ChangePasswordPage /> },
       { path: ROUTES.confirmLogin, element: <ConfirmLoginPage /> },
       { path: ROUTES.kit, element: <KitPage /> },
+      { path: ROUTES.apiStatus, element: <ApiStatusPage /> },
       { path: ROUTES.theme, element: <ThemePage /> },
       { path: ROUTES.language, element: <LanguagePage /> },
       { path: ROUTES.customerLanguage, element: <LanguagePage /> },
@@ -136,7 +137,7 @@ export const router = createBrowserRouter([
       { path: ROUTES.customerNotifications, element: <CustomerNotificationsPage /> },
       { path: ROUTES.customerFavorites, element: <FavoritesPage /> },
       {
-        element: <TabLayout tabs={merchantTabs} />,
+        element: <MerchantTabLayout />,
         children: [
           { path: ROUTES.home, element: <HomePage /> },
           { path: ROUTES.clients, element: <ClientsPage /> },

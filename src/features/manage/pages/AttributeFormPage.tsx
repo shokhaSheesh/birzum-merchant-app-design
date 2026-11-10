@@ -1,7 +1,10 @@
 import { Plus, Tags, X } from 'lucide-react'
 import { useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
-import { attributesStore, SWATCH_PRESETS } from '@/entities/catalog/attributes'
+import { ownAttributesStore, SWATCH_PRESETS } from '@/entities/catalog/attributes'
+import { loadAttributes, removeAttribute, saveAttribute } from '@/entities/merchant/merchantApi'
+import { toastError } from '@/shared/api/client'
+import { useRemote } from '@/shared/api/useRemote'
 import { LANGS, type Lang, type LocalizedText } from '@/shared/i18n/dictionaries'
 import { emptyText, fillMissing, isComplete } from '@/shared/i18n/localized'
 import { useI18n } from '@/shared/i18n/useI18n'
@@ -15,16 +18,27 @@ import { LangToggle } from '@/shared/ui/LangToggle'
 import { LocalizedTextField } from '@/shared/ui/LocalizedTextField'
 import { ScreenIntro } from '@/shared/ui/ScreenIntro'
 import { Section } from '@/shared/ui/Section'
+import { DeleteRecord } from '../components/DeleteRecord'
+import { LoadGate } from '../components/LoadGate'
 import { SwatchPicker } from '../components/SwatchPicker'
 
 type ValueDraft = { id: string; name: LocalizedText; swatch?: string }
 
 /** Create or edit a variant type: its name and its values, each written once per language. */
 export function AttributeFormPage() {
+  const remote = useRemote(loadAttributes)
+  return (
+    <LoadGate loading={remote.loading} failed={remote.failed} onRetry={remote.reload}>
+      <AttributeForm />
+    </LoadGate>
+  )
+}
+
+function AttributeForm() {
   const { t, lang: appLang } = useI18n()
   const navigate = useNavigate()
   const { id } = useParams()
-  const existing = attributesStore.get(id)
+  const existing = ownAttributesStore.get(id)
 
   /** One toggle switches every value row at once. */
   const [valuesLang, setValuesLang] = useState<Lang>(appLang)
@@ -34,25 +48,32 @@ export function AttributeFormPage() {
     () => existing?.values ?? [{ id: newId(), name: emptyText() }],
   )
   const [submitted, setSubmitted] = useState(false)
+  const [saving, setSaving] = useState(false)
 
   const patchValue = (valueId: string, patch: Partial<ValueDraft>) =>
     setValues((list) => list.map((v) => (v.id === valueId ? { ...v, ...patch } : v)))
-  const save = () => {
+  const save = async () => {
     setSubmitted(true)
     const texts = [name, ...values.map((v) => v.name)]
     if (!texts.every(isComplete) || values.length === 0) return
-    attributesStore.save({
-      id: existing?.id ?? newId(),
-      name: fillMissing(name),
-      color,
-      values: values.map((v) => ({
-        id: v.id,
-        name: fillMissing(v.name),
-        swatch: color ? (v.swatch ?? SWATCH_PRESETS[0]) : undefined,
-      })),
-    })
-    toast(t('toast.saved'))
-    navigate(-1)
+    setSaving(true)
+    try {
+      await saveAttribute(existing, {
+        name: fillMissing(name),
+        color,
+        values: values.map((v) => ({
+          id: v.id,
+          name: fillMissing(v.name),
+          swatch: color ? (v.swatch ?? SWATCH_PRESETS[0]) : undefined,
+        })),
+      })
+      toast(t('toast.saved'))
+      navigate(-1)
+    } catch (error) {
+      toastError(error)
+    } finally {
+      setSaving(false)
+    }
   }
 
   return (
@@ -60,7 +81,7 @@ export function AttributeFormPage() {
       onSubmit={save}
       onBack={() => navigate(-1)}
       footer={
-        <Button type="submit" block>
+        <Button type="submit" block loading={saving}>
           {t('common.save')}
         </Button>
       }
@@ -135,6 +156,14 @@ export function AttributeFormPage() {
           {t('attribute.addValue')}
         </Button>
       </Section>
+      {existing && (
+        <DeleteRecord
+          onDelete={async () => {
+            await removeAttribute(existing.id)
+            navigate(-1)
+          }}
+        />
+      )}
     </FormScreen>
   )
 }

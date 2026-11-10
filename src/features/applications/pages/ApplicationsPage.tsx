@@ -1,3 +1,4 @@
+import { SampleBadge } from '@/shared/ui/SampleBadge'
 import { Plus } from 'lucide-react'
 import { useState } from 'react'
 import { useSearchParams } from 'react-router-dom'
@@ -49,7 +50,12 @@ export function ApplicationsPage() {
     <div className="flex h-full flex-col">
       <header className="flex shrink-0 flex-col gap-4 px-5 pt-[max(1.5rem,env(safe-area-inset-top))] pb-3">
         <div className="flex items-center justify-between gap-3">
-          <h1 className="flex min-h-10 items-center text-2xl font-bold">{t('nav.applications')}</h1>
+          <div className="flex min-w-0 items-center gap-2">
+            <h1 className="flex min-h-10 items-center text-2xl font-bold">
+              {t('nav.applications')}
+            </h1>
+            <SampleBadge />
+          </div>
           <Button size="sm" onClick={() => setCreating(true)}>
             <Plus size={18} />
             {t('clients.create')}

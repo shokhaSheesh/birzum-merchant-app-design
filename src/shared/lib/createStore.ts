@@ -21,6 +21,8 @@ export function createStore<T extends { id: string }>(seed: T[]) {
   return {
     useAll: () => useSyncExternalStore(subscribe, () => items),
     getAll: () => items,
+    /** Swaps the whole list, e.g. for what the server returned. */
+    replace: (next: T[]) => change(next),
     get: (id: string | undefined) => items.find((item) => item.id === id),
     update: (id: string, patch: Partial<T>) =>
       change(items.map((item) => (item.id === id ? { ...item, ...patch } : item))),

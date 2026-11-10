@@ -1,25 +1,31 @@
 import { CircleAlert, Clock, Package, Plus, Trash2, X } from 'lucide-react'
 import { useState, type FormEvent } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
-import { attributesStore, SWATCH_PRESETS, type Attribute } from '@/entities/catalog/attributes'
+import { ownAttributesStore, SWATCH_PRESETS, type Attribute } from '@/entities/catalog/attributes'
 import {
   allCombos,
   BRANDS,
   CATEGORIES,
-  OWN_STORE_ID,
   productsStore,
-  resubmitted,
   variantKey,
   type Category,
   type Product,
 } from '@/entities/catalog/products'
 import { subcategoriesOf } from '@/entities/catalog/subcategories'
+import {
+  addAttributeValue,
+  loadAttributes,
+  loadProducts,
+  removeProduct,
+  saveProduct,
+} from '@/entities/merchant/merchantApi'
+import { toastError } from '@/shared/api/client'
+import { useRemote } from '@/shared/api/useRemote'
 import type { Lang, LocalizedText } from '@/shared/i18n/dictionaries'
 import { emptyText, fillMissing, isBlank, isComplete } from '@/shared/i18n/localized'
 import { useI18n } from '@/shared/i18n/useI18n'
 import { toast } from '@/shared/lib/toast'
 import { cn } from '@/shared/lib/cn'
-import { newId } from '@/shared/lib/createStore'
 import { Alert } from '@/shared/ui/Alert'
 import { Button } from '@/shared/ui/Button'
 import { Checkbox } from '@/shared/ui/Checkbox'
@@ -32,6 +38,8 @@ import { ScreenIntro } from '@/shared/ui/ScreenIntro'
 import { Section } from '@/shared/ui/Section'
 import { Select } from '@/shared/ui/Select'
 import { Sheet } from '@/shared/ui/Sheet'
+import { DeleteRecord } from '../components/DeleteRecord'
+import { LoadGate } from '../components/LoadGate'
 import { PhotoTiles } from '../components/PhotoTiles'
 import { SwatchPicker } from '../components/SwatchPicker'
 
@@ -55,11 +63,20 @@ const chip = 'h-10 rounded-control border-2 px-3.5 text-sm font-semibold'
  * and prices each one.
  */
 export function ProductFormPage() {
+  const remote = useRemote(() => Promise.all([loadAttributes(), loadProducts()]))
+  return (
+    <LoadGate loading={remote.loading} failed={remote.failed} onRetry={remote.reload}>
+      <ProductForm />
+    </LoadGate>
+  )
+}
+
+function ProductForm() {
   const { t, tl, lang: appLang } = useI18n()
   const navigate = useNavigate()
   const { id } = useParams()
   const existing = productsStore.get(id)
-  const attributes = attributesStore.useAll()
+  const attributes = ownAttributesStore.useAll()
 
   const [photosLang, setPhotosLang] = useState<Lang>(appLang)
   const [specsLang, setSpecsLang] = useState<Lang>(appLang)
@@ -81,6 +98,7 @@ export function ProductFormPage() {
   const [price, setPrice] = useState<number | null>(existing?.price ?? null)
   const [active, setActive] = useState(existing?.active ?? true)
   const [submitted, setSubmitted] = useState(false)
+  const [saving, setSaving] = useState(false)
   const [groups, setGroups] = useState<GroupDraft[]>(() =>
     (existing?.variations ?? []).map((variation) => ({ id: draftId(), ...variation })),
   )
@@ -145,7 +163,7 @@ export function ProductFormPage() {
         }))
       : [{ heading: null, combos, from: 0 }]
 
-  const save = () => {
+  const save = async () => {
     setSubmitted(true)
     if (
       !isComplete(name) ||
@@ -161,28 +179,31 @@ export function ProductFormPage() {
     const variants = Object.fromEntries(
       sold.map((combo) => [variantKey(combo), { price: comboOf(combo).price ?? price }]),
     )
-    productsStore.save({
-      id: existing?.id ?? newId(),
-      storeId: existing?.storeId ?? OWN_STORE_ID,
-      stock: existing?.stock ?? {},
-      name: fillMissing(name),
-      description: fillMissing(description),
-      category,
-      subcategory: subcategories.length > 0 ? (subcategory ?? undefined) : undefined,
-      brand,
-      // Cards show the cheapest way to buy the product
-      price: sold.length > 0 ? Math.min(...Object.values(variants).map((v) => v.price)) : price,
-      images,
-      valueImages,
-      active,
-      // Every saved change goes to the admin; an approved product stays on sale meanwhile
-      moderation: resubmitted(existing),
-      variations,
-      variants,
-      specs: specs
-        .filter((spec) => !isBlank(spec.label) && !isBlank(spec.value))
-        .map((spec) => ({ label: fillMissing(spec.label), value: fillMissing(spec.value) })),
-    })
+    setSaving(true)
+    try {
+      await saveProduct(existing, {
+        name: fillMissing(name),
+        description: fillMissing(description),
+        category,
+        subcategory: subcategories.length > 0 ? (subcategory ?? undefined) : undefined,
+        brand,
+        // Cards show the cheapest way to buy the product
+        price: sold.length > 0 ? Math.min(...Object.values(variants).map((v) => v.price)) : price,
+        images,
+        valueImages,
+        active,
+        variations,
+        variants,
+        specs: specs
+          .filter((spec) => !isBlank(spec.label) && !isBlank(spec.value))
+          .map((spec) => ({ label: fillMissing(spec.label), value: fillMissing(spec.value) })),
+      })
+    } catch (error) {
+      toastError(error)
+      return
+    } finally {
+      setSaving(false)
+    }
     toast(t('moderation.sent'))
     navigate(-1)
   }
@@ -200,7 +221,7 @@ export function ProductFormPage() {
       footer={
         <div className="flex flex-col gap-3">
           {submitted && formError && <Alert message={formError} />}
-          <Button type="submit" block>
+          <Button type="submit" block loading={saving}>
             {t('common.save')}
           </Button>
         </div>
@@ -518,6 +539,15 @@ export function ProductFormPage() {
         <p className="text-sm text-ink-muted">{t('product.stockNote')}</p>
       </div>
 
+      {existing && (
+        <DeleteRecord
+          onDelete={async () => {
+            await removeProduct(existing.id)
+            navigate(-1)
+          }}
+        />
+      )}
+
       {addingTo && (
         <NewValueSheet
           attribute={addingTo}
@@ -548,20 +578,28 @@ function NewValueSheet({ attribute, onClose, onAdded }: NewValueProps) {
   const [swatch, setSwatch] = useState(SWATCH_PRESETS[0])
   const [submitted, setSubmitted] = useState(false)
 
-  const add = (e: FormEvent) => {
+  const [saving, setSaving] = useState(false)
+
+  const add = async (e: FormEvent) => {
     // The sheet's form sits inside the product form in React's tree: keep the submit to itself
     e.preventDefault()
     e.stopPropagation()
     setSubmitted(true)
     if (!isComplete(name)) return
-    const value = {
-      id: newId(),
-      name: fillMissing(name),
-      swatch: attribute.color ? swatch : undefined,
+    setSaving(true)
+    try {
+      // The server gives the new value its id
+      const value = await addAttributeValue(attribute, {
+        name: fillMissing(name),
+        swatch: attribute.color ? swatch : undefined,
+      })
+      if (value) onAdded(value.id)
+      onClose()
+    } catch (error) {
+      toastError(error)
+    } finally {
+      setSaving(false)
     }
-    attributesStore.update(attribute.id, { values: [...attribute.values, value] })
-    onAdded(value.id)
-    onClose()
   }
 
   return (
@@ -574,7 +612,7 @@ function NewValueSheet({ attribute, onClose, onAdded }: NewValueProps) {
           requireBoth={submitted}
         />
         {attribute.color && <SwatchPicker value={swatch} onChange={setSwatch} />}
-        <Button type="submit" block className="mt-2">
+        <Button type="submit" block loading={saving} className="mt-2">
           {t('common.save')}
         </Button>
       </form>
