@@ -502,10 +502,20 @@ export async function removeStaff(id: string) {
 
 export type MapKey = { id: string; kind: 'mapkit' | 'maps'; key: string }
 
-/** `GET /merchant/geo/keys`: the Yandex keys for the map, one per kind. */
+const MAP_KINDS: MapKey['kind'][] = ['mapkit', 'maps']
+
+/**
+ * `GET /merchant/geo/keys/{kind}` for each kind: the Yandex keys for the map. A kind with no key
+ * left (503) is left out; the server has no list endpoint.
+ */
 export async function loadMapKeys() {
-  const { items } = await api<{ items: MapKey[] }>('/merchant/geo/keys')
-  return items
+  const results = await Promise.allSettled(
+    MAP_KINDS.map((kind) => api<MapKey>(`/merchant/geo/keys/${kind}`)),
+  )
+  const keys = results.flatMap((r) => (r.status === 'fulfilled' ? [r.value] : []))
+  const failed = results.find((r) => r.status === 'rejected')
+  if (!keys.length && failed?.status === 'rejected') throw failed.reason
+  return keys
 }
 
 /**
