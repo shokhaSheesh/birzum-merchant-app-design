@@ -3,7 +3,7 @@ import { formatDate, formatSum } from '@/shared/lib/format'
 import { Alert } from '@/shared/ui/Alert'
 import { StatusBadge, type StatusTone } from '@/shared/ui/StatusBadge'
 import type { Application } from '../clients'
-import { paymentSchedule, type PaymentState } from '../payments'
+import { paymentSchedule, type Payment, type PaymentState } from '../payments'
 
 const tones: Record<PaymentState, StatusTone> = {
   paid: 'success',
@@ -11,8 +11,17 @@ const tones: Record<PaymentState, StatusTone> = {
   overdue: 'danger',
 }
 
-/** An application's payments: how far along it is, what is overdue, then every installment. */
-export function PaymentSchedule({ application }: { application: Application }) {
+/**
+ * An application's payments: how far along it is, what is overdue, then every installment.
+ * With `onPaidClick`, a paid installment is a button (the client app opens its details).
+ */
+export function PaymentSchedule({
+  application,
+  onPaidClick,
+}: {
+  application: Application
+  onPaidClick?: (payment: Payment) => void
+}) {
   const { t } = useI18n()
   const payments = paymentSchedule(application)
   const paid = payments.filter((payment) => payment.state === 'paid')
@@ -55,18 +64,34 @@ export function PaymentSchedule({ application }: { application: Application }) {
         </div>
       </div>
       <ul className="rounded-card border border-line bg-canvas px-4">
-        {payments.map((payment) => (
-          <li
-            key={payment.number}
-            className="flex items-center justify-between gap-3 border-b border-line py-3 last:border-b-0"
-          >
-            <div className="flex flex-col gap-0.5">
-              <p className="font-semibold">{formatDate(payment.dueDate)}</p>
-              <p className="text-sm text-ink-muted">{formatSum(payment.amount)}</p>
-            </div>
-            <StatusBadge tone={tones[payment.state]}>{t(`payments.${payment.state}`)}</StatusBadge>
-          </li>
-        ))}
+        {payments.map((payment) => {
+          const content = (
+            <>
+              <div className="flex flex-col gap-0.5">
+                <p className="font-semibold">{formatDate(payment.dueDate)}</p>
+                <p className="text-sm text-ink-muted">{formatSum(payment.amount)}</p>
+              </div>
+              <StatusBadge tone={tones[payment.state]}>
+                {t(`payments.${payment.state}`)}
+              </StatusBadge>
+            </>
+          )
+          return (
+            <li key={payment.number} className="border-b border-line last:border-b-0">
+              {onPaidClick && payment.state === 'paid' ? (
+                <button
+                  type="button"
+                  onClick={() => onPaidClick(payment)}
+                  className="-mx-4 flex w-[calc(100%+2rem)] items-center justify-between gap-3 px-4 py-3 text-left active:bg-navy-100"
+                >
+                  {content}
+                </button>
+              ) : (
+                <div className="flex items-center justify-between gap-3 py-3">{content}</div>
+              )}
+            </li>
+          )
+        })}
       </ul>
     </div>
   )

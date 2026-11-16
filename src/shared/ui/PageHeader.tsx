@@ -7,10 +7,12 @@ type Props = {
   title?: string
   /** Icon buttons for the top right corner. */
   end?: ReactNode
+  /** What the back arrow does when it is not "go to the previous page", e.g. close a step. */
+  onBack?: () => void
 }
 
 /** Top bar of a pushed screen: back arrow, a short title, and optional actions on the right. */
-export function PageHeader({ title, end }: Props) {
+export function PageHeader({ title, end, onBack }: Props) {
   const { t } = useI18n()
   const navigate = useNavigate()
 
@@ -18,7 +20,7 @@ export function PageHeader({ title, end }: Props) {
     <header className="flex shrink-0 items-center gap-2 px-5 pt-[max(0.75rem,env(safe-area-inset-top))] pb-2">
       <button
         type="button"
-        onClick={() => navigate(-1)}
+        onClick={() => (onBack ? onBack() : navigate(-1))}
         aria-label={t('common.back')}
         className="-ml-2 grid size-10 shrink-0 place-items-center rounded-full text-brand active:bg-navy-100"
       >

@@ -1,27 +1,30 @@
-import { ArrowRight, Bell, ShoppingBag, Sparkles } from 'lucide-react'
+import { ArrowRight, Bell, QrCode, ShoppingBag, Sparkles } from 'lucide-react'
 import { Link, useNavigate } from 'react-router-dom'
+import { useCatalog } from '@/entities/catalog/products'
 import { initials } from '@/entities/clients/clientName'
 import { useCustomer } from '@/entities/session/customer'
-import { customerCatalogPath, ROUTES } from '@/shared/config/routes'
+import { customerCatalogPath, customerProductsPath, ROUTES } from '@/shared/config/routes'
 import { useI18n } from '@/shared/i18n/useI18n'
 import { Avatar } from '@/shared/ui/Avatar'
 import { Button } from '@/shared/ui/Button'
 import { BannerCarousel } from '../components/BannerCarousel'
 import { LimitTile } from '../components/LimitTile'
 import { NextPaymentCard } from '../components/NextPaymentCard'
+import { ProductCard } from '../components/ProductCard'
 
 const roundButton =
   'relative grid size-11 shrink-0 place-items-center rounded-full border border-line bg-canvas text-brand active:bg-navy-100'
 
 /**
- * Bosh sahifa keeps only the main things, top to bottom: notifications, the limit,
- * "Xaridni hoziroq amalga oshiring" (opens Katalog), the next payment and the banners.
- * Categories and products live in Katalog.
+ * Bosh sahifa, top to bottom: «Mening QR kodim» and notifications at the top right, the limit,
+ * "Xaridni hoziroq amalga oshiring" (opens Katalog), the next payment, the banners, then the
+ * products in a two-column grid. Categories live in Katalog.
  */
 export function CustomerHomePage() {
   const { t } = useI18n()
   const customer = useCustomer()
   const navigate = useNavigate()
+  const products = useCatalog()
 
   if (!customer) return null
   const hasNews = customer.applications.length > 0
@@ -33,6 +36,9 @@ export function CustomerHomePage() {
         <p className="min-w-0 flex-1 truncate pl-1 text-lg font-bold">
           {t('chome.greeting', { name: customer.firstName })}
         </p>
+        <Link to={ROUTES.customerQr} aria-label={t('myqr.title')} className={roundButton}>
+          <QrCode size={22} />
+        </Link>
         <Link
           to={ROUTES.customerNotifications}
           aria-label={t('notifications.title')}
@@ -77,6 +83,22 @@ export function CustomerHomePage() {
       {customer.limits !== null && <NextPaymentCard client={customer} />}
 
       <BannerCarousel />
+
+      {products.length > 0 && (
+        <section className="flex flex-col gap-3">
+          <div className="flex items-baseline justify-between gap-3">
+            <h2 className="text-lg font-bold">{t('chome.products')}</h2>
+            <Link to={customerProductsPath({})} className="text-sm font-semibold text-brand">
+              {t('catalog.all')}
+            </Link>
+          </div>
+          <div className="grid grid-cols-2 gap-x-3 gap-y-5">
+            {products.map((product) => (
+              <ProductCard key={product.id} product={product} />
+            ))}
+          </div>
+        </section>
+      )}
     </div>
   )
 }

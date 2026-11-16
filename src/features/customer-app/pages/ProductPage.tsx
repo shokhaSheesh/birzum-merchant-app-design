@@ -43,6 +43,7 @@ import { TermPicker } from '@/shared/ui/TermPicker'
 import { LikeButton } from '../components/LikeButton'
 import { ProductCard } from '../components/ProductCard'
 import { ProductGallery } from '../components/ProductGallery'
+import { ProductReviews } from '../components/ProductReviews'
 import { usePickupPoints } from '@/entities/merchant/usePickupPoints'
 import { StoreLogo } from '../components/StoreLogo'
 import { StoreRating } from '../components/StoreRating'
@@ -230,6 +231,10 @@ function ProductDetails({ product }: { product: Product }) {
             </InfoList>
           </Section>
         )}
+
+        <Section title={t('product.reviews')}>
+          <ProductReviews productId={product.id} />
+        </Section>
 
         {similar.length > 0 && (
           <Section title={t('product.similar')}>

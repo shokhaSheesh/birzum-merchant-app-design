@@ -1,4 +1,5 @@
 import { Store, Truck } from 'lucide-react'
+import type { ReactNode } from 'react'
 import { useI18n } from '@/shared/i18n/useI18n'
 import { ChoiceGrid } from '@/shared/ui/ChoiceGrid'
 import { Select } from '@/shared/ui/Select'
@@ -40,6 +41,8 @@ type Props = {
   points?: { id: string; name: string }[]
   pointId?: string | null
   onPoint?: (pointId: string) => void
+  /** Shown for delivery instead of the address box (the client app opens a page from it). */
+  deliverySlot?: ReactNode
 }
 
 /**
@@ -54,6 +57,7 @@ export function FulfilmentFields({
   points = [],
   pointId = null,
   onPoint,
+  deliverySlot,
 }: Props) {
   const { t } = useI18n()
 
@@ -79,7 +83,8 @@ export function FulfilmentFields({
           error={showErrors && !pointId ? t('error.required') : undefined}
         />
       )}
-      {fulfilment.method === 'delivery' && (
+      {fulfilment.method === 'delivery' && deliverySlot}
+      {fulfilment.method === 'delivery' && !deliverySlot && (
         <AddressField
           label={t('delivery.address')}
           value={

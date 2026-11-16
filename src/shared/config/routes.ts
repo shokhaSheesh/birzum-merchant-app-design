@@ -50,6 +50,7 @@ export const ROUTES = {
   customerSupport: '/customer/support',
   customerChat: '/customer/support/chat',
   customerProduct: '/customer/product/:id',
+  customerProductReviews: '/customer/product/:id/reviews',
   customerPurchases: '/customer/purchases',
   customerPurchase: '/customer/purchases/:number',
   customerCards: '/customer/cards',
@@ -75,6 +76,7 @@ export const clientContractPath = (id: string, term: number) =>
   `/clients/${id}/contract/new?term=${term}`
 export const applicationPath = (number: number) => `/applications/${number}`
 export const customerProductPath = (id: string) => `/customer/product/${id}`
+export const customerProductReviewsPath = (id: string) => `/customer/product/${id}/reviews`
 export const customerPurchasePath = (number: number) => `/customer/purchases/${number}`
 export const customerStorePath = (id: string) => `/customer/stores/${id}`
 /**

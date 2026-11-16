@@ -13,6 +13,8 @@ import { usedShare } from '@/entities/clients/limitUsage'
 import { CardSelect, FulfilmentFields } from '@/entities/clients/ui/FulfilmentFields'
 import { LegalConsent } from '@/entities/legal/ui/LegalConsent'
 import { usePickupPoints } from '@/entities/merchant/usePickupPoints'
+import { DeliveryAddressButton } from '../components/DeliveryAddressButton'
+import { DeliveryAddressPage } from '../components/DeliveryAddressPage'
 import { SchedulePreviewSheet } from '../components/SchedulePreviewSheet'
 import { SelfCheckSheet } from '../components/SelfCheck'
 import { StoreLogo } from '../components/StoreLogo'
@@ -32,8 +34,8 @@ type ShopChoice = { fulfilment: Fulfilment; pointId: string | null }
 const noChoice: ShopChoice = { fulfilment: { method: 'pickup', address: '' }, pointId: null }
 
 /**
- * Checkout, the step after the cart. The shop first asks how its goods are received (delivery
- * to an address picked on the map), then lists its products, each with its own term at the
+ * Checkout, the step after the cart. The shop first asks how its goods are received (delivery:
+ * a button opens the delivery address page), then lists its products, each with its own term at the
  * shop's tariff. A down payment is paid in cash at the shop. The card is chosen once. Before
  * sending, the shopper confirms nobody is guiding them; one ariza is filed per term, since an
  * ariza has a single term.
@@ -60,6 +62,8 @@ export function CheckoutPage() {
   /** The "I am doing this myself" sheet, shown once everything else is filled in. */
   const [selfCheck, setSelfCheck] = useState(false)
   const [sent, setSent] = useState(false)
+  /** The shop whose delivery address page is open, over the checkout (so nothing typed is lost). */
+  const [addressFor, setAddressFor] = useState<string | null>(null)
 
   if (sent) {
     return (
@@ -193,6 +197,16 @@ export function CheckoutPage() {
     setSent(true)
   }
 
+  if (addressFor) {
+    return (
+      <DeliveryAddressPage
+        fulfilment={(choices[addressFor] ?? noChoice).fulfilment}
+        onSave={(fulfilment) => setChoice(addressFor, { fulfilment })}
+        onClose={() => setAddressFor(null)}
+      />
+    )
+  }
+
   return (
     <div className="flex h-full flex-col">
       <PageHeader title={t('checkout.title')} />
@@ -211,6 +225,13 @@ export function CheckoutPage() {
               points={shop.points}
               pointId={shop.pointId}
               onPoint={(pointId) => setChoice(shop.storeId, { pointId })}
+              deliverySlot={
+                <DeliveryAddressButton
+                  fulfilment={shop.choice.fulfilment}
+                  error={submitted && !shop.valid}
+                  onClick={() => setAddressFor(shop.storeId)}
+                />
+              }
             />
             {shop.short.length > 0 && (
               <Alert

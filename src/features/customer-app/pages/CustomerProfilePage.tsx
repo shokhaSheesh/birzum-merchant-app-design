@@ -10,6 +10,7 @@ import {
   MonitorSmartphone,
   Palette,
   QrCode,
+  History,
   Receipt,
   ShieldCheck,
 } from 'lucide-react'
@@ -57,6 +58,11 @@ export function CustomerProfilePage() {
         <MenuList>
           <MenuRow icon={QrCode} label={t('myqr.title')} to={ROUTES.customerQr} />
           <MenuRow icon={Receipt} label={t('payments.overview')} to={ROUTES.customerPayments} />
+          <MenuRow
+            icon={History}
+            label={t('payhistory.title')}
+            to={ROUTES.customerPaymentHistory}
+          />
           <MenuRow icon={CreditCard} label={t('client.cards')} to={ROUTES.customerCards} />
           <MenuRow icon={Contact} label={t('contacts.title')} to={ROUTES.customerContacts} />
         </MenuList>

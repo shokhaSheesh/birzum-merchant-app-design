@@ -1,22 +1,22 @@
-import { ChevronRight, History } from 'lucide-react'
+import { ChevronRight } from 'lucide-react'
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { getStore, OWN_STORE_ID } from '@/entities/catalog/products'
 import { upcomingPayments, type Upcoming } from '@/entities/clients/upcoming'
 import { useCustomer } from '@/entities/session/customer'
-import { customerPurchasePath, ROUTES } from '@/shared/config/routes'
+import { customerPurchasePath } from '@/shared/config/routes'
 import { useI18n } from '@/shared/i18n/useI18n'
 import { cn } from '@/shared/lib/cn'
 import { formatDate, formatSum } from '@/shared/lib/format'
 import { Button } from '@/shared/ui/Button'
 import { EmptyState } from '@/shared/ui/EmptyState'
 import { PageHeader } from '@/shared/ui/PageHeader'
-import { Section } from '@/shared/ui/Section'
 import { PaySheet } from '../components/PaySheet'
 
 /**
- * Everything the shopper owes in one place: the total and what is overdue on top, then the
- * next payment of each running purchase, soonest first, each payable from here.
+ * Yaqin toʻlovlar: everything the shopper owes in one place, the total and what is overdue on top,
+ * then the next payment of each running purchase, soonest first, each payable from here. Past
+ * payments are on their own page, «Toʻlovlar tarixi», opened from Profil.
  */
 export function PaymentsPage() {
   const { t } = useI18n()
@@ -44,16 +44,10 @@ export function PaymentsPage() {
               <p className="font-bold">{items[0] ? formatDate(items[0].payment.dueDate) : '—'}</p>
             </div>
           </div>
-          <Link
-            to={ROUTES.customerPaymentHistory}
-            className="flex h-11 items-center justify-center gap-2 rounded-control bg-surface text-sm font-semibold text-brand active:bg-navy-100"
-          >
-            <History size={18} />
-            {t('payhistory.title')}
-          </Link>
         </div>
 
-        <Section title={t('payments.upcoming')}>
+        {/* The page is already called «Yaqin toʻlovlar», so the list has no heading of its own */}
+        <div className="flex flex-col">
           {items.length === 0 ? (
             <EmptyState title={t('payments.none')} />
           ) : (
@@ -102,7 +96,7 @@ export function PaymentsPage() {
               })}
             </ul>
           )}
-        </Section>
+        </div>
       </div>
 
       {paying && (

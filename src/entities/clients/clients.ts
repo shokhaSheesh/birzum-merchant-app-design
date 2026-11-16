@@ -65,6 +65,13 @@ export type Fulfilment = {
   method: DeliveryMethod
   address: string
   point?: { lat: number; lng: number }
+  /** Asked on the client's delivery address page; all optional. */
+  house?: string
+  apartment?: string
+  entrance?: string
+  floor?: string
+  /** A landmark or a note for the courier, up to 200 characters. */
+  note?: string
 }
 
 /** What was entered when the contract was drawn up. Missing on applications rejected before that. */
@@ -135,8 +142,6 @@ export type Application = {
   /** Paid ahead of the schedule, in UZS. It settles the last payments first, so the nasiya ends sooner. */
   prepaid?: number
   prepaidOn?: Date
-  /** True once the shopper has left a review for this purchase. */
-  reviewed?: boolean
   /** Set when the status is `rejected`. */
   rejection?: Rejection
   /** Photos of the client with the goods, taken by the seller at hand-over. */

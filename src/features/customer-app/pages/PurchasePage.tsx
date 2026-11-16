@@ -1,8 +1,9 @@
-import { Download, Info, PackageCheck, Star, Undo2 } from 'lucide-react'
+import { Download, Info, PackageCheck, Undo2 } from 'lucide-react'
 import { useState } from 'react'
 import { useParams } from 'react-router-dom'
 import { getStore, OWN_STORE_ID } from '@/entities/catalog/products'
 import { reviewsStore, type Review } from '@/entities/catalog/reviews'
+import { cardLabel } from '@/entities/clients/cardBrand'
 import { customerStatus, customerStatusTone } from '@/entities/clients/customerStatus'
 import {
   cancelApplication,
@@ -10,8 +11,7 @@ import {
   receiveApplication,
 } from '@/entities/clients/applicationsApi'
 import { shortName } from '@/entities/clients/clientName'
-import type { Application } from '@/entities/clients/clients'
-import { clientsStore } from '@/entities/clients/clientsStore'
+import type { Application, ApplicationProduct } from '@/entities/clients/clients'
 import { downloadContract } from '@/entities/clients/contractPdf'
 import { historyOf } from '@/entities/clients/history'
 import { hasSchedule, nextPayment } from '@/entities/clients/payments'
@@ -37,27 +37,22 @@ import { PageHeader } from '@/shared/ui/PageHeader'
 import { Section } from '@/shared/ui/Section'
 import { SegmentedTabs } from '@/shared/ui/SegmentedTabs'
 import { StatusBadge } from '@/shared/ui/StatusBadge'
+import { PaymentDetailSheet, type PaidRow } from '../components/PaymentDetailSheet'
 import { PaySheet } from '../components/PaySheet'
+import { ProductReviewStars } from '../components/ProductReviewStars'
 import { ReturnInfoSheet } from '../components/ReturnInfoSheet'
 import { ReviewSheet } from '../components/ReviewSheet'
+import { StatusSteps } from '../components/StatusSteps'
 
-/** Publishes the review to the shop and marks the purchase as reviewed. */
-function saveReview(
-  application: Application,
-  review: Pick<Review, 'storeId' | 'author' | 'rating' | 'text'>,
-) {
-  reviewsStore.save({
-    ...review,
-    id: newId(),
-    date: new Date(),
-    productName: application.details?.products[0]?.name ?? '',
-  })
-  clientsStore.updateApplication(application.id, { reviewed: true })
+/** Publishes a product review; it shows on the product's page and counts towards the shop's rating. */
+function saveReview(review: Omit<Review, 'id' | 'date'>) {
+  reviewsStore.save({ ...review, id: newId(), date: new Date() })
 }
 
 /**
- * One of the shopper's arizalar: where it stands, what was ordered and from which shop,
- * and, once the goods are handed over, the payments with a button to pay the next one.
+ * One of the shopper's arizalar: where it stands and what comes next (step by step), what was
+ * ordered and from which shop (each product can be rated once received), and, once the goods are
+ * handed over, the payments: a paid one opens its details, and a button pays the next one.
  */
 export function PurchasePage() {
   const { t } = useI18n()
@@ -66,7 +61,11 @@ export function PurchasePage() {
   const pickupPoints = usePickupPoints()
   const [tab, setTab] = useState<'info' | 'products' | 'payments'>('info')
   const [paying, setPaying] = useState(false)
-  const [reviewing, setReviewing] = useState(false)
+  const [reviewing, setReviewing] = useState<{ line: ApplicationProduct; rating: number } | null>(
+    null,
+  )
+  const [paidRow, setPaidRow] = useState<PaidRow | null>(null)
+  const reviews = reviewsStore.useAll()
   const [cancelling, setCancelling] = useState(false)
   const [returnInfo, setReturnInfo] = useState(false)
   const [receiving, setReceiving] = useState(false)
@@ -97,15 +96,27 @@ export function PurchasePage() {
     toast(t('receive.done'))
   }
 
-  const sendReview = (rating: number, text: string) => {
-    saveReview(application, {
+  /** The shopper's review of one product line of this purchase, if they left one. */
+  const reviewOf = (line: ApplicationProduct) =>
+    reviews.find(
+      (review) => review.applicationId === application.id && review.productId === line.productId,
+    )
+
+  const sendReview = (line: ApplicationProduct, rating: number, text: string) => {
+    if (!line.productId) return
+    saveReview({
       storeId,
+      productId: line.productId,
+      applicationId: application.id,
       author: `${customer.firstName} ${customer.lastName[0]}.`,
       rating,
       text,
+      productName: line.name,
     })
     toast(t('toast.sent'))
   }
+
+  const card = customer.cards.find((item) => item.id === details?.cardId)
 
   return (
     <div className="flex h-full flex-col">
@@ -165,6 +176,9 @@ export function PurchasePage() {
 
         {tab === 'info' && (
           <>
+            <Section title={t('steps.title')}>
+              <StatusSteps application={application} />
+            </Section>
             <InfoList>
               <InfoRow label={t('application.date')} value={formatDateTime(application.date)} />
               {store && <InfoRow label={t('profile.store')} value={store.name} />}
@@ -177,27 +191,16 @@ export function PurchasePage() {
               )}
             </InfoList>
 
-            {received && (
-              <div className="-mt-4 flex flex-col gap-2">
-                {application.contractNumber && (
-                  <Button
-                    variant="secondary"
-                    block
-                    onClick={() => downloadContract({ application, client: customer }, point?.name)}
-                  >
-                    <Download size={20} />
-                    {t('application.contract.download')}
-                  </Button>
-                )}
-                {application.reviewed ? (
-                  <p className="py-2 text-center text-sm text-ink-muted">{t('feedback.done')}</p>
-                ) : (
-                  <Button variant="secondary" block onClick={() => setReviewing(true)}>
-                    <Star size={20} />
-                    {t('feedback.leave')}
-                  </Button>
-                )}
-              </div>
+            {received && application.contractNumber && (
+              <Button
+                variant="secondary"
+                block
+                className="-mt-4"
+                onClick={() => downloadContract({ application, client: customer }, point?.name)}
+              >
+                <Download size={20} />
+                {t('application.contract.download')}
+              </Button>
             )}
             {!!application.handoverPhotos?.length && (
               <Section title={t('handover.received')}>
@@ -222,7 +225,21 @@ export function PurchasePage() {
 
         {tab === 'products' && details && (
           <>
-            <ProductsSummary products={details.products} />
+            <ProductsSummary
+              products={details.products}
+              lineFooter={
+                // Once the goods are in hand, each catalogue product can be rated right here
+                received
+                  ? (line) =>
+                      line.productId && (
+                        <ProductReviewStars
+                          rating={reviewOf(line)?.rating}
+                          onRate={(rating) => setReviewing({ line, rating })}
+                        />
+                      )
+                  : undefined
+              }
+            />
             <Section title={t('contract.conditions')}>
               <InstallmentTermsCard
                 terms={{ ...details, installmentTotal: application.installmentTotal }}
@@ -233,7 +250,19 @@ export function PurchasePage() {
         )}
 
         {tab === 'payments' && hasSchedule(application) && (
-          <PaymentSchedule application={application} />
+          <PaymentSchedule
+            application={application}
+            onPaidClick={(paid) =>
+              setPaidRow({
+                purchaseId: application.id,
+                store: store?.name ?? '',
+                card: card && cardLabel(card),
+                paidOn: paid.paidOn ?? paid.dueDate,
+                amount: paid.amount,
+                months: [paid.number],
+              })
+            }
+          />
         )}
       </div>
 
@@ -293,11 +322,13 @@ export function PurchasePage() {
       )}
       {reviewing && (
         <ReviewSheet
-          shopName={store?.name ?? ''}
-          onClose={() => setReviewing(false)}
-          onSend={sendReview}
+          title={reviewing.line.name}
+          initialRating={reviewing.rating}
+          onClose={() => setReviewing(null)}
+          onSend={(rating, text) => sendReview(reviewing.line, rating, text)}
         />
       )}
+      {paidRow && <PaymentDetailSheet row={paidRow} onClose={() => setPaidRow(null)} />}
       {cancelling && (
         <CancelSheet
           onClose={() => setCancelling(false)}

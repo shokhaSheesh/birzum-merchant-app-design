@@ -6,11 +6,12 @@ import { customerProductPath } from '@/shared/config/routes'
 import { useI18n } from '@/shared/i18n/useI18n'
 import { formatSum, groupDigits } from '@/shared/lib/format'
 import { LikeButton } from './LikeButton'
+import { ProductRating } from './ProductRating'
 import { StoreLogo } from './StoreLogo'
 
 /**
  * A product in a two-column grid: its photos to swipe through with a heart on top, the name,
- * two lines of description, the price, the lowest monthly payment and the shop selling it.
+ * two lines of description, the rating (average and number of reviews), the price, the lowest monthly payment and the shop selling it.
  */
 export function ProductCard({ product }: { product: Product }) {
   const { t, tl, lang } = useI18n()
@@ -38,6 +39,7 @@ export function ProductCard({ product }: { product: Product }) {
             </p>
           )}
         </div>
+        <ProductRating productId={product.id} />
         <p className="font-bold">{formatSum(product.price)}</p>
         <p className="self-start rounded-full bg-green-200 px-2.5 py-0.5 text-xs font-semibold whitespace-nowrap">
           {t('catalog.perMonth', { amount: groupDigits(lowestMonthly) })}

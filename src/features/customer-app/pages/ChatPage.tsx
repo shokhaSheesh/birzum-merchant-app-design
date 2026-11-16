@@ -1,11 +1,20 @@
-import { Headset, ImagePlus, SendHorizontal } from 'lucide-react'
+import { Headset, ImagePlus, Mic, SendHorizontal } from 'lucide-react'
 import { useEffect, useRef, useState, type FormEvent } from 'react'
 import type { TranslationKey } from '@/shared/i18n/dictionaries'
 import { useI18n } from '@/shared/i18n/useI18n'
 import { cn } from '@/shared/lib/cn'
 import { PageHeader } from '@/shared/ui/PageHeader'
+import { RecordingBar, VoiceMessage } from '../components/VoiceMessage'
 
-type Message = { id: number; from: 'agent' | 'me'; text: string; at: Date; image?: string }
+type Message = {
+  id: number
+  from: 'agent' | 'me'
+  text: string
+  at: Date
+  image?: string
+  /** A voice message: its length in seconds. Only the client sends these. */
+  voice?: number
+}
 
 const TOPICS: TranslationKey[] = ['chat.topic.payment', 'chat.topic.limit', 'chat.topic.order']
 const time = (date: Date) =>
@@ -14,15 +23,25 @@ const time = (date: Date) =>
 let lastId = 0
 const nextId = () => ++lastId
 
+const minutesAgo = (minutes: number) => new Date(Date.now() - minutes * 60_000)
+
 /**
- * Chat with support. Sample conversation: the agent greets, quick topics start a question,
- * and every message gets a short automatic answer. The real chat comes from the support system.
+ * Chat with support. Sample conversation: an earlier exchange with two voice messages from the
+ * client, then the agent's greeting; quick topics start a question, and every message gets a
+ * short automatic answer. With the box empty, the send button is a microphone: tap to record,
+ * then send or delete. Support answers in text only. The real chat comes from the support system.
  */
 export function ChatPage() {
   const { t } = useI18n()
   const [messages, setMessages] = useState<Message[]>(() => [
-    { id: nextId(), from: 'agent', text: t('chat.greeting'), at: new Date() },
+    // Sample earlier messages, so the voice messages can be seen without recording
+    { id: nextId(), from: 'me', text: '', voice: 14, at: minutesAgo(32) },
+    { id: nextId(), from: 'agent', text: t('chat.sample.voiceReply'), at: minutesAgo(30) },
+    { id: nextId(), from: 'me', text: '', voice: 6, at: minutesAgo(29) },
+    { id: nextId(), from: 'agent', text: t('chat.greeting'), at: minutesAgo(28) },
   ])
+  const [seeded] = useState(() => messages.length)
+  const [recording, setRecording] = useState(false)
   const [draft, setDraft] = useState('')
   const [typing, setTyping] = useState(false)
   const end = useRef<HTMLDivElement>(null)
@@ -32,12 +51,12 @@ export function ChatPage() {
     end.current?.scrollIntoView({ behavior: 'smooth' })
   }, [messages, typing])
 
-  const send = (text: string, image?: string) => {
+  const send = (text: string, image?: string, voice?: number) => {
     const clean = text.trim()
-    if (!clean && !image) return
+    if (!clean && !image && !voice) return
     setMessages((list) => [
       ...list,
-      { id: nextId(), from: 'me', text: clean, image, at: new Date() },
+      { id: nextId(), from: 'me', text: clean, image, voice, at: new Date() },
     ])
     setDraft('')
     setTyping(true)
@@ -87,12 +106,19 @@ export function ChatPage() {
                   className="-mx-1.5 -mt-0.5 max-h-60 rounded-xl object-cover"
                 />
               )}
+              {message.voice && (
+                <VoiceMessage
+                  duration={message.voice}
+                  seed={message.id}
+                  mine={message.from === 'me'}
+                />
+              )}
               {message.text && <p className="break-words whitespace-pre-line">{message.text}</p>}
               <p className="self-end text-[11px] opacity-60">{time(message.at)}</p>
             </div>
           </div>
         ))}
-        {messages.length === 1 && (
+        {messages.length === seeded && (
           <div className="flex flex-wrap gap-2 pl-10">
             {TOPICS.map((topic) => (
               <button
@@ -128,44 +154,67 @@ export function ChatPage() {
         onSubmit={submit}
         className="flex shrink-0 items-center gap-1.5 border-t border-line px-4 pt-3 pb-[max(1rem,env(safe-area-inset-bottom))]"
       >
-        <button
-          type="button"
-          aria-label={t('chat.attach')}
-          onClick={() => picker.current?.click()}
-          className="grid size-12 shrink-0 place-items-center rounded-full text-brand active:bg-navy-100"
-        >
-          <ImagePlus size={22} />
-        </button>
-        <input
-          ref={picker}
-          type="file"
-          accept="image/*"
-          hidden
-          onChange={(e) => {
-            const file = e.target.files?.[0]
-            if (file) send(draft, URL.createObjectURL(file))
-            e.target.value = ''
-          }}
-        />
-        <label htmlFor="chat-input" className="sr-only">
-          {t('chat.placeholder')}
-        </label>
-        <input
-          id="chat-input"
-          value={draft}
-          onChange={(e) => setDraft(e.target.value)}
-          placeholder={t('chat.placeholder')}
-          autoComplete="off"
-          className="h-12 min-w-0 flex-1 rounded-full border border-line bg-canvas px-4 outline-none placeholder:text-ink-subtle focus-visible:ring-3 focus-visible:ring-green-200"
-        />
-        <button
-          type="submit"
-          aria-label={t('chat.send')}
-          disabled={!draft.trim()}
-          className="grid size-12 shrink-0 place-items-center rounded-full bg-primary text-on-primary disabled:opacity-40"
-        >
-          <SendHorizontal size={20} />
-        </button>
+        {recording ? (
+          <RecordingBar
+            onCancel={() => setRecording(false)}
+            onSend={(seconds) => {
+              setRecording(false)
+              send('', undefined, seconds)
+            }}
+          />
+        ) : (
+          <>
+            <button
+              type="button"
+              aria-label={t('chat.attach')}
+              onClick={() => picker.current?.click()}
+              className="grid size-12 shrink-0 place-items-center rounded-full text-brand active:bg-navy-100"
+            >
+              <ImagePlus size={22} />
+            </button>
+            <input
+              ref={picker}
+              type="file"
+              accept="image/*"
+              hidden
+              onChange={(e) => {
+                const file = e.target.files?.[0]
+                if (file) send(draft, URL.createObjectURL(file))
+                e.target.value = ''
+              }}
+            />
+            <label htmlFor="chat-input" className="sr-only">
+              {t('chat.placeholder')}
+            </label>
+            <input
+              id="chat-input"
+              value={draft}
+              onChange={(e) => setDraft(e.target.value)}
+              placeholder={t('chat.placeholder')}
+              autoComplete="off"
+              className="h-12 min-w-0 flex-1 rounded-full border border-line bg-canvas px-4 outline-none placeholder:text-ink-subtle focus-visible:ring-3 focus-visible:ring-green-200"
+            />
+            {draft.trim() ? (
+              <button
+                type="submit"
+                aria-label={t('chat.send')}
+                className="grid size-12 shrink-0 place-items-center rounded-full bg-primary text-on-primary"
+              >
+                <SendHorizontal size={20} />
+              </button>
+            ) : (
+              // An empty box: the same place records a voice message instead
+              <button
+                type="button"
+                aria-label={t('chat.voice.record')}
+                onClick={() => setRecording(true)}
+                className="grid size-12 shrink-0 place-items-center rounded-full bg-primary text-on-primary"
+              >
+                <Mic size={20} />
+              </button>
+            )}
+          </>
+        )}
       </form>
     </div>
   )

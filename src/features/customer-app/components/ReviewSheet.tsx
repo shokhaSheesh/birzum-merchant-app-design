@@ -7,15 +7,18 @@ import { Sheet } from '@/shared/ui/Sheet'
 import { TextAreaField } from '@/shared/ui/TextAreaField'
 
 type Props = {
-  shopName: string
+  /** The product being rated. */
+  title: string
+  /** The star the shopper tapped to open the sheet. */
+  initialRating?: number
   onClose: () => void
   onSend: (rating: number, text: string) => void
 }
 
-/** The shopper rates a shop after getting the goods: one to five stars and a few words. */
-export function ReviewSheet({ shopName, onClose, onSend }: Props) {
+/** The shopper rates a product after getting it: one to five stars and, if they like, a few words. */
+export function ReviewSheet({ title, initialRating = 0, onClose, onSend }: Props) {
   const { t } = useI18n()
-  const [rating, setRating] = useState(0)
+  const [rating, setRating] = useState(initialRating)
   const [text, setText] = useState('')
   const [submitted, setSubmitted] = useState(false)
 
@@ -28,7 +31,7 @@ export function ReviewSheet({ shopName, onClose, onSend }: Props) {
   }
 
   return (
-    <Sheet open onClose={onClose} title={shopName}>
+    <Sheet open onClose={onClose} title={title}>
       <form onSubmit={send} noValidate className="flex flex-col gap-4 pt-1 pb-1">
         <div className="flex flex-col gap-1.5">
           <p className="text-sm font-medium text-ink-muted">{t('feedback.rating')}</p>
